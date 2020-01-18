@@ -89,3 +89,19 @@ These options are available:
  * `USE_POLYMOST=0` – disable the true 3D renderer.
  * `USE_OPENGL=1` – enable use of OpenGL 2.0 acceleration.
  * `USE_OPENGL=USE_GL2` – enable use of OpenGL 2.0 acceleration. (GCC/clang syntax.)
+ * `USE_OPENGL=USE_GLES2` – enable use of OpenGL ES 2.0 acceleration. (GCC/clang syntax.)
+ * `USE_OPENGL=0` – disable use of OpenGL acceleration.
+ * `WITHOUT_GTK=1` – disable use of GTK+ to provide launch windows and load/save file choosers.
+
+Warnings
+--------
+
+1. You should exercise caution if you choose to use multiplayer features over
+   untrustworthy networks with untrustworthy players.
+2. 3D Realms and Apogee do not support this port. Contact me instead.
+
+
+Enjoy!
+
+Jonathon Fowler
+
