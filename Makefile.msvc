@@ -1,0 +1,50 @@
+# Duke3D Makefile for Microsoft Make
+
+# Engine options
+#  USE_POLYMOST   - enables Polymost renderer
+#  USE_OPENGL     - enables OpenGL support in Polymost
+#     Define as 0 to disable OpenGL
+#     Define as 1 (or 2) for GL 2.0/2.1 profile
+#     Define as 3 for GL 3.2 Core profile
+#  USE_ASM        - enables the use of assembly code if supported
+USE_POLYMOST=1
+USE_OPENGL=1
+USE_ASM=1
+
+RELEASE=1
+
+# Create Makefile.msvcuser yourself to provide your own overrides
+# for configurable values
+!if EXIST(Makefile.msvcuser)
+!include Makefile.msvcuser
+!endif
+
+ENGINEROOT=jfbuild
+ENGINEINC=$(ENGINEROOT)\include
+SRC=src
+RSRC=rsrc
+MACTROOT=jfmact
+AUDIOLIBROOT=jfaudiolib
+
+CC=cl
+RC=rc
+LINK=link
+
+OURCFLAGS=/nologo /MD /Zl
+OURCXXFLAGS=/nologo /MD /Zl /EHsc
+OURCPPFLAGS=/I$(SRC) /I$(ENGINEINC) /I$(MACTROOT) /I$(AUDIOLIBROOT)\include
+OURLINKFLAGS=/opt:ref /nologo
+OURRFLAGS=/nologo /i$(SRC) /i$(ENGINEINC)
+OURLIBS=msvcrt.lib ole32.lib
+
+!if $(RELEASE)
+# release options
+OURCFLAGS=$(OURCFLAGS) /Ox
+OURCXXFLAGS=$(OURCXXFLAGS) /Ox
+OURLINKFLAGS=$(OURLINKFLAGS) /RELEASE
+!else
+# debugging options
+OURCFLAGS=$(OURCFLAGS) /Ot /Z7
+OURCXXFLAGS=$(OURXXCFLAGS) /Ot /Z7
+OURLINKFLAGS=$(OURLINKFLAGS) /DEBUG
+!endif
