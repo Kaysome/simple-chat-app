@@ -109,4 +109,50 @@ EDITOROBJS=$(EDITOROBJS) $(SRC)\version.$o
 	$(CC) /TC /c $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
 
 {$(SRC)}.rc{$(SRC)}.$(res):
-	$(RC) $(OURRFLAGS)
+	$(RC) $(OURRFLAGS) /fo$@ /r $<
+
+{$(MACTROOT)}.c{$(MACTROOT)}.$o:
+	$(CC) /TC /c $(CPPFLAGS) $(OURCPPFLAGS) $(CFLAGS) $(OURCFLAGS) /Fo$@ $<
+
+# TARGETS
+all: duke3d$(EXESUFFIX) build$(EXESUFFIX) ;
+
+duke3d$(EXESUFFIX): $(GAMEOBJS) $(ENGINEROOT)\$(ENGINELIB) $(AUDIOLIBROOT)\$(JFAUDIOLIB)
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) $(OURLINKFLAGS) $** $(JFAUDIOLIB_LINKFLAGS) $(OURLIBS)
+
+build$(EXESUFFIX): $(EDITOROBJS) $(ENGINEROOT)\$(ENGINELIB) $(ENGINEROOT)\$(EDITORLIB)
+	$(LINK) /OUT:$@ /SUBSYSTEM:WINDOWS $(LINKFLAGS) $(OURLINKFLAGS) $** $(OURLIBS)
+
+$(ENGINEROOT)\$(ENGINELIB) $(ENGINEROOT)\$(EDITORLIB): ALWAYSBUILD
+	cd "$(@D)"
+	$(MAKE) /nologo /f Makefile.msvc /$(MAKEFLAGS) USE_POLYMOST=$(USE_POLYMOST) USE_OPENGL=$(USE_OPENGL) USE_ASM=$(USE_ASM) RELEASE=$(RELEASE) $(@F)
+	cd "$(MAKEDIR)"
+
+$(AUDIOLIBROOT)\$(JFAUDIOLIB): ALWAYSBUILD
+	cd "$(@D)"
+	$(MAKE) /nologo /f Makefile.msvc /$(MAKEFLAGS) RELEASE=$(RELEASE) $(@F)
+	cd "$(MAKEDIR)"
+
+$(SRC)\version-auto.c: ALWAYSBUILD
+	cmd /c tools\generateversion.cmd > $@
+
+ALWAYSBUILD: ;
+
+# DEPENDENCIES
+!include Makefile.deps
+
+# PHONIES
+clean::
+	-del /q $(GAMEOBJS) $(EDITOROBJS)
+veryclean:: clean
+	-del /q duke3d$(EXESUFFIX) build$(EXESUFFIX)
+
+clean veryclean::
+	cd "$(ENGINEROOT)"
+	-$(MAKE) /nologo /f Makefile.msvc $@
+	cd "$(MAKEDIR)"
+
+clean::
+	cd "$(AUDIOLIBROOT)"
+	-$(MAKE) /nologo /f Makefile.msvc $@
+	cd "$(MAKEDIR)"
