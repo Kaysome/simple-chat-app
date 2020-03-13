@@ -213,4 +213,25 @@
                             <property name="margin_top">8</property>
                             <child>
                               <object class="GtkCheckButton" id="usemousecheck">
-                            
+                                <property name="label" translatable="yes">Mo_use</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkCheckButton" id="usejoystickcheck">
+                                <property name="label" translatable="yes">Cont_roller</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="draw_indicator">True</property>
+               
