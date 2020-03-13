@@ -135,4 +135,30 @@
                           <object class="GtkComboBox" id="vmode3dcombo">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="model">vmode3dlist</pr
+                            <property name="model">vmode3dlist</property>
+                            <child>
+                              <object class="GtkCellRendererText"/>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="vmode3dlabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_right">12</property>
+                            <property name="label" translatable="yes">_Video mode:</property>
+                            <property name="use_underline">True</property>
+                            <property name="mnemonic_widget">vmode3dcombo</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+        
