@@ -161,4 +161,29 @@
                             <property name="left_attach">0</property>
                             <property name="top_attach">0</property>
                           </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">8</property>
+                            <property name="label" translatable="yes">S_ound quality:</property>
+                            <property name="use_underline">True</property>
+                            <property name="mnemonic_widget">soundqualitycombo</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkComboBox" id="soundqualitycombo">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">8</property>
+                            <property name="model">soundqualitylist</property>
+                            <child>
+                              <object class="GtkCellRendererText"/>
+                              <attributes>
+                                <attribute name="text">0</attribute>
         
