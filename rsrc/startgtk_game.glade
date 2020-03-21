@@ -415,4 +415,30 @@
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-       
+                      <object class="GtkTreeView" id="gametable">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="vexpand">True</property>
+                        <property name="model">gamelist</property>
+                        <property name="headers_clickable">False</property>
+                        <property name="enable_search">False</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection"/>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="sizing">autosize</property>
+                            <property name="min_width">280</property>
+                            <property name="title" translatable="yes">Game name</property>
+                            <child>
+                              <object class="GtkCellRendererText"/>
+                              <attributes>
+                                <attribute name="text">0</attribute>
+                              </attributes>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn">
+                            <property name="sizing">autosize</property>
+                            <property name="title" translatable="yes">Fil
