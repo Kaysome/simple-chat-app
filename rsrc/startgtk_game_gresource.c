@@ -5796,4 +5796,39 @@ static const SECTION union { const guint8 data[46369]; const double alignment; v
   "\345\342\065\245\106\144\315\143\325\027\337\142\141\343\330\246"
   "\076\076\207\252\310\333\065\224\010\017\217\100\347\025\372\375"
   "\114\351\267\032\213\014\037\214\066\015\200\140\040\014\240\172"
-  "\037\
+  "\037\374\345\350\155\221\360\057\010\060\247\020\075\113\204\337"
+  "\276\000\340\002\102\022\014\203\345\200\326\344\070\321\305\224"
+  "\370\145\015\104\067\161\173\026\010\237\055\000\104\320\066\213"
+  "\060\026\117\224\165\140\053\267\105\314\342\117\226\125\144\130"
+  "\253\152\113\003\331\126\001\300\213\230\336\031\044\201\240\152"
+  "\161\063\276\117\044\134\230\312\352\232\266\074\170\333\003\000"
+  "\114\105\034\030\337\233\252\330\242\331\137\170\206\360\267\267"
+  "\167\017\371\173\301\305\245\322\117\027\333\121\226\112\116\057"
+  "\155\153\034\036\124\376\137\200\001\000\215\103\111\261\227\023"
+  "\336\350\000\000\000\000\111\105\116\104\256\102\140\202\000\000"
+  "\050\165\165\141\171\051\057\000\001\000\000\000\000\000\000\000"
+  "" };
+#endif /* !_MSC_VER */
+
+static GStaticResource static_resource = { startgtk_resource_data.data, sizeof (startgtk_resource_data.data) - 1 /* nul terminator */, NULL, NULL, NULL };
+
+G_MODULE_EXPORT
+GResource *startgtk_get_resource (void);
+GResource *startgtk_get_resource (void)
+{
+  return g_static_resource_get_resource (&static_resource);
+}
+
+G_MODULE_EXPORT
+void startgtk_unregister_resource (void);
+void startgtk_unregister_resource (void)
+{
+  g_static_resource_fini (&static_resource);
+}
+
+G_MODULE_EXPORT
+void startgtk_register_resource (void);
+void startgtk_register_resource (void)
+{
+  g_static_resource_init (&static_resource);
+}
