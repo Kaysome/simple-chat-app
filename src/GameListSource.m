@@ -40,4 +40,43 @@
     if (!fg) {
         return nil;
     }
-    switch ([[aTableColumn identifier] intV
+    switch ([[aTableColumn identifier] intValue]) {
+        case 0:	// name column
+            if (fg->ref) {
+                return [NSString stringWithUTF8String: fg->ref->name];
+            } else {
+                return @"Unknown game";
+            }
+        case 1:	// grp column
+            return [NSString stringWithUTF8String: fg->name];
+        case 2: // hidden column pointing to the grpfile entry.
+            return [NSValue valueWithPointer: fg];
+        default:
+            return nil;
+    }
+}
+
+- (int)numberOfRowsInTableView:(NSTableView *)aTableView
+{
+    int count = 0;
+    struct grpfile const *fg = GroupsFound();
+
+    for (count = 0; fg; fg = fg->next) {
+        if (fg->ref) count++;
+    }
+    return count;
+}
+
+- (int)indexForGrp:(struct grpfile const *)grpFile
+{
+    int index;
+    struct grpfile const *fg = GroupsFound();
+
+    for (index = 0; fg; fg = fg->next) {
+        if (fg == grpFile) return index;
+        if (fg->ref) index++;
+    }
+    return -1;
+}
+@end
+
