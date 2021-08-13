@@ -108,4 +108,69 @@ static int importmeta_cancelled(void *data);
 - (BOOL)isImportCancelled;
 
 - (IBAction)cancel:(id)sender;
-- (IBAction)start:(id)se
+- (IBAction)start:(id)sender;
+
+- (void)setupConfigMode;
+- (void)setupMessagesMode:(BOOL)allowCancel;
+- (void)putsMessage:(NSString *)str;
+- (void)setTitle:(NSString *)str;
+- (void)setSettings:(struct startwin_settings *)theSettings;
+
+@end
+
+@implementation StartupWinController
+
+- (void)windowDidLoad
+{
+    quiteventonclose = TRUE;
+}
+
+- (BOOL)windowShouldClose:(id)sender
+{
+    if (inmodal) {
+        [NSApp stopModalWithCode:STARTWIN_CANCEL];
+    }
+    quitevent = quitevent || quiteventonclose;
+    return NO;
+}
+
+- (int)modalRun
+{
+    int retval;
+
+    inmodal = YES;
+    switch ([NSApp runModalForWindow:[self window]]) {
+        case STARTWIN_RUN: retval = STARTWIN_RUN; break;
+        case STARTWIN_CANCEL: retval = STARTWIN_CANCEL; break;
+        default: retval = -1;
+    }
+    inmodal = NO;
+
+    return retval;
+}
+
+// Close the window, but don't cause the quitevent flag to be set
+// as though this is a cancel operation.
+- (void)closeQuietly
+{
+    quiteventonclose = FALSE;
+    [self close];
+}
+
+- (void)populateVideoModes:(BOOL)firstTime
+{
+    int i, mode3d = -1;
+    int xdim = 0, ydim = 0, bpp = 0, fullscreen = 0;
+    int cd[] = { 32, 24, 16, 15, 8, 0 };
+    NSMenu *menu3d = nil;
+    NSMenuItem *menuitem = nil;
+
+    if (firstTime) {
+        getvalidmodes();
+        xdim = settings->xdim3d;
+        ydim = settings->ydim3d;
+        bpp  = settings->bpp3d;
+        fullscreen = settings->fullscreen;
+    } else {
+        fullscreen = ([fullscreenButton state] == NSOnState);
+        mode3d = (int)[[videoMode3DPUButto
