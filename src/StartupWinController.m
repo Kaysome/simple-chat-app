@@ -61,3 +61,51 @@ static int importmeta_cancelled(void *data);
     IBOutlet NSButton *fullscreenButton;
     IBOutlet NSTextView *messagesView;
     IBOutlet NSTabView *tabView;
+    IBOutlet NSTabViewItem *tabConfig;
+    IBOutlet NSTabViewItem *tabMessages;
+    IBOutlet NSPopUpButton *videoMode3DPUButton;
+
+    IBOutlet NSPopUpButton *soundQualityPUButton;
+    IBOutlet NSButton *useMouseButton;
+    IBOutlet NSButton *useJoystickButton;
+
+    IBOutlet NSButton *singlePlayerButton;
+    IBOutlet NSButton *joinMultiButton;
+    IBOutlet NSTextField *hostField;
+    IBOutlet NSButton *hostMultiButton;
+    IBOutlet NSTextField *numPlayersField;
+    IBOutlet NSStepper *numPlayersStepper;
+
+    IBOutlet NSTabViewItem *tabGame;
+    IBOutlet NSScrollView *gameList;
+
+    IBOutlet NSButton *chooseImportButton;
+    IBOutlet NSButton *importInfoButton;
+
+    IBOutlet NSButton *cancelButton;
+    IBOutlet NSButton *startButton;
+
+    IBOutlet NSWindow *importStatusWindow;
+    IBOutlet NSTextField *importStatusText;
+    IBOutlet NSButton *importStatusCancel;
+}
+
+- (int)modalRun;
+- (void)closeQuietly;
+- (void)populateVideoModes:(BOOL)firstTime;
+- (void)populateSoundQuality:(BOOL)firstTime;
+
+- (IBAction)fullscreenClicked:(id)sender;
+
+- (IBAction)multiPlayerModeClicked:(id)sender;
+
+- (IBAction)chooseImportClicked:(id)sender;
+- (IBAction)importInfoClicked:(id)sender;
+- (IBAction)importStatusCancelClicked:(id)sender;
+- (void)updateImportStatusText:(NSString *)text;
+- (void)doImport:(NSString *)path;
+- (void)doneImport:(NSNumber *)result;
+- (BOOL)isImportCancelled;
+
+- (IBAction)cancel:(id)sender;
+- (IBAction)start:(id)se
