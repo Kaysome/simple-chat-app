@@ -173,4 +173,50 @@ static int importmeta_cancelled(void *data);
         fullscreen = settings->fullscreen;
     } else {
         fullscreen = ([fullscreenButton state] == NSOnState);
-        mode3d = (int)[[videoMode3DPUButto
+        mode3d = (int)[[videoMode3DPUButton selectedItem] tag];
+        if (mode3d >= 0) {
+            xdim = validmode[mode3d].xdim;
+            ydim = validmode[mode3d].ydim;
+            bpp = validmode[mode3d].bpp;
+        }
+    }
+
+    // Find an ideal match.
+    mode3d = checkvideomode(&xdim, &ydim, bpp, fullscreen, 1);
+    if (mode3d < 0) {
+        for (i=0; cd[i]; ) { if (cd[i] >= bpp) i++; else break; }
+        for ( ; cd[i]; i++) {
+            mode3d = checkvideomode(&xdim, &ydim, cd[i], fullscreen, 1);
+            if (mode3d < 0) continue;
+            break;
+        }
+    }
+
+    // Repopulate the lists.
+    menu3d = [videoMode3DPUButton menu];
+    [menu3d removeAllItems];
+
+    for (i = 0; i < validmodecnt; i++) {
+        if (validmode[i].fs != fullscreen) continue;
+
+        menuitem = [menu3d addItemWithTitle:[NSString stringWithFormat:@"%d %C %d %d-bpp",
+                                          validmode[i].xdim, 0xd7, validmode[i].ydim, validmode[i].bpp]
+                                     action:nil
+                              keyEquivalent:@""];
+        [menuitem setTag:i];
+    }
+
+    if (mode3d >= 0) [videoMode3DPUButton selectItemWithTag:mode3d];
+}
+
+- (void)populateSoundQuality:(BOOL)firstTime
+{
+    int i, curidx = -1;
+    NSMenu *menu = nil;
+    NSMenuItem *menuitem = nil;
+
+    if (firstTime) {
+        for (i = 0; soundQualities[i].frequency > 0; i++) {
+            if (soundQualities[i].frequency == settings->samplerate &&
+                soundQualities[i].samplesize == settings->bitspersample &&
+                soundQualities[i].chan
