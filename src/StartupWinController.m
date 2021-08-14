@@ -261,4 +261,46 @@ static int importmeta_cancelled(void *data);
 
         selindex = [gamelistsrc indexForGrp:settings->selectedgrp];
         if (selindex >= 0) {
-            [table selectRowIndexes:[NSIndexSet indexSetWithInde
+            [table selectRowIndexes:[NSIndexSet indexSetWithIndex:selindex] byExtendingSelection:NO];
+        }
+
+        [gamelistsrc autorelease];
+    } else {
+        [table reloadData];
+    }
+}
+
+- (IBAction)fullscreenClicked:(id)sender
+{
+    [self populateVideoModes:NO];
+}
+
+- (IBAction)multiPlayerModeClicked:(id)sender
+{
+    [singlePlayerButton setState:(sender == singlePlayerButton ? NSOnState : NSOffState)];
+
+    [joinMultiButton setState:(sender == joinMultiButton ? NSOnState : NSOffState)];
+    [hostField setEnabled:(sender == joinMultiButton)];
+
+    [hostMultiButton setState:(sender == hostMultiButton ? NSOnState : NSOffState)];
+    [numPlayersField setEnabled:(sender == hostMultiButton)];
+    [numPlayersStepper setEnabled:(sender == hostMultiButton)];
+}
+
+- (IBAction)chooseImportClicked:(id)sender
+{
+    @autoreleasepool {
+        NSArray *filetypes = [[NSArray alloc] initWithObjects:@"grp", @"app", nil];
+        NSOpenPanel *panel = [NSOpenPanel openPanel];
+
+        [panel setTitle:@"Import game data"];
+        [panel setPrompt:@"Import"];
+        [panel setMessage:@"Select a .grp file, an .app bundle, or choose a folder to search."];
+        [panel setAllowedFileTypes:filetypes];
+        [panel setCanChooseFiles:TRUE];
+        [panel setCanChooseDirectories:TRUE];
+        [panel setShowsHiddenFiles:TRUE];
+        [panel beginSheetModalForWindow:[self window]
+                      completionHandler:^void (NSModalResponse resp) {
+            if (resp == NSFileHandlingPanelOKButton) {
+   
