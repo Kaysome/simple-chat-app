@@ -219,4 +219,46 @@ static int importmeta_cancelled(void *data);
         for (i = 0; soundQualities[i].frequency > 0; i++) {
             if (soundQualities[i].frequency == settings->samplerate &&
                 soundQualities[i].samplesize == settings->bitspersample &&
-                soundQualities[i].chan
+                soundQualities[i].channels == settings->channels) {
+                curidx = i;
+                break;
+            }
+        }
+        if (curidx < 0) {
+            soundQualities[i].frequency = settings->samplerate;
+            soundQualities[i].samplesize = settings->bitspersample;
+            soundQualities[i].channels = settings->channels;
+        }
+    }
+
+    menu = [soundQualityPUButton menu];
+    [menu removeAllItems];
+
+    for (i = 0; soundQualities[i].frequency > 0; i++) {
+        menuitem = [menu addItemWithTitle:[NSString stringWithFormat:@"%d kHz, %d-bit, %s",
+                                          soundQualities[i].frequency / 1000,
+                                          soundQualities[i].samplesize,
+                                          soundQualities[i].channels == 1 ? "Mono" : "Stereo"]
+                                   action:nil
+                            keyEquivalent:@""];
+        [menuitem setTag:i];
+    }
+
+    if (curidx >= 0) [soundQualityPUButton selectItemAtIndex:curidx];
+}
+
+- (void)populateGameList:(BOOL)firstTime
+{
+    NSTableView *table;
+    int selindex = -1;
+
+    table = [gameList documentView];
+
+    if (firstTime) {
+        gamelistsrc = [[GameListSource alloc] init];
+        [table setDataSource:gamelistsrc];
+        [table deselectAll:nil];
+
+        selindex = [gamelistsrc indexForGrp:settings->selectedgrp];
+        if (selindex >= 0) {
+            [table selectRowIndexes:[NSIndexSet indexSetWithInde
