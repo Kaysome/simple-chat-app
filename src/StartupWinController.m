@@ -303,4 +303,62 @@ static int importmeta_cancelled(void *data);
         [panel beginSheetModalForWindow:[self window]
                       completionHandler:^void (NSModalResponse resp) {
             if (resp == NSFileHandlingPanelOKButton) {
-   
+                NSURL *file = [panel URL];
+                if ([file isFileURL]) {
+                    [self doImport:[file path]];
+                }
+            }
+        }];
+    }
+}
+
+- (IBAction)importStatusCancelClicked:(id)sender
+{
+    [importthread cancel];
+}
+
+- (void)updateImportStatusText:(NSString *)text
+{
+    [importStatusText setStringValue:text];
+}
+
+- (void)doImport:(NSString *)path
+{
+    if ([importthread isExecuting]) {
+        NSLog(@"import thread is already executing");
+        return;
+    }
+
+    // Put up the status sheet which becomes modal.
+    [NSApp beginSheet:importStatusWindow
+       modalForWindow:[self window]
+        modalDelegate:self
+       didEndSelector:nil
+          contextInfo:NULL];
+
+    // Spawn a thread to do the scan.
+    importthread = [[NSThread alloc] initWithBlock:^void(void) {
+        struct importgroupsmeta meta = {
+            (void *)self,
+            importmeta_progress,
+            importmeta_cancelled
+        };
+        int result = ImportGroupsFromPath([path UTF8String], &meta);
+        [self performSelectorOnMainThread:@selector(doneImport:)
+                               withObject:[NSNumber numberWithInt:result]
+                            waitUntilDone:FALSE];
+    }];
+    [importthread start];
+}
+
+// Finish up after the import thread returns.
+- (void)doneImport:(NSNumber *)result
+{
+    if ([result intValue] > 0) {
+        [self populateGameList:NO];
+    }
+    [importStatusWindow orderOut:nil];
+    [NSApp endSheet:importStatusWindow returnCode:1];
+}
+
+// Report on wheth
