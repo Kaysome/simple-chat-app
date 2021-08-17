@@ -361,4 +361,41 @@ static int importmeta_cancelled(void *data);
     [NSApp endSheet:importStatusWindow returnCode:1];
 }
 
-// Report on wheth
+// Report on whether the import thread has been been cancelled early.
+- (BOOL)isImportCancelled
+{
+    return [importthread isCancelled];
+}
+
+- (IBAction)importInfoClicked:(id)sender
+{
+    @autoreleasepool {
+        NSAlert *alert = [[NSAlert alloc] init];
+        NSURL *sharewareurl = [NSURL URLWithString:@"https://www.jonof.id.au/files/jfduke3d/dn3dsw13.zip"];
+
+        [alert setAlertStyle:NSAlertStyleInformational];
+        [alert setMessageText:@"JFDuke3D can scan locations of your choosing for Duke Nukem 3D game data"];
+        [alert setInformativeText:@"Click the 'Choose a location...' button, then locate "
+            @"a .grp file, an .app bundle, or a folder to scan.\n\n"
+            @"Common locations to check include:\n"
+            @" • CD/DVD drives\n"
+            @" • GOG-managed .app bundles\n"
+            @" • Steam library folders\n\n"
+            @"To play the Shareware version, download the shareware data (dn3dsw13.zip), unzip the file, "
+                @"then select the DUKE3D.GRP file with the 'Choose a location...' option."];
+        [alert addButtonWithTitle:@"OK"];
+        [alert addButtonWithTitle:@"Download Shareware"];
+        switch ([alert runModal]) {
+            case NSAlertFirstButtonReturn:
+                break;
+            case NSAlertSecondButtonReturn:
+                LSOpenCFURLRef((CFURLRef)sharewareurl, nil);
+                break;
+        }
+    }
+}
+
+- (IBAction)cancel:(id)sender
+{
+    if (inmodal) {
+ 
