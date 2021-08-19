@@ -442,3 +442,46 @@ static int importmeta_cancelled(void *data);
     // Get the chosen game entry.
     table = [gameList documentView];
     grpvalue = [[table dataSource] tableView:table
+                   objectValueForTableColumn:[table tableColumnWithIdentifier:@"2"]
+                                         row:[table selectedRow]];
+    if (grpvalue) {
+        settings->selectedgrp = (struct grpfile *)[grpvalue pointerValue];
+    }
+
+    settings->forcesetup = [alwaysShowButton state] == NSOnState;
+
+    if (inmodal) {
+        [NSApp stopModalWithCode:STARTWIN_RUN];
+    }
+}
+
+- (void)setupConfigMode
+{
+    [alwaysShowButton setState: (settings->forcesetup ? NSOnState : NSOffState)];
+    [alwaysShowButton setEnabled:YES];
+
+    [videoMode3DPUButton setEnabled:YES];
+    [self populateVideoModes:YES];
+    [fullscreenButton setEnabled:YES];
+    [fullscreenButton setState: (settings->fullscreen ? NSOnState : NSOffState)];
+
+    [soundQualityPUButton setEnabled:YES];
+    [self populateSoundQuality:YES];
+    [useMouseButton setEnabled:YES];
+    [useMouseButton setState: (settings->usemouse ? NSOnState : NSOffState)];
+    [useJoystickButton setEnabled:YES];
+    [useJoystickButton setState: (settings->usejoy ? NSOnState : NSOffState)];
+
+    if (!settings->netoverride) {
+        [singlePlayerButton setEnabled:YES];
+        [singlePlayerButton setState:NSOnState];
+
+        [hostMultiButton setEnabled:YES];
+        [hostMultiButton setState:NSOffState];
+        [numPlayersField setEnabled:NO];
+        [numPlayersField setIntValue:2];
+        [numPlayersStepper setEnabled:NO];
+        [numPlayersStepper setMaxValue:MAXPLAYERS];
+
+        [joinMultiButton setEnabled:YES];
+        [joinM
