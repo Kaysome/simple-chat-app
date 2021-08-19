@@ -398,4 +398,47 @@ static int importmeta_cancelled(void *data);
 - (IBAction)cancel:(id)sender
 {
     if (inmodal) {
- 
+        [NSApp stopModalWithCode:STARTWIN_CANCEL];
+    }
+    quitevent = quitevent || quiteventonclose;
+}
+
+- (IBAction)start:(id)sender
+{
+    int mode = -1;
+    NSTableView *table;
+    NSValue *grpvalue;
+
+    mode = (int)[[videoMode3DPUButton selectedItem] tag];
+    if (mode >= 0) {
+        settings->xdim3d = validmode[mode].xdim;
+        settings->ydim3d = validmode[mode].ydim;
+        settings->bpp3d = validmode[mode].bpp;
+        settings->fullscreen = validmode[mode].fs;
+    }
+
+    settings->usemouse = [useMouseButton state] == NSOnState;
+    settings->usejoy = [useJoystickButton state] == NSOnState;
+
+    mode = (int)[[soundQualityPUButton selectedItem] tag];
+    if (mode >= 0) {
+        settings->samplerate = soundQualities[mode].frequency;
+        settings->bitspersample = soundQualities[mode].samplesize;
+        settings->channels = soundQualities[mode].channels;
+    }
+
+    settings->numplayers = 0;
+    settings->joinhost = NULL;
+    if ([singlePlayerButton state] == NSOnState) {
+        settings->numplayers = 1;
+    } else if ([joinMultiButton state] == NSOnState) {
+        NSString *host = [hostField stringValue];
+        settings->numplayers = 2;
+        settings->joinhost = strdup([host cStringUsingEncoding:NSUTF8StringEncoding]);
+    } else if ([hostMultiButton state] == NSOnState) {
+        settings->numplayers = [numPlayersField intValue];
+    }
+
+    // Get the chosen game entry.
+    table = [gameList documentView];
+    grpvalue = [[table dataSource] tableView:table
