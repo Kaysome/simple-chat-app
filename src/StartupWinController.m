@@ -597,4 +597,70 @@ int startwin_close(void)
     @autoreleasepool {
         [startwin closeQuietly];
         [startwin release];
-       
+        startwin = nil;
+
+        return 0;
+    }
+}
+
+int startwin_puts(const char *s)
+{
+    if (!s) return -1;
+    if (startwin == nil) return 1;
+
+    @autoreleasepool {
+        NSString *str = [NSString stringWithUTF8String:s];
+        if ([NSThread isMainThread]) {
+            [startwin putsMessage:str];
+        } else {
+            [startwin performSelectorOnMainThread:@selector(putsMessage:)
+                                       withObject:str
+                                    waitUntilDone:TRUE];
+        }
+
+        return 0;
+    }
+}
+
+int startwin_settitle(const char *s)
+{
+    if (!s) return -1;
+    if (startwin == nil) return 1;
+
+    @autoreleasepool {
+        [startwin setTitle:[NSString stringWithUTF8String:s]];
+
+        return 0;
+    }
+}
+
+int startwin_idle(void *v)
+{
+    (void)v;
+    return 0;
+}
+
+int startwin_run(struct startwin_settings *settings)
+{
+    int retval;
+
+    if (startwin == nil) return STARTWIN_RUN;
+
+    @autoreleasepool {
+        [startwin setSettings:settings];
+
+        [startwin setupConfigMode];
+        retval = [startwin modalRun];
+        [startwin setupMessagesMode: (settings->numplayers > 1)];
+
+        return retval;
+    }
+}
+
+// Callback for the C-universe ImportGroupsFrom*() to notify the UI in Obj-C land.
+static void importmeta_progress(void *data, const char *path)
+{
+    StartupWinController *control = (StartupWinController *)data;
+
+    @autoreleasepool {
+        [control performSelectorOnMainThr
