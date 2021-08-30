@@ -663,4 +663,15 @@ static void importmeta_progress(void *data, const char *path)
     StartupWinController *control = (StartupWinController *)data;
 
     @autoreleasepool {
-        [control performSelectorOnMainThr
+        [control performSelectorOnMainThread:@selector(updateImportStatusText:)
+                                  withObject:[NSString stringWithUTF8String:path]
+                               waitUntilDone:FALSE];
+    }
+}
+
+// Callback for the C-universe ImportGroupsFrom*() to discover they've been cancelled by the UI.
+static int importmeta_cancelled(void *data)
+{
+    StartupWinController *control = (StartupWinController *)data;
+    return [control isImportCancelled];
+}
