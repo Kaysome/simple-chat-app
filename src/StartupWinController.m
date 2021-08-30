@@ -484,4 +484,55 @@ static int importmeta_cancelled(void *data);
         [numPlayersStepper setMaxValue:MAXPLAYERS];
 
         [joinMultiButton setEnabled:YES];
-        [joinM
+        [joinMultiButton setState:NSOffState];
+        [hostField setEnabled:NO];
+    } else {
+        [singlePlayerButton setEnabled:NO];
+        [hostMultiButton setEnabled:NO];
+        [numPlayersField setEnabled:NO];
+        [numPlayersStepper setEnabled:NO];
+        [joinMultiButton setEnabled:NO];
+        [hostField setEnabled:NO];
+    }
+
+    [self populateGameList:YES];
+    [[gameList documentView] setEnabled:YES];
+    [chooseImportButton setEnabled:YES];
+    [importInfoButton setEnabled:YES];
+
+    [cancelButton setEnabled:YES];
+    [startButton setEnabled:YES];
+
+    if (!settings->selectedgrp) {
+        [tabView selectTabViewItem:tabGame];
+    } else {
+        [tabView selectTabViewItem:tabConfig];
+    }
+    [NSCursor unhide];  // Why should I need to do this?
+}
+
+- (void)setupMessagesMode:(BOOL)allowCancel
+{
+    [tabView selectTabViewItem:tabMessages];
+
+    // disable all the controls on the Configuration page
+    NSEnumerator *enumerator = [[[tabConfig view] subviews] objectEnumerator];
+    NSControl *control;
+    while (control = [enumerator nextObject]) {
+        [control setEnabled:false];
+    }
+
+    [[gameList documentView] setEnabled:NO];
+    [chooseImportButton setEnabled:NO];
+    [importInfoButton setEnabled:NO];
+
+    [alwaysShowButton setEnabled:NO];
+
+    [cancelButton setEnabled:allowCancel];
+    [startButton setEnabled:false];
+}
+
+- (void)putsMessage:(NSString *)str
+{
+    NSRange end;
+    NSTextStorage *text = [messagesView textSto
