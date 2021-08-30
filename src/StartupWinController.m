@@ -535,4 +535,66 @@ static int importmeta_cancelled(void *data);
 - (void)putsMessage:(NSString *)str
 {
     NSRange end;
-    NSTextStorage *text = [messagesView textSto
+    NSTextStorage *text = [messagesView textStorage];
+    BOOL shouldAutoScroll;
+
+    shouldAutoScroll = ((int)NSMaxY([messagesView bounds]) == (int)NSMaxY([messagesView visibleRect]));
+
+    end.location = [text length];
+    end.length = 0;
+
+    [text beginEditing];
+    [messagesView replaceCharactersInRange:end withString:str];
+    [text endEditing];
+
+    if (shouldAutoScroll) {
+        end.location = [text length];
+        end.length = 0;
+        [messagesView scrollRangeToVisible:end];
+    }
+}
+
+- (void)setTitle:(NSString *)str
+{
+    [[self window] setTitle:str];
+}
+
+- (void)setSettings:(struct startwin_settings *)theSettings
+{
+    settings = theSettings;
+}
+
+@end
+
+static StartupWinController *startwin = nil;
+
+int startwin_open(void)
+{
+    if (startwin != nil) return 1;
+
+    @autoreleasepool {
+        startwin = [[StartupWinController alloc] initWithWindowNibName:@"startwin.game"];
+        if (startwin == nil) return -1;
+
+        NSWindow *win = [startwin window];  // Forces the window controls on the controller to be initialised.
+        if (win == nil) {
+            [startwin closeQuietly];
+            [startwin release];
+            startwin = nil;
+            return -1;
+        }
+        [startwin setupMessagesMode:YES];
+        [startwin showWindow:nil];
+
+        return 0;
+    }
+}
+
+int startwin_close(void)
+{
+    if (startwin == nil) return 1;
+
+    @autoreleasepool {
+        [startwin closeQuietly];
+        [startwin release];
+       
