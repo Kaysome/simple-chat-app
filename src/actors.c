@@ -63,4 +63,68 @@ void stopinterpolation(int *posptr)
         }
 }
 
-void dointerpolations(int smoothratio)       //Stick at beginning of dr
+void dointerpolations(int smoothratio)       //Stick at beginning of drawscreen
+{
+    int i, j, odelta, ndelta;
+
+    ndelta = 0; j = 0;
+    for(i=numinterpolations-1;i>=0;i--)
+    {
+        bakipos[i] = *curipos[i];
+        odelta = ndelta; ndelta = (*curipos[i])-oldipos[i];
+        if (odelta != ndelta) j = mulscale16(ndelta,smoothratio);
+        *curipos[i] = oldipos[i]+j;
+    }
+}
+
+void restoreinterpolations()  //Stick at end of drawscreen
+{
+    int i;
+
+    for(i=numinterpolations-1;i>=0;i--) *curipos[i] = bakipos[i];
+}
+
+int ceilingspace(short sectnum)
+{
+    if( (sector[sectnum].ceilingstat&1) && sector[sectnum].ceilingpal == 0 )
+    {
+        switch(sector[sectnum].ceilingpicnum)
+        {
+            case MOONSKY1:
+            case BIGORBIT1:
+                return 1;
+        }
+    }
+    return 0;
+}
+
+int floorspace(short sectnum)
+{
+    if( (sector[sectnum].floorstat&1) && sector[sectnum].ceilingpal == 0 )
+    {
+        switch(sector[sectnum].floorpicnum)
+        {
+            case MOONSKY1:
+            case BIGORBIT1:
+                return 1;
+        }
+    }
+    return 0;
+}
+
+void addammo( short weapon,struct player_struct *p,short amount)
+{
+   p->ammo_amount[weapon] += amount;
+
+   if( p->ammo_amount[weapon] > max_ammo_amount[weapon] )
+        p->ammo_amount[weapon] = max_ammo_amount[weapon];
+}
+
+void addweaponnoswitch( struct player_struct *p, short weapon)
+{
+    if ( p->gotweapon[weapon] == 0 )
+    {
+        p->gotweapon[weapon] = 1;
+        if(weapon == SHRINKER_WEAPON)
+            p->gotweapon[GROW_WEAPON] = 1;
+ 
