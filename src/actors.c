@@ -127,4 +127,67 @@ void addweaponnoswitch( struct player_struct *p, short weapon)
         p->gotweapon[weapon] = 1;
         if(weapon == SHRINKER_WEAPON)
             p->gotweapon[GROW_WEAPON] = 1;
- 
+    }
+
+    switch(weapon)
+    {
+        case KNEE_WEAPON:
+        case TRIPBOMB_WEAPON:
+        case HANDREMOTE_WEAPON:
+        case HANDBOMB_WEAPON:     break;
+        case SHOTGUN_WEAPON:      spritesound(SHOTGUN_COCK,p->i);break;
+        case PISTOL_WEAPON:       spritesound(INSERT_CLIP,p->i);break;
+        default:      spritesound(SELECT_WEAPON,p->i);break;
+    }
+}
+
+void addweapon( struct player_struct *p,short weapon)
+{
+    addweaponnoswitch(p,weapon);
+    p->random_club_frame = 0;
+
+    if(p->holster_weapon == 0)
+    {
+        p->weapon_pos = -1;
+        p->last_weapon = p->curr_weapon;
+    }
+    else
+    {
+        p->weapon_pos = 10;
+        p->holster_weapon = 0;
+        p->last_weapon = -1;
+    }
+
+    p->kickback_pic = 0;
+    p->curr_weapon = weapon;
+}
+
+void checkavailinven( struct player_struct *p )
+{
+
+    if(p->firstaid_amount > 0)
+        p->inven_icon = 1;
+    else if(p->steroids_amount > 0)
+        p->inven_icon = 2;
+    else if(p->holoduke_amount > 0)
+        p->inven_icon = 3;
+    else if(p->jetpack_amount > 0)
+        p->inven_icon = 4;
+    else if(p->heat_amount > 0)
+        p->inven_icon = 5;
+    else if(p->scuba_amount > 0)
+        p->inven_icon = 6;
+    else if(p->boot_amount > 0)
+        p->inven_icon = 7;
+    else p->inven_icon = 0;
+}
+
+void checkavailweapon( struct player_struct *p )
+{
+    short i,snum;
+    int32 weap;
+
+    if(p->wantweaponfire >= 0)
+    {
+        weap = p->wantweaponfire;
+        p-
