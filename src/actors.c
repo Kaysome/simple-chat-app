@@ -190,4 +190,69 @@ void checkavailweapon( struct player_struct *p )
     if(p->wantweaponfire >= 0)
     {
         weap = p->wantweaponfire;
-        p-
+        p->wantweaponfire = -1;
+
+        if(weap == p->curr_weapon) return;
+        else if( p->gotweapon[weap] && p->ammo_amount[weap] > 0 )
+        {
+            addweapon(p,weap);
+            return;
+        }
+    }
+
+    weap = p->curr_weapon;
+    if( p->gotweapon[weap] && p->ammo_amount[weap] > 0 )
+        return;
+    if( p->gotweapon[weap] && !(p->weaponswitch & 2))
+        return;
+    
+    snum = sprite[p->i].yvel;
+
+    for(i=0;i<10;i++)
+    {
+        weap = ud.wchoice[snum][i];
+        if (VOLUMEONE && weap > 6) continue;
+
+        if(weap == 0) weap = 9;
+        else weap--;
+
+        if( weap == 0 || ( p->gotweapon[weap] && p->ammo_amount[weap] > 0 ) )
+            break;
+    }
+
+    if(i == 10) weap = 0;
+
+    // Found the weapon
+
+    p->last_weapon  = p->curr_weapon;
+    p->random_club_frame = 0;
+    p->curr_weapon  = weap;
+    p->kickback_pic = 0;
+    if(p->holster_weapon == 1)
+    {
+        p->holster_weapon = 0;
+        p->weapon_pos = 10;
+    }
+    else p->weapon_pos   = -1;
+}
+
+int ifsquished(short i, short p)
+{
+    sectortype *sc;
+    char squishme;
+    int floorceildist;
+
+    if(PN == APLAYER && ud.clipping)
+        return 0;
+
+    sc = &sector[SECT];
+    floorceildist = sc->floorz - sc->ceilingz;
+
+    if(sc->lotag != 23)
+    {
+        if(sprite[i].pal == 1)
+            squishme = floorceildist < (32<<8) && (sc->lotag&32768) == 0;
+        else
+            squishme = floorceildist < (12<<8); // && (sc->lotag&32768) == 0;
+    }
+    else squishm
