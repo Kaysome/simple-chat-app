@@ -255,4 +255,56 @@ int ifsquished(short i, short p)
         else
             squishme = floorceildist < (12<<8); // && (sc->lotag&32768) == 0;
     }
-    else squishm
+    else squishme = 0;
+
+    if( squishme )
+    {
+        FTA(10,&ps[p]);
+
+        if(badguy(&sprite[i])) sprite[i].xvel = 0;
+
+        if(sprite[i].pal == 1)
+        {
+            hittype[i].picnum = SHOTSPARK1;
+            hittype[i].extra = 1;
+            return 0;
+        }
+
+        return 1;
+    }
+    return 0;
+}
+
+void hitradius( short i, int  r, int  hp1, int  hp2, int  hp3, int  hp4 )
+{
+    spritetype *s,*sj;
+    walltype *wal;
+    int d, q, x1, y1;
+    int sectcnt, sectend, dasect, startwall, endwall, nextsect;
+    short j,k,p,x,nextj,sect;
+    unsigned char statlist[] = {0,1,6,10,12,2,5};
+    short *tempshort = (short *)tempbuf;
+
+    s = &sprite[i];
+
+    if(s->picnum == RPG && s->xrepeat < 11) goto SKIPWALLCHECK;
+
+    if(s->picnum != SHRINKSPARK)
+    {
+        tempshort[0] = s->sectnum;
+        dasect = s->sectnum;
+        sectcnt = 0; sectend = 1;
+
+        do
+        {
+            dasect = tempshort[sectcnt++];
+            if(((sector[dasect].ceilingz-s->z)>>8) < r)
+            {
+               d = klabs(wall[sector[dasect].wallptr].x-s->x)+klabs(wall[sector[dasect].wallptr].y-s->y);
+               if(d < r)
+                    checkhitceiling(dasect);
+               else
+               {
+                    d = klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].x-s->x)+klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].y-s->y);
+                    if(d < r)
+                        checkhi
