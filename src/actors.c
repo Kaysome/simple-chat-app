@@ -307,4 +307,47 @@ void hitradius( short i, int  r, int  hp1, int  hp2, int  hp3, int  hp4 )
                {
                     d = klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].x-s->x)+klabs(wall[wall[wall[sector[dasect].wallptr].point2].point2].y-s->y);
                     if(d < r)
-                        checkhi
+                        checkhitceiling(dasect);
+               }
+           }
+
+           startwall = sector[dasect].wallptr;
+           endwall = startwall+sector[dasect].wallnum;
+           for(x=startwall,wal=&wall[startwall];x<endwall;x++,wal++)
+               if( ( klabs(wal->x-s->x)+klabs(wal->y-s->y) ) < r)
+           {
+               nextsect = wal->nextsector;
+               if (nextsect >= 0)
+               {
+                   for(dasect=sectend-1;dasect>=0;dasect--)
+                       if (tempshort[dasect] == nextsect) break;
+                   if (dasect < 0) tempshort[sectend++] = nextsect;
+               }
+               x1 = (((wal->x+wall[wal->point2].x)>>1)+s->x)>>1;
+               y1 = (((wal->y+wall[wal->point2].y)>>1)+s->y)>>1;
+               updatesector(x1,y1,&sect);
+               if( sect >= 0 && cansee(x1,y1,s->z,sect,s->x,s->y,s->z,s->sectnum ) )
+                   checkhitwall(i,x,wal->x,wal->y,s->z,s->picnum);
+           }
+        }
+        while (sectcnt < sectend);
+    }
+
+    SKIPWALLCHECK:
+
+    q = -(16<<8)+(TRAND&((32<<8)-1));
+
+    for(x = 0;x<7;x++)
+    {
+        j = headspritestat[statlist[x]];
+        while(j >= 0)
+        {
+            nextj = nextspritestat[j];
+            sj = &sprite[j];
+
+            if( x == 0 || x >= 5 || AFLAMABLE(sj->picnum) )
+            {
+                if( s->picnum != SHRINKSPARK || (sj->cstat&257) )
+                    if( dist( s, sj ) < r )
+                    {
+                        if( badguy(sj) && !cansee( sj->x, sj->y,sj->z+q, sj-
