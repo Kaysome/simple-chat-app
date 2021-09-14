@@ -413,4 +413,32 @@ void hitradius( short i, int  r, int  hp1, int  hp2, int  hp3, int  hp4 )
                             sj->picnum == FEM2 || sj->picnum == FEM3 ||
                             sj->picnum == FEM4 || sj->picnum == FEM5 ||
                             sj->picnum == FEM6 || sj->picnum == FEM7 ||
-                
+                            sj->picnum == FEM8 || sj->picnum == FEM9 ||
+                            sj->picnum == FEM10 || sj->picnum == STATUE ||
+                            sj->picnum == STATUEFLASH || sj->picnum == SPACEMARINE || sj->picnum == QUEBALL || sj->picnum == STRIPEBALL)
+                                checkhitsprite( j, i );
+                    }
+                    else if(s->extra == 0) hittype[j].extra = 0;
+
+                    if ( sj->picnum != RADIUSEXPLOSION &&
+                        s->owner >= 0 && sprite[s->owner].statnum < MAXSTATUS )
+                    {
+                        if(sj->picnum == APLAYER)
+                        {
+                            p = sj->yvel;
+                            if(ps[p].newowner >= 0)
+                            {
+                                ps[p].newowner = -1;
+                                ps[p].posx = ps[p].oposx;
+                                ps[p].posy = ps[p].oposy;
+                                ps[p].posz = ps[p].oposz;
+                                ps[p].ang = ps[p].oang;
+                                updatesector(ps[p].posx,ps[p].posy,&ps[p].cursectnum);
+                                setpal(&ps[p]);
+
+                                k = headspritestat[1];
+                                while(k >= 0)
+                                {
+                                    if(sprite[k].picnum==CAMERA1)
+                                        sprite[k].yvel = 0;
+  
