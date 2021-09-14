@@ -382,4 +382,35 @@ void hitradius( short i, int  r, int  hp1, int  hp2, int  hp3, int  hp4 )
                     {
                         if( s->picnum == SHRINKSPARK )
                             hittype[j].picnum = SHRINKSPARK;
-                        else hittype[j].picnum = RADIUS
+                        else hittype[j].picnum = RADIUSEXPLOSION;
+                    }
+
+                    if(s->picnum != SHRINKSPARK)
+                    {
+                        if ( d < r/3 )
+                        {
+                            if(hp4 == hp3) hp4++;
+                            hittype[j].extra = hp3 + (TRAND%(hp4-hp3));
+                        }
+                        else if ( d < 2*r/3 )
+                        {
+                            if(hp3 == hp2) hp3++;
+                            hittype[j].extra = hp2 + (TRAND%(hp3-hp2));
+                        }
+                        else if ( d < r )
+                        {
+                            if(hp2 == hp1) hp2++;
+                            hittype[j].extra = hp1 + (TRAND%(hp2-hp1));
+                        }
+
+                        if( sprite[j].picnum != TANK && sprite[j].picnum != ROTATEGUN && sprite[j].picnum != RECON && sprite[j].picnum != BOSS1 && sprite[j].picnum != BOSS2 && sprite[j].picnum != BOSS3 && sprite[j].picnum != BOSS4 )
+                        {
+                            if(sj->xvel < 0) sj->xvel = 0;
+                            sj->xvel += (s->extra<<2);
+                        }
+
+                        if( sj->picnum == PODFEM1 || sj->picnum == FEM1 ||
+                            sj->picnum == FEM2 || sj->picnum == FEM3 ||
+                            sj->picnum == FEM4 || sj->picnum == FEM5 ||
+                            sj->picnum == FEM6 || sj->picnum == FEM7 ||
+                
