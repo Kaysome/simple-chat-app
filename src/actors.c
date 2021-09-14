@@ -350,4 +350,36 @@ void hitradius( short i, int  r, int  hp1, int  hp2, int  hp3, int  hp4 )
                 if( s->picnum != SHRINKSPARK || (sj->cstat&257) )
                     if( dist( s, sj ) < r )
                     {
-                        if( badguy(sj) && !cansee( sj->x, sj->y,sj->z+q, sj-
+                        if( badguy(sj) && !cansee( sj->x, sj->y,sj->z+q, sj->sectnum, s->x, s->y, s->z+q, s->sectnum) )
+                            goto BOLT;
+                        checkhitsprite( j, i );
+                    }
+            }
+            else if( sj->extra >= 0 && sj != s && ( sj->picnum == TRIPBOMB || badguy(sj) || sj->picnum == QUEBALL || sj->picnum == STRIPEBALL || (sj->cstat&257) || sj->picnum == DUKELYINGDEAD ) )
+            {
+                if( s->picnum == SHRINKSPARK && sj->picnum != SHARK && ( j == s->owner || sj->xrepeat < 24 ) )
+                {
+                    j = nextj;
+                    continue;
+                }
+                if( s->picnum == MORTER && j == s->owner)
+                {
+                    j = nextj;
+                    continue;
+                }
+
+                if(sj->picnum == APLAYER) sj->z -= PHEIGHT;
+                d = dist( s, sj );
+                if(sj->picnum == APLAYER) sj->z += PHEIGHT;
+
+                if ( d < r && cansee( sj->x, sj->y, sj->z-(8<<8), sj->sectnum, s->x, s->y, s->z-(12<<8), s->sectnum) )
+                {
+                    hittype[j].ang = getangle(sj->x-s->x,sj->y-s->y);
+
+                    if ( s->picnum == RPG && sj->extra > 0)
+                        hittype[j].picnum = RPG;
+                    else
+                    {
+                        if( s->picnum == SHRINKSPARK )
+                            hittype[j].picnum = SHRINKSPARK;
+                        else hittype[j].picnum = RADIUS
