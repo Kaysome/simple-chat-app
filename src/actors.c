@@ -441,4 +441,52 @@ void hitradius( short i, int  r, int  hp1, int  hp2, int  hp3, int  hp4 )
                                 {
                                     if(sprite[k].picnum==CAMERA1)
                                         sprite[k].yvel = 0;
-  
+                                    k = nextspritestat[k];
+                                }
+                            }
+                        }
+                        hittype[j].owner = s->owner;
+                    }
+                }
+            }
+            BOLT:
+            j = nextj;
+        }
+    }
+}
+
+
+int movesprite(short spritenum, int xchange, int ychange, int zchange, unsigned int cliptype)
+{
+    int daz,h, oldx, oldy;
+    short retval, dasectnum, cd;
+    char bg;
+
+    bg = badguy(&sprite[spritenum]);
+
+    if(sprite[spritenum].statnum == 5 || (bg && sprite[spritenum].xrepeat < 4 ) )
+    {
+        sprite[spritenum].x += (xchange*TICSPERFRAME)>>2;
+        sprite[spritenum].y += (ychange*TICSPERFRAME)>>2;
+        sprite[spritenum].z += (zchange*TICSPERFRAME)>>2;
+        if(bg)
+            setsprite(spritenum,sprite[spritenum].x,sprite[spritenum].y,sprite[spritenum].z);
+        return 0;
+    }
+
+    dasectnum = sprite[spritenum].sectnum;
+
+    daz = sprite[spritenum].z;
+    h = ((tilesizy[sprite[spritenum].picnum]*sprite[spritenum].yrepeat)<<1);
+    daz -= h;
+
+    if( bg )
+    {
+        oldx = sprite[spritenum].x;
+        oldy = sprite[spritenum].y;
+
+        if( sprite[spritenum].xrepeat > 60 )
+            retval = clipmove(&sprite[spritenum].x,&sprite[spritenum].y,&daz,&dasectnum,((xchange*TICSPERFRAME)<<11),((ychange*TICSPERFRAME)<<11),1024L,(4<<8),(4<<8),cliptype);
+        else
+        {
+            if(sprite[sprit
