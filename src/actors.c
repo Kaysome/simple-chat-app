@@ -513,4 +513,51 @@ int movesprite(short spritenum, int xchange, int ychange, int zchange, unsigned 
                     sprite[spritenum].ang = (TRAND&2047);
                 else if( (hittype[spritenum].temp_data[0]&3) == 1 && sprite[spritenum].picnum != COMMANDER )
                     sprite[spritenum].ang = (TRAND&2047);
-                setsprite(spritenum,oldx,oldy,sprite[spritenum].z)
+                setsprite(spritenum,oldx,oldy,sprite[spritenum].z);
+                if(dasectnum < 0) dasectnum = 0;
+                return (16384+dasectnum);
+        }
+        if( (retval&49152) >= 32768 && (hittype[spritenum].cgg==0) ) sprite[spritenum].ang += 768;
+    }
+    else
+    {
+        if(sprite[spritenum].statnum == 4)
+            retval =
+                clipmove(&sprite[spritenum].x,&sprite[spritenum].y,&daz,&dasectnum,((xchange*TICSPERFRAME)<<11),((ychange*TICSPERFRAME)<<11),8L,(4<<8),(4<<8),cliptype);
+        else
+            retval =
+                clipmove(&sprite[spritenum].x,&sprite[spritenum].y,&daz,&dasectnum,((xchange*TICSPERFRAME)<<11),((ychange*TICSPERFRAME)<<11),(int)(sprite[spritenum].clipdist<<2),(4<<8),(4<<8),cliptype);
+    }
+
+    if( dasectnum >= 0)
+        if ( (dasectnum != sprite[spritenum].sectnum) )
+            changespritesect(spritenum,dasectnum);
+    daz = sprite[spritenum].z + ((zchange*TICSPERFRAME)>>3);
+    if ((daz > hittype[spritenum].ceilingz) && (daz <= hittype[spritenum].floorz))
+        sprite[spritenum].z = daz;
+    else
+        if (retval == 0)
+            return(16384+dasectnum);
+
+    return(retval);
+}
+
+
+short ssp(short i,unsigned int cliptype) //The set sprite function
+{
+    spritetype *s;
+    int movetype;
+
+    s = &sprite[i];
+
+    movetype = movesprite(i,
+        (s->xvel*(sintable[(s->ang+512)&2047]))>>14,
+        (s->xvel*(sintable[s->ang&2047]))>>14,s->zvel,
+        cliptype);
+
+    return (movetype==0);
+}
+
+void insertspriteq(short i)
+{
+    if(spriteqa
