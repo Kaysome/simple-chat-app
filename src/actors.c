@@ -489,4 +489,28 @@ int movesprite(short spritenum, int xchange, int ychange, int zchange, unsigned 
             retval = clipmove(&sprite[spritenum].x,&sprite[spritenum].y,&daz,&dasectnum,((xchange*TICSPERFRAME)<<11),((ychange*TICSPERFRAME)<<11),1024L,(4<<8),(4<<8),cliptype);
         else
         {
-            if(sprite[sprit
+            if(sprite[spritenum].picnum == LIZMAN)
+                cd = 292L;
+            else if( (actortype[sprite[spritenum].picnum]&3) )
+                cd = sprite[spritenum].clipdist<<2;
+            else
+                cd = 192L;
+
+            retval = clipmove(&sprite[spritenum].x,&sprite[spritenum].y,&daz,&dasectnum,((xchange*TICSPERFRAME)<<11),((ychange*TICSPERFRAME)<<11),cd,(4<<8),(4<<8),cliptype);
+        }
+
+        if( dasectnum < 0 || ( dasectnum >= 0 &&
+            ( ( hittype[spritenum].actorstayput >= 0 && hittype[spritenum].actorstayput != dasectnum ) ||
+              ( ( sprite[spritenum].picnum == BOSS2 ) && sprite[spritenum].pal == 0 && sector[dasectnum].lotag != 3 ) ||
+              ( ( sprite[spritenum].picnum == BOSS1 || sprite[spritenum].picnum == BOSS2 ) && sector[dasectnum].lotag == 1 ) ||
+              ( sector[dasectnum].lotag == 1 && ( sprite[spritenum].picnum == LIZMAN || ( sprite[spritenum].picnum == LIZTROOP && sprite[spritenum].zvel == 0 ) ) )
+            ) )
+          )
+        {
+                sprite[spritenum].x = oldx;
+                sprite[spritenum].y = oldy;
+                if(sector[dasectnum].lotag == 1 && sprite[spritenum].picnum == LIZMAN)
+                    sprite[spritenum].ang = (TRAND&2047);
+                else if( (hittype[spritenum].temp_data[0]&3) == 1 && sprite[spritenum].picnum != COMMANDER )
+                    sprite[spritenum].ang = (TRAND&2047);
+                setsprite(spritenum,oldx,oldy,sprite[spritenum].z)
