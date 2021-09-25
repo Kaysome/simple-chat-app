@@ -759,4 +759,40 @@ void movefta(void)
             if( x < 30000 )
             {
                 hittype[i].timetosleep++;
-            
+                if( hittype[i].timetosleep >= (x>>8) )
+                {
+                    int rz, orz;
+                    if(badguy(s))
+                    {
+                        px = ps[p].oposx+64-(TRAND&127);
+                        py = ps[p].oposy+64-(TRAND&127);
+                        updatesector(px,py,&psect);
+                        if(psect == -1)
+                        {
+                            i = nexti;
+                            continue;
+                        }
+                        sx = s->x+64-(TRAND&127);
+                        sy = s->y+64-(TRAND&127);
+                        updatesector(px,py,&ssect);
+                        if(ssect == -1)
+                        {
+                            i = nexti;
+                            continue;
+                        }
+                        rz = TRAND;
+                        orz = TRAND;
+                        j = cansee(sx,sy,s->z-(rz%(52<<8)),s->sectnum,px,py,ps[p].oposz-(orz%(32<<8)),ps[p].cursectnum);
+                    }
+                    else
+                    {
+                        rz = TRAND;
+                        orz = TRAND;
+                        j = cansee(s->x,s->y,s->z-((rz&31)<<8),s->sectnum,ps[p].oposx,ps[p].oposy,ps[p].oposz-((orz&31)<<8),ps[p].cursectnum);
+                    }
+
+       //             j = 1;
+
+                    if(j) switch(s->picnum)
+                    {
+                 
