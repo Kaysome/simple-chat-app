@@ -629,4 +629,66 @@ void guts(spritetype *s,short gtype, short n, short p)
     for(j=0;j<n;j++)
     {
         a = TRAND&2047;
-        i = EGS(s->sectnum,s-
+        i = EGS(s->sectnum,s->x+(TRAND&255)-128,s->y+(TRAND&255)-128,gutz-(TRAND&8191),gtype,-32,sx,sy,a,48+(TRAND&31),-512-(TRAND&2047),ps[p].i,5);
+        if(PN == JIBS2)
+        {
+            sprite[i].xrepeat >>= 2;
+            sprite[i].yrepeat >>= 2;
+        }
+        if(pal == 6)
+            sprite[i].pal = 6;
+    }
+}
+
+void gutsdir(spritetype *s,short gtype, short n, short p)
+{
+    int gutz,floorz;
+    short a,j;
+    char sx,sy;
+
+    if(badguy(s) && s->xrepeat < 16)
+        sx = sy = 8;
+    else sx = sy = 32;
+
+    gutz = s->z-(8<<8);
+    floorz = getflorzofslope(s->sectnum,s->x,s->y);
+
+    if( gutz > ( floorz-(8<<8) ) )
+        gutz = floorz-(8<<8);
+
+    if(s->picnum == COMMANDER)
+        gutz -= (24<<8);
+
+    for(j=0;j<n;j++)
+    {
+        a = TRAND&2047;
+        EGS(s->sectnum,s->x,s->y,gutz,gtype,-32,sx,sy,a,256+(TRAND&127),-512-(TRAND&2047),ps[p].i,5);
+    }
+}
+
+void setsectinterpolate(short i)
+{
+    int j, k, startwall,endwall;
+
+    startwall = sector[SECT].wallptr;
+    endwall = startwall+sector[SECT].wallnum;
+
+    for(j=startwall;j<endwall;j++)
+    {
+        setinterpolation(&wall[j].x);
+        setinterpolation(&wall[j].y);
+        k = wall[j].nextwall;
+        if(k >= 0)
+        {
+            setinterpolation(&wall[k].x);
+            setinterpolation(&wall[k].y);
+            k = wall[k].point2;
+            setinterpolation(&wall[k].x);
+            setinterpolation(&wall[k].y);
+        }
+    }
+}
+
+void clearsectinterpolate(short i)
+{
+    shor
