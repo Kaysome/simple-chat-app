@@ -560,4 +560,73 @@ short ssp(short i,unsigned int cliptype) //The set sprite function
 
 void insertspriteq(short i)
 {
-    if(spriteqa
+    if(spriteqamount > 0)
+    {
+        if(spriteq[spriteqloc] >= 0)
+            sprite[spriteq[spriteqloc]].xrepeat = 0;
+        spriteq[spriteqloc] = i;
+        spriteqloc = (spriteqloc+1)%spriteqamount;
+    }
+    else sprite[i].xrepeat = sprite[i].yrepeat = 0;
+}
+
+void lotsofmoney(spritetype *s, short n)
+{
+    short i ,j;
+    for(i=n;i>0;i--)
+    {
+        j = EGS(s->sectnum,s->x,s->y,s->z-(TRAND%(47<<8)),MONEY,-32,8,8,TRAND&2047,0,0,0,5);
+        sprite[j].cstat = TRAND&12;
+    }
+}
+
+void lotsofmail(spritetype *s, short n)
+{
+    short i ,j;
+    for(i=n;i>0;i--)
+    {
+        j = EGS(s->sectnum,s->x,s->y,s->z-(TRAND%(47<<8)),MAIL,-32,8,8,TRAND&2047,0,0,0,5);
+        sprite[j].cstat = TRAND&12;
+    }
+}
+
+void lotsofpaper(spritetype *s, short n)
+{
+    short i ,j;
+    for(i=n;i>0;i--)
+    {
+        j = EGS(s->sectnum,s->x,s->y,s->z-(TRAND%(47<<8)),PAPER,-32,8,8,TRAND&2047,0,0,0,5);
+        sprite[j].cstat = TRAND&12;
+    }
+}
+
+
+
+void guts(spritetype *s,short gtype, short n, short p)
+{
+    int gutz,floorz;
+    short i,a,j;
+    char sx,sy;
+    signed char pal;
+
+    if(badguy(s) && s->xrepeat < 16)
+        sx = sy = 8;
+    else sx = sy = 32;
+
+    gutz = s->z-(8<<8);
+    floorz = getflorzofslope(s->sectnum,s->x,s->y);
+
+    if( gutz > ( floorz-(8<<8) ) )
+        gutz = floorz-(8<<8);
+
+    if(s->picnum == COMMANDER)
+        gutz -= (24<<8);
+
+    if( badguy(s) && s->pal == 6)
+        pal = 6;
+    else pal = 0;
+
+    for(j=0;j<n;j++)
+    {
+        a = TRAND&2047;
+        i = EGS(s->sectnum,s-
