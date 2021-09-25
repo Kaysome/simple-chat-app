@@ -691,4 +691,72 @@ void setsectinterpolate(short i)
 
 void clearsectinterpolate(short i)
 {
-    shor
+    short j,startwall,endwall;
+
+    startwall = sector[SECT].wallptr;
+    endwall = startwall+sector[SECT].wallnum;
+    for(j=startwall;j<endwall;j++)
+    {
+        stopinterpolation(&wall[j].x);
+        stopinterpolation(&wall[j].y);
+        if(wall[j].nextwall >= 0)
+        {
+            stopinterpolation(&wall[wall[j].nextwall].x);
+            stopinterpolation(&wall[wall[j].nextwall].y);
+        }
+    }
+}
+
+void ms(short i)
+{
+    //T1,T2 and T3 are used for all the sector moving stuff!!!
+
+    short startwall,endwall,x;
+    int tx,ty,j,k;
+    spritetype *s;
+
+    s = &sprite[i];
+
+    s->x += (s->xvel*(sintable[(s->ang+512)&2047]))>>14;
+    s->y += (s->xvel*(sintable[s->ang&2047]))>>14;
+
+    j = T2;
+    k = T3;
+
+    startwall = sector[s->sectnum].wallptr;
+    endwall = startwall+sector[s->sectnum].wallnum;
+    for(x=startwall;x<endwall;x++)
+    {
+        rotatepoint(
+            0,0,
+            msx[j],msy[j],
+            k&2047,&tx,&ty);
+
+        dragpoint(x,s->x+tx,s->y+ty);
+
+        j++;
+    }
+}
+
+void movefta(void)
+{
+    int x, px, py, sx, sy;
+    short i, j, p, psect, ssect, nexti;
+    spritetype *s;
+
+    i = headspritestat[2];
+    while(i >= 0)
+    {
+        nexti = nextspritestat[i];
+
+        s = &sprite[i];
+        p = findplayer(s,&x);
+
+        ssect = psect = s->sectnum;
+
+        if(sprite[ps[p].i].extra > 0 )
+        {
+            if( x < 30000 )
+            {
+                hittype[i].timetosleep++;
+            
