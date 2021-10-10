@@ -1055,4 +1055,55 @@ void moveplayers(void) //Players
                 if(ud.multimode > 1)
                     if( sprite[ps[otherp].i].extra > 0 )
                 {
-                    if( s->yrepeat > 32 && sprite[ps[otherp].i].yrepe
+                    if( s->yrepeat > 32 && sprite[ps[otherp].i].yrepeat < 32)
+                    {
+                        if( otherx < 1400 && p->knee_incs == 0 )
+                        {
+                            p->knee_incs = 1;
+                            p->weapon_pos = -1;
+                            p->actorsqu = ps[otherp].i;
+                        }
+                    }
+                }
+                if(ud.god)
+                {
+                    s->extra = max_player_health;
+                    s->cstat = 257;
+                    p->jetpack_amount =     1599;
+                }
+
+
+                if( s->extra > 0 )
+                {
+                    hittype[i].owner = i;
+
+                    if(ud.god == 0)
+                        if( ceilingspace(s->sectnum) || floorspace(s->sectnum) )
+                            quickkill(p);
+                }
+                else
+                {
+
+                    p->posx = s->x;
+                    p->posy = s->y;
+                    p->posz = s->z-(20<<8);
+
+                    p->newowner = -1;
+
+                    if( p->wackedbyactor >= 0 && sprite[p->wackedbyactor].statnum < MAXSTATUS )
+                    {
+                        p->ang += getincangle(p->ang,getangle(sprite[p->wackedbyactor].x-p->posx,sprite[p->wackedbyactor].y-p->posy))>>1;
+                        p->ang &= 2047;
+                    }
+
+                }
+                s->ang = p->ang;
+            }
+        }
+        else
+        {
+            if(p->holoduke_on == -1)
+                KILLIT(i);
+
+            hittype[i].bposx = s->x;
+            hittyp
