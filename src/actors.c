@@ -889,4 +889,44 @@ short ifhitbyweapon(short sn)
 
                         hittype[sn].owner = ps[p].i;
                     }
-        
+                }
+
+                switch(hittype[sn].picnum)
+                {
+                    case RADIUSEXPLOSION:
+                    case RPG:
+                    case HYDRENT:
+                    case HEAVYHBOMB:
+                    case SEENINE:
+                    case OOZFILTER:
+                    case EXPLODINGBARREL:
+                        ps[p].posxv +=
+                            hittype[sn].extra*(sintable[(hittype[sn].ang+512)&2047])<<2;
+                        ps[p].posyv +=
+                            hittype[sn].extra*(sintable[hittype[sn].ang&2047])<<2;
+                        break;
+                    default:
+                        ps[p].posxv +=
+                            hittype[sn].extra*(sintable[(hittype[sn].ang+512)&2047])<<1;
+                        ps[p].posyv +=
+                            hittype[sn].extra*(sintable[hittype[sn].ang&2047])<<1;
+                        break;
+                }
+            }
+            else
+            {
+                if(hittype[sn].extra == 0 )
+                    if( hittype[sn].picnum == SHRINKSPARK && npc->xrepeat < 24 )
+                        return -1;
+
+                npc->extra -= hittype[sn].extra;
+                if(npc->picnum != RECON && npc->owner >= 0 && sprite[npc->owner].statnum < MAXSTATUS )
+                    npc->owner = hittype[sn].owner;
+            }
+
+            hittype[sn].extra = -1;
+            return hittype[sn].picnum;
+        }
+    }
+
+    hittype[sn].extra 
