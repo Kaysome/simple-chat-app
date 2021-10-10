@@ -829,3 +829,64 @@ void movefta(void)
             {
                 if (sector[s->sectnum].ceilingstat&1)
                     s->shade = sector[s->sectnum].ceilingshade;
+                else s->shade = sector[s->sectnum].floorshade;
+            }
+        }
+        i = nexti;
+    }
+}
+
+short ifhitsectors(short sectnum)
+{
+    short i;
+
+    i = headspritestat[5];
+    while(i >= 0)
+    {
+        if( PN == EXPLOSION2 && sectnum == SECT )
+            return i;
+        i = nextspritestat[i];
+    }
+    return -1;
+}
+
+short ifhitbyweapon(short sn)
+{
+    short j, p;
+    spritetype *npc;
+
+    if( hittype[sn].extra >= 0 )
+    {
+        if(sprite[sn].extra >= 0 )
+        {
+            npc = &sprite[sn];
+
+            if(npc->picnum == APLAYER)
+            {
+                if(ud.god && hittype[sn].picnum != SHRINKSPARK ) return -1;
+
+                p = npc->yvel;
+                j = hittype[sn].owner;
+
+                if( j >= 0 &&
+                    sprite[j].picnum == APLAYER &&
+                    ud.coop == 1 &&
+                    ud.ffire == 0 )
+                        return -1;
+
+                npc->extra -= hittype[sn].extra;
+
+                if(j >= 0)
+                {
+                    if(npc->extra <= 0 && hittype[sn].picnum != FREEZEBLAST)
+                    {
+                        npc->extra = 0;
+
+                        ps[p].wackedbyactor = j;
+
+                        if( sprite[hittype[sn].owner].picnum == APLAYER && p != sprite[hittype[sn].owner].yvel )
+                            ps[p].frag_ps = sprite[j].yvel;
+
+                        hittype[sn].owner = ps[p].i;
+                    }
+        
