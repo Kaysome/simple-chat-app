@@ -1106,4 +1106,57 @@ void moveplayers(void) //Players
                 KILLIT(i);
 
             hittype[i].bposx = s->x;
-            hittyp
+            hittype[i].bposy = s->y;
+            hittype[i].bposz = s->z;
+
+            s->cstat = 0;
+
+            if(s->xrepeat < 42)
+            {
+                s->xrepeat += 4;
+                s->cstat |= 2;
+            }
+            else s->xrepeat = 42;
+            if(s->yrepeat < 36)
+                s->yrepeat += 4;
+            else
+            {
+                s->yrepeat = 36;
+                if(sector[s->sectnum].lotag != 2)
+                    makeitfall(i);
+                if(s->zvel == 0 && sector[s->sectnum].lotag == 1)
+                    s->z += (32<<8);
+            }
+
+            if(s->extra < 8)
+            {
+                s->xvel = 128;
+                s->ang = p->ang;
+                s->extra++;
+                //IFMOVING;     // JBF 20040825: is really "if (ssp(i,CLIPMASK0)) ;" which is probably
+        ssp(i,CLIPMASK0);   // not the safest of ideas because a zealous optimiser probably sees
+                    // it as redundant, so I'll call the "ssp(i,CLIPMASK0)" explicitly.
+            }
+            else
+            {
+                s->ang = 2047-p->ang;
+                setsprite(i,s->x,s->y,s->z);
+            }
+        }
+
+        if (sector[s->sectnum].ceilingstat&1)
+            s->shade += (sector[s->sectnum].ceilingshade-s->shade)>>1;
+        else
+            s->shade += (sector[s->sectnum].floorshade-s->shade)>>1;
+
+        BOLT:
+        i = nexti;
+    }
+}
+
+
+void movefx(void)
+{
+    short i, j, nexti, p;
+    int x, ht;
+    spritetype *s;
