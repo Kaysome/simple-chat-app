@@ -929,4 +929,69 @@ short ifhitbyweapon(short sn)
         }
     }
 
-    hittype[sn].extra 
+    hittype[sn].extra = -1;
+    return -1;
+}
+
+void movecyclers(void)
+{
+    short q, j, x, t, s, *c;
+    walltype *wal;
+    unsigned char cshade;
+
+    for(q=numcyclers-1;q>=0;q--)
+    {
+
+        c = &cyclers[q][0];
+        s = c[0];
+
+        t = c[3];
+        j = t+(sintable[c[1]&2047]>>10);
+        cshade = c[2];
+
+        if( j < cshade ) j = cshade;
+        else if( j > t )  j = t;
+
+        c[1] += sector[s].extra;
+        if(c[5])
+        {
+            wal = &wall[sector[s].wallptr];
+            for(x = sector[s].wallnum;x>0;x--,wal++)
+                if( wal->hitag != 1 )
+            {
+                wal->shade = j;
+
+                if( (wal->cstat&2) && wal->nextwall >= 0)
+                    wall[wal->nextwall].shade = j;
+
+            }
+            sector[s].floorshade = sector[s].ceilingshade = j;
+        }
+    }
+}
+
+void movedummyplayers(void)
+{
+    short i, p, nexti;
+
+    i = headspritestat[13];
+    while(i >= 0)
+    {
+        nexti = nextspritestat[i];
+
+        p = sprite[OW].yvel;
+
+        if( ps[p].on_crane >= 0 || sector[ps[p].cursectnum].lotag != 1 || sprite[ps[p].i].extra <= 0 )
+        {
+            ps[p].dummyplayersprite = -1;
+            KILLIT(i);
+        }
+        else
+        {
+            if(ps[p].on_ground && ps[p].on_warping_sector == 1 && sector[ps[p].cursectnum].lotag == 1 )
+            {
+                CS = 257;
+                SZ = sector[SECT].ceilingz+(27<<8);
+                SA = ps[p].ang;
+                if(T1 == 8)
+              
