@@ -1160,3 +1160,54 @@ void movefx(void)
     short i, j, nexti, p;
     int x, ht;
     spritetype *s;
+
+    i = headspritestat[11];
+    while(i >= 0)
+    {
+        s = &sprite[i];
+
+        nexti = nextspritestat[i];
+
+        switch(s->picnum)
+        {
+            case RESPAWN:
+                if(sprite[i].extra == 66)
+                {
+                    j = spawn(i,SHT);
+//                    sprite[j].pal = sprite[i].pal;
+                    KILLIT(i);
+                }
+                else if(sprite[i].extra > (66-13))
+                    sprite[i].extra++;
+                break;
+
+            case MUSICANDSFX:
+
+                ht = s->hitag;
+
+                if(T2 != SoundToggle)
+                {
+                    T2 = SoundToggle;
+                    T1 = 0;
+                }
+
+                if(s->lotag >= 1000 && s->lotag < 2000)
+                {
+                    x = ldist(&sprite[ps[screenpeek].i],s);
+                    if( x < ht && T1 == 0 )
+                    {
+                        FX_SetReverb( s->lotag - 1000 );
+                        T1 = 1;
+                    }
+                    if( x >= ht && T1 == 1 )
+                    {
+                        FX_SetReverb(0);
+                        FX_SetReverbDelay(0);
+                        T1 = 0;
+                    }
+                }
+                else if(s->lotag < 999 && (unsigned)sector[s->sectnum].lotag < 9 && AmbienceToggle && sector[SECT].floorz != sector[SECT].ceilingz)
+                {
+                    if( (soundm[s->lotag]&2) )
+                    {
+               
