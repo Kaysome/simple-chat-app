@@ -994,4 +994,65 @@ void movedummyplayers(void)
                 SZ = sector[SECT].ceilingz+(27<<8);
                 SA = ps[p].ang;
                 if(T1 == 8)
-              
+                    T1 = 0;
+                else T1++;
+            }
+            else
+            {
+                if(sector[SECT].lotag != 2) SZ = sector[SECT].floorz;
+                CS = (short) 32768;
+            }
+        }
+
+        SX += (ps[p].posx-ps[p].oposx);
+        SY += (ps[p].posy-ps[p].oposy);
+        setsprite(i,SX,SY,SZ);
+
+        BOLT:
+
+        i = nexti;
+    }
+}
+
+
+short otherp;
+void moveplayers(void) //Players
+{
+    short i , nexti;
+    int otherx;
+    spritetype *s;
+    struct player_struct *p;
+
+    i = headspritestat[10];
+    while(i >= 0)
+    {
+        nexti = nextspritestat[i];
+
+        s = &sprite[i];
+        p = &ps[s->yvel];
+        if(s->owner >= 0)
+        {
+            if(p->newowner >= 0 ) //Looking thru the camera
+            {
+                s->x = p->oposx;
+                s->y = p->oposy;
+                hittype[i].bposz = s->z = p->oposz+PHEIGHT;
+                s->ang = p->oang;
+                setsprite(i,s->x,s->y,s->z);
+            }
+            else
+            {
+                if(ud.multimode > 1)
+                    otherp = findotherplayer(s->yvel,&otherx);
+                else
+                {
+                    otherp = s->yvel;
+                    otherx = 0;
+                }
+
+                execute(i,s->yvel,otherx);
+
+                if(ud.multimode > 1)
+                    if( sprite[ps[otherp].i].extra > 0 )
+                {
+                    if( s->yrepeat > 32 && sprite[ps[otherp].i].yrepe
