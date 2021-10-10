@@ -795,4 +795,37 @@ void movefta(void)
 
                     if(j) switch(s->picnum)
                     {
-                 
+                        case RUBBERCAN:
+                        case EXPLODINGBARREL:
+                        case WOODENHORSE:
+                        case HORSEONSIDE:
+                        case CANWITHSOMETHING:
+                        case CANWITHSOMETHING2:
+                        case CANWITHSOMETHING3:
+                        case CANWITHSOMETHING4:
+                        case FIREBARREL:
+                        case FIREVASE:
+                        case NUKEBARREL:
+                        case NUKEBARRELDENTED:
+                        case NUKEBARRELLEAKED:
+                        case TRIPBOMB:
+                            if (sector[s->sectnum].ceilingstat&1)
+                                s->shade = sector[s->sectnum].ceilingshade;
+                            else s->shade = sector[s->sectnum].floorshade;
+
+                            hittype[i].timetosleep = 0;
+                            changespritestat(i,6);
+                            break;
+                        default:
+                            hittype[i].timetosleep = 0;
+                            check_fta_sounds(i);
+                            changespritestat(i,1);
+                            break;
+                    }
+                    else hittype[i].timetosleep = 0;
+                }
+            }
+            if( badguy( s ) )
+            {
+                if (sector[s->sectnum].ceilingstat&1)
+                    s->shade = sector[s->sectnum].ceilingshade;
