@@ -1210,4 +1210,33 @@ void movefx(void)
                 {
                     if( (soundm[s->lotag]&2) )
                     {
-               
+                        x = dist(&sprite[ps[screenpeek].i],s);
+                        if( x < ht && T1 == 0 && FX_VoiceAvailable(soundpr[s->lotag]-1) )
+                        {
+                            if(numenvsnds == NumVoices)
+                            {
+                                j = headspritestat[11];
+                                while(j >= 0)
+                                {
+                                    if( PN == MUSICANDSFX && j != i && sprite[j].lotag < 999 && hittype[j].temp_data[0] == 1 && dist(&sprite[j],&sprite[ps[screenpeek].i]) > x )
+                                    {
+                                        stopenvsound(sprite[j].lotag,j);
+                                        break;
+                                    }
+                                    j = nextspritestat[j];
+                                }
+                                if(j == -1) goto BOLT;
+                            }
+                            spritesound(s->lotag,i);
+                            T1 = 1;
+                        }
+                        if( x >= ht && T1 == 1 )
+                        {
+                            T1 = 0;
+                            stopenvsound(s->lotag,i);
+                        }
+                    }
+                    if( (soundm[s->lotag]&16) )
+                    {
+                        if(T5 > 0) T5--;
+                        else for(p=connecthead;p>=0;p=connectpoint2[p
