@@ -1239,4 +1239,56 @@ void movefx(void)
                     if( (soundm[s->lotag]&16) )
                     {
                         if(T5 > 0) T5--;
-                        else for(p=connecthead;p>=0;p=connectpoint2[p
+                        else for(p=connecthead;p>=0;p=connectpoint2[p])
+                            if( p == myconnectindex && ps[p].cursectnum == s->sectnum )
+                        {
+                            j = s->lotag+((unsigned)global_random%(s->hitag+1));
+                            sound(j);
+                            T5 =  26*40 + (global_random%(26*40));
+                        }
+                    }
+                }
+                break;
+        }
+        BOLT:
+        i = nexti;
+    }
+}
+
+
+
+void movefallers(void)
+{
+    short i, nexti, sect, j;
+    spritetype *s;
+    int x;
+
+    i = headspritestat[12];
+    while(i >= 0)
+    {
+        nexti = nextspritestat[i];
+        s = &sprite[i];
+
+        sect = s->sectnum;
+
+        if( T1 == 0 )
+        {
+            s->z -= (16<<8);
+            T2 = s->ang;
+            x = s->extra;
+            IFHIT
+            {
+                if( j == FIREEXT || j == RPG || j == RADIUSEXPLOSION || j == SEENINE || j == OOZFILTER )
+                {
+                    if(s->extra <= 0)
+                    {
+                        T1 = 1;
+                        j = headspritestat[12];
+                        while(j >= 0)
+                        {
+                            if(sprite[j].hitag == SHT)
+                            {
+                                hittype[j].temp_data[0] = 1;
+                                sprite[j].cstat &= (65535-64);
+                                if(sprite[j].picnum == CEILINGSTEAM || sprite[j].picnum == STEAM)
+               
