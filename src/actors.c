@@ -1291,4 +1291,56 @@ void movefallers(void)
                                 hittype[j].temp_data[0] = 1;
                                 sprite[j].cstat &= (65535-64);
                                 if(sprite[j].picnum == CEILINGSTEAM || sprite[j].picnum == STEAM)
-               
+                                    sprite[j].cstat |= 32768;
+                            }
+                            j = nextspritestat[j];
+                        }
+                    }
+                }
+                else
+                {
+                    hittype[i].extra = 0;
+                    s->extra = x;
+                }
+            }
+            s->ang = T2;
+            s->z += (16<<8);
+        }
+        else if(T1 == 1)
+        {
+            if(s->lotag > 0)
+            {
+                s->lotag-=3;
+                if(s->lotag <= 0)
+                {
+                    s->xvel = (32+(TRAND&63));
+                    s->zvel = -(1024+(TRAND&1023));
+                }
+            }
+            else
+            {
+                if( s->xvel > 0)
+                {
+                    s->xvel -= 8;
+                    ssp(i,CLIPMASK0);
+                }
+
+                if( floorspace(s->sectnum) ) x = 0;
+                else
+                {
+                    if(ceilingspace(s->sectnum))
+                        x = gc/6;
+                    else
+                        x = gc;
+                }
+
+                if( s->z < (sector[sect].floorz-FOURSLEIGHT) )
+                {
+                    s->zvel += x;
+                    if(s->zvel > 6144)
+                        s->zvel = 6144;
+                    s->z += s->zvel;
+                }
+                if( (sector[sect].floorz-s->z) < (16<<8) )
+                {
+                    j = 1+(TRAND&7
