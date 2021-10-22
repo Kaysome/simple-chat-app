@@ -1343,4 +1343,63 @@ void movefallers(void)
                 }
                 if( (sector[sect].floorz-s->z) < (16<<8) )
                 {
-                    j = 1+(TRAND&7
+                    j = 1+(TRAND&7);
+                    for(x=0;x<j;x++) RANDOMSCRAP;
+                    KILLIT(i);
+                }
+            }
+        }
+
+        BOLT:
+        i = nexti;
+    }
+}
+
+void movestandables(void)
+{
+    short i, j, k, m, nexti, nextj, p=0, sect;
+    int l=0, x, *t;
+    spritetype *s;
+
+    i = headspritestat[6];
+    while(i >= 0)
+    {
+        nexti = nextspritestat[i];
+
+        t = &hittype[i].temp_data[0];
+        s = &sprite[i];
+        sect = s->sectnum;
+
+        if( sect < 0 ) KILLIT(i);
+
+        hittype[i].bposx = s->x;
+        hittype[i].bposy = s->y;
+        hittype[i].bposz = s->z;
+
+        IFWITHIN(CRANE,CRANE+3)
+        {
+            //t[0] = state
+            //t[1] = checking sector number
+
+            if(s->xvel) getglobalz(i);
+
+            if( t[0] == 0 ) //Waiting to check the sector
+            {
+                j = headspritesect[t[1]];
+                while(j>=0)
+                {
+                    nextj = nextspritesect[j];
+                    switch( sprite[j].statnum )
+                    {
+                        case 1:
+                        case 2:
+                        case 6:
+                        case 10:
+                            s->ang = getangle(msx[t[4]+1]-s->x,msy[t[4]+1]-s->y);
+                            setsprite(j,msx[t[4]+1],msy[t[4]+1],sprite[j].z);
+                            t[0]++;
+                            goto BOLT;
+                    }
+                    j = nextj;
+                }
+            }
