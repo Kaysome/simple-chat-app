@@ -1443,4 +1443,46 @@ void movestandables(void)
                                     ps[p].on_crane = -1;
                             }
                             t[0]++;
-            
+                            s->owner = -1;
+                        }
+                    }
+                }
+            }
+            else if(t[0]==3)
+            {
+                s->picnum++;
+                if( s->picnum == (CRANE+2) )
+                {
+                    p = checkcursectnums(t[1]);
+                    if(p >= 0 && ps[p].on_ground)
+                    {
+                        s->owner = -2;
+                        ps[p].on_crane = i;
+                        spritesound(DUKE_GRUNT,ps[p].i);
+                        ps[p].ang = s->ang+1024;
+                    }
+                    else
+                    {
+                        j = headspritesect[t[1]];
+                        while(j>=0)
+                        {
+                            switch( sprite[j].statnum )
+                            {
+                                case 1:
+                                case 6:
+                                    s->owner = j;
+                                    break;
+                            }
+                            j = nextspritesect[j];
+                        }
+                    }
+
+                    t[0]++;//Grabbed the sprite
+                    t[2]=0;
+                    goto BOLT;
+                }
+            }
+            else if(t[0]==4) //Delay before going up
+            {
+                t[2]++;
+       
