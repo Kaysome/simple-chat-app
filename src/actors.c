@@ -1534,4 +1534,55 @@ void movestandables(void)
 
                 if(s->owner >= 0)
                 {
-                    
+                    setsprite(s->owner,s->x,s->y,s->z);
+
+                    hittype[s->owner].bposx = s->x;
+                    hittype[s->owner].bposy = s->y;
+                    hittype[s->owner].bposz = s->z;
+
+                    s->zvel = 0;
+                }
+                else if(s->owner == -2)
+                {
+                    ps[p].oposx = ps[p].posx = s->x-(sintable[(ps[p].ang+512)&2047]>>6);
+                    ps[p].oposy = ps[p].posy = s->y-(sintable[ps[p].ang&2047]>>6);
+                    ps[p].oposz = ps[p].posz = s->z+(2<<8);
+                    setsprite(ps[p].i,ps[p].posx,ps[p].posy,ps[p].posz);
+                    ps[p].cursectnum = sprite[ps[p].i].sectnum;
+                }
+            }
+
+            goto BOLT;
+        }
+
+        IFWITHIN(WATERFOUNTAIN,WATERFOUNTAIN+3)
+        {
+            if(t[0] > 0)
+            {
+                if( t[0] < 20 )
+                {
+                    t[0]++;
+
+                    s->picnum++;
+
+                    if( s->picnum == ( WATERFOUNTAIN+3 ) )
+                        s->picnum = WATERFOUNTAIN+1;
+                }
+                else
+                {
+                    p = findplayer(s,&x);
+
+                    if(x > 512)
+                    {
+                        t[0] = 0;
+                        s->picnum = WATERFOUNTAIN;
+                    }
+                    else t[0] = 1;
+                }
+            }
+            goto BOLT;
+        }
+
+        if( AFLAMABLE(s->picnum) )
+        {
+      
