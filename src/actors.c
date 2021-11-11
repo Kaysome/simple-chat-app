@@ -1485,4 +1485,53 @@ void movestandables(void)
             else if(t[0]==4) //Delay before going up
             {
                 t[2]++;
-       
+                if(t[2] > 10)
+                    t[0]++;
+            }
+            else if(t[0]==5 || t[0] == 8)
+            {
+                if(t[0]==8 && s->picnum < (CRANE+2))
+                    if( (sector[sect].floorz-s->z) > 8192)
+                        s->picnum++;
+
+                if(s->z < msx[t[4]+2])
+                {
+                    t[0]++;
+                    s->xvel = 0;
+                }
+                else
+                    s->z -= (1024+512);
+            }
+            else if(t[0]==6)
+            {
+                if( s->xvel < 192 )
+                    s->xvel += 8;
+                s->ang = getangle(msx[t[4]]-s->x,msy[t[4]]-s->y);
+                //IFMOVING; // JBF 20040825: see my rant above about this
+        ssp(i,CLIPMASK0);
+                if( ((s->x-msx[t[4]])*(s->x-msx[t[4]])+(s->y-msy[t[4]])*(s->y-msy[t[4]]) ) < (128*128) )
+                    t[0]++;
+            }
+
+            else if(t[0]==9)
+                t[0] = 0;
+
+            setsprite(msy[t[4]+2],s->x,s->y,s->z-(34<<8));
+
+            if(s->owner != -1)
+            {
+                p = findplayer(s,&x);
+
+                IFHIT
+                {
+                    if(s->owner == -2)
+                        if(ps[p].on_crane == i)
+                            ps[p].on_crane = -1;
+                    s->owner = -1;
+                    s->picnum = CRANE;
+                    goto BOLT;
+                }
+
+                if(s->owner >= 0)
+                {
+                    
