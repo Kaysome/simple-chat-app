@@ -1403,3 +1403,44 @@ void movestandables(void)
                     j = nextj;
                 }
             }
+
+            else if(t[0]==1)
+            {
+                if( s->xvel < 184 )
+                {
+                    s->picnum = CRANE+1;
+                    s->xvel += 8;
+                }
+                //IFMOVING; // JBF 20040825: see my rant above about this
+        ssp(i,CLIPMASK0);
+                if(sect == t[1])
+                    t[0]++;
+            }
+            else if(t[0]==2 || t[0]==7)
+            {
+                s->z += (1024+512);
+
+                if(t[0]==2)
+                {
+                    if( (sector[sect].floorz - s->z) < (64<<8) )
+                        if(s->picnum > CRANE) s->picnum--;
+
+                    if( (sector[sect].floorz - s->z) < (4096+1024))
+                        t[0]++;
+                }
+                if(t[0]==7)
+                {
+                    if( (sector[sect].floorz - s->z) < (64<<8) )
+                    {
+                        if(s->picnum > CRANE) s->picnum--;
+                        else
+                        {
+                            if(s->owner==-2)
+                            {
+                                spritesound(DUKE_GRUNT,ps[p].i);
+                                p = findplayer(s,&x);
+                                if(ps[p].on_crane == i)
+                                    ps[p].on_crane = -1;
+                            }
+                            t[0]++;
+            
