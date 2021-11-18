@@ -1636,4 +1636,55 @@ void movestandables(void)
 
                     j = spawn(i,EXPLOSION2);
                     sprite[j].ang = s->ang;
-                    sprite[j].
+                    sprite[j].xvel = 348;
+                    ssp(j,CLIPMASK0);
+
+                    j = headspritestat[5];
+                    while(j >= 0)
+                    {
+                        if(sprite[j].picnum == LASERLINE && s->hitag == sprite[j].hitag)
+                            sprite[j].xrepeat = sprite[j].yrepeat = 0;
+                        j = nextspritestat[j];
+                    }
+                    KILLIT(i);
+                }
+                goto BOLT;
+            }
+            else
+            {
+                x = s->extra;
+                s->extra = 1;
+                l = s->ang;
+                IFHIT { T3 = 16; }
+                s->extra = x;
+                s->ang = l;
+            }
+
+            if( T1 < 32 )
+            {
+                p = findplayer(s,&x);
+                if( x > 768 ) T1++;
+                else if(T1 > 16) T1++;
+            }
+            if( T1 == 32 )
+            {
+                l = s->ang;
+                s->ang = T6;
+
+                T4 = s->x;T5 = s->y;
+                s->x += sintable[(T6+512)&2047]>>9;
+                s->y += sintable[(T6)&2047]>>9;
+                s->z -= (3<<8);
+                setsprite(i,s->x,s->y,s->z);
+
+                x = hitasprite(i,&m);
+
+                hittype[i].lastvx = x;
+
+                s->ang = l;
+
+                k = 0;
+
+                while(x > 0)
+                {
+                    j = 
