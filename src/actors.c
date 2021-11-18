@@ -1585,4 +1585,55 @@ void movestandables(void)
 
         if( AFLAMABLE(s->picnum) )
         {
-      
+            if(T1 == 1)
+            {
+                T2++;
+                if( (T2&3) > 0) goto BOLT;
+
+                if( s->picnum == TIRE && T2 == 32 )
+                {
+                    s->cstat = 0;
+                    j = spawn(i,BLOODPOOL);
+                    sprite[j].shade = 127;
+                }
+                else
+                {
+                    if(s->shade < 64) s->shade++;
+                    else KILLIT(i);
+                }
+
+                j = s->xrepeat-(TRAND&7);
+                if(j < 10)
+                {
+                    KILLIT(i);
+                }
+
+                s->xrepeat = j;
+
+                j = s->yrepeat-(TRAND&7);
+                if(j < 4) { KILLIT(i); }
+                s->yrepeat = j;
+            }
+            if(s->picnum == BOX)
+            {
+                makeitfall(i);
+                hittype[i].ceilingz = sector[s->sectnum].ceilingz;
+            }
+            goto BOLT;
+        }
+
+        if(s->picnum == TRIPBOMB)
+        {
+            if(T3 > 0)
+            {
+                T3--;
+                if(T3 == 8)
+                {
+                    spritesound(LASERTRIP_EXPLODE,i);
+                    for(j=0;j<5;j++) RANDOMSCRAP;
+                    x = s->extra;
+                    hitradius( i, tripbombblastradius, x>>2,x>>1,x-(x>>2),x);
+
+                    j = spawn(i,EXPLOSION2);
+                    sprite[j].ang = s->ang;
+                    sprite[j].
