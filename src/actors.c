@@ -1734,4 +1734,49 @@ void movestandables(void)
 
                 if( hittype[i].lastvx != x )
                 {
-                
+                    T3 = 13;
+                    spritesound(LASERTRIP_ARMING,i);
+                }
+            }
+            goto BOLT;
+        }
+
+
+        if( s->picnum >= CRACK1 && s->picnum <= CRACK4 )
+        {
+            if(s->hitag > 0)
+            {
+                t[0] = s->cstat;
+                t[1] = s->ang;
+                j = ifhitbyweapon(i);
+                if(j == FIREEXT || j == RPG || j == RADIUSEXPLOSION || j == SEENINE || j == OOZFILTER )
+                {
+                    j = headspritestat[6];
+                    while(j >= 0)
+                    {
+                        if(s->hitag == sprite[j].hitag && ( sprite[j].picnum == OOZFILTER || sprite[j].picnum == SEENINE ) )
+                            if(sprite[j].shade != -32)
+                                sprite[j].shade = -32;
+                        j = nextspritestat[j];
+                    }
+
+                    goto DETONATE;
+                }
+                else
+                {
+                    s->cstat = t[0];
+                    s->ang = t[1];
+                    s->extra = 0;
+                }
+            }
+            goto BOLT;
+        }
+
+        if( s->picnum == FIREEXT )
+        {
+            j = ifhitbyweapon(i);
+            if( j == -1 ) goto BOLT;
+
+            for(k=0;k<16;k++)
+            {
+                j = EGS(SECT,SX,SY,SZ-(TRAND%(48<<8)),SCRAP3+(TRAND&3),-8,48,48,TRAND&2047,(TRAND&63)+64,-(TRAND&4095)-(spri
