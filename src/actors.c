@@ -1779,4 +1779,51 @@ void movestandables(void)
 
             for(k=0;k<16;k++)
             {
-                j = EGS(SECT,SX,SY,SZ-(TRAND%(48<<8)),SCRAP3+(TRAND&3),-8,48,48,TRAND&2047,(TRAND&63)+64,-(TRAND&4095)-(spri
+                j = EGS(SECT,SX,SY,SZ-(TRAND%(48<<8)),SCRAP3+(TRAND&3),-8,48,48,TRAND&2047,(TRAND&63)+64,-(TRAND&4095)-(sprite[i].zvel>>2),i,5);
+                sprite[j].pal = 2;
+            }
+
+            spawn(i,EXPLOSION2);
+            spritesound(PIPEBOMB_EXPLODE,i);
+            spritesound(GLASS_HEAVYBREAK,i);
+
+            if(s->hitag > 0)
+            {
+                j = headspritestat[6];
+                while(j >= 0)
+                {
+                    if(s->hitag == sprite[j].hitag && ( sprite[j].picnum == OOZFILTER || sprite[j].picnum == SEENINE ) )
+                        if(sprite[j].shade != -32)
+                            sprite[j].shade = -32;
+                    j = nextspritestat[j];
+                }
+
+                x = s->extra;
+                spawn(i,EXPLOSION2);
+                hitradius( i, pipebombblastradius,x>>2, x-(x>>1),x-(x>>2), x);
+                spritesound(PIPEBOMB_EXPLODE,i);
+
+                goto DETONATE;
+            }
+            else
+            {
+                hitradius(i,seenineblastradius,10,15,20,25);
+                KILLIT(i);
+            }
+            goto BOLT;
+        }
+
+        if(s->picnum == OOZFILTER || s->picnum == SEENINE || s->picnum == SEENINEDEAD || s->picnum == (SEENINEDEAD+1) )
+        {
+            if(s->shade != -32 && s->shade != -33)
+            {
+                if(s->xrepeat)
+                    j = (ifhitbyweapon(i) >= 0);
+                else
+                    j = 0;
+
+                if( j || s->shade == -31 )
+                {
+                    if(j) s->lotag = 0;
+
+                 
