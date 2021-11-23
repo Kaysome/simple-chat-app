@@ -1687,4 +1687,51 @@ void movestandables(void)
 
                 while(x > 0)
                 {
-                    j = 
+                    j = spawn(i,LASERLINE);
+                    setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
+                    sprite[j].hitag = s->hitag;
+                    hittype[j].temp_data[1] = sprite[j].z;
+
+                    s->x += sintable[(T6+512)&2047]>>4;
+                    s->y += sintable[(T6)&2047]>>4;
+
+                    if( x < 1024 )
+                    {
+                        sprite[j].xrepeat = x>>5;
+                        break;
+                    }
+                    x -= 1024;
+                }
+
+                T1++;
+                s->x = T4;s->y = T5;
+                s->z += (3<<8);
+                setsprite(i,s->x,s->y,s->z);
+                T4 = 0;
+                if( m >= 0 )
+                {
+                    T3 = 13;
+                    spritesound(LASERTRIP_ARMING,i);
+                }
+                else T3 = 0;
+            }
+            if(T1 == 33)
+            {
+                T2++;
+
+
+                T4 = s->x;T5 = s->y;
+                s->x += sintable[(T6+512)&2047]>>9;
+                s->y += sintable[(T6)&2047]>>9;
+                s->z -= (3<<8);
+                setsprite(i,s->x,s->y,s->z);
+
+                x = hitasprite(i,&m);
+
+                s->x = T4;s->y = T5;
+                s->z += (3<<8);
+                setsprite(i,s->x,s->y,s->z);
+
+                if( hittype[i].lastvx != x )
+                {
+                
