@@ -1826,4 +1826,46 @@ void movestandables(void)
                 {
                     if(j) s->lotag = 0;
 
-                 
+                    t[3] = 1;
+
+                    j = headspritestat[6];
+                    while(j >= 0)
+                    {
+                        if(s->hitag == sprite[j].hitag && ( sprite[j].picnum == SEENINE || sprite[j].picnum == OOZFILTER ) )
+                            sprite[j].shade = -32;
+                        j = nextspritestat[j];
+                    }
+                }
+            }
+            else
+            {
+                if(s->shade == -32)
+                {
+                    if(s->lotag > 0)
+                    {
+                        s->lotag-=3;
+                        if(s->lotag <= 0) s->lotag = -99;
+                    }
+                    else
+                        s->shade = -33;
+                }
+                else
+                {
+                    if( s->xrepeat > 0 )
+                    {
+                        T3++;
+                        if(T3 == 3)
+                        {
+                            if( s->picnum == OOZFILTER )
+                            {
+                                T3 = 0;
+                                goto DETONATE;
+                            }
+                            if( s->picnum != (SEENINEDEAD+1) )
+                            {
+                                T3 = 0;
+
+                                if(s->picnum == SEENINEDEAD) s->picnum++;
+                                else if(s->picnum == SEENINE)
+                                    s->picnum = SEENINEDEAD;
+         
