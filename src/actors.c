@@ -1907,4 +1907,47 @@ void movestandables(void)
                     {
                         x = s->extra;
                         spawn(i,EXPLOSION2);
-                        hitradius( i,
+                        hitradius( i,seenineblastradius,x>>2, x-(x>>1),x-(x>>2), x);
+                        spritesound(PIPEBOMB_EXPLODE,i);
+                    }
+
+                    if(s->xrepeat)
+                        for(x=0;x<8;x++) RANDOMSCRAP;
+
+                    KILLIT(i);
+                }
+            }
+            goto BOLT;
+        }
+
+        if(s->picnum == MASTERSWITCH)
+        {
+            if(s->yvel == 1)
+                {
+                    s->hitag--;
+                    if(s->hitag <= 0)
+                    {
+                        operatesectors(sect,i);
+
+                        j = headspritesect[sect];
+                        while(j >= 0)
+                        {
+                            if(sprite[j].statnum == 3)
+                            {
+                                switch(sprite[j].lotag)
+                                {
+                                    case 2:
+                                    case 21:
+                                    case 31:
+                                    case 32:
+                                    case 36:
+                                        hittype[j].temp_data[0] = 1;
+                                        break;
+                                    case 3:
+                                        hittype[j].temp_data[4] = 1;
+                                        break;
+                                }
+                            }
+                            else if(sprite[j].statnum == 6)
+                            {
+                
