@@ -1868,4 +1868,43 @@ void movestandables(void)
                                 if(s->picnum == SEENINEDEAD) s->picnum++;
                                 else if(s->picnum == SEENINE)
                                     s->picnum = SEENINEDEAD;
-         
+                            }
+                            else goto DETONATE;
+                        }
+                        goto BOLT;
+                    }
+
+                    DETONATE:
+
+                    earthquaketime = 16;
+
+                    j = headspritestat[3];
+                    while(j >= 0)
+                    {
+                        if( s->hitag == sprite[j].hitag )
+                        {
+                            if(sprite[j].lotag == 13)
+                            {
+                                if( hittype[j].temp_data[2] == 0 )
+                                    hittype[j].temp_data[2] = 1;
+                            }
+                            else if(sprite[j].lotag == 8)
+                                hittype[j].temp_data[4] = 1;
+                            else if(sprite[j].lotag == 18)
+                            {
+                                if(hittype[j].temp_data[0] == 0)
+                                    hittype[j].temp_data[0] = 1;
+                            }
+                            else if(sprite[j].lotag == 21)
+                                hittype[j].temp_data[0] = 1;
+                        }
+                        j = nextspritestat[j];
+                    }
+
+                    s->z -= (32<<8);
+
+                    if( ( t[3] == 1 && s->xrepeat ) || s->lotag == -99 )
+                    {
+                        x = s->extra;
+                        spawn(i,EXPLOSION2);
+                        hitradius( i,
