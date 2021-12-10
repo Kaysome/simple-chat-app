@@ -2101,4 +2101,52 @@ void movestandables(void)
                 if( t[1] )
                 {
                     t[1]--;
-                    if(t[1
+                    if(t[1] == 0)
+                        s->cstat &= 32767;
+                }
+                else
+                {
+                    makeitfall(i);
+                    ssp(i,CLIPMASK0);
+                    if(s->xvel > 0) s->xvel -= 2;
+
+                    if(s->zvel == 0)
+                    {
+                        s->cstat |= 32768;
+
+                        if(s->pal != 2 && s->hitag == 0)
+                            spritesound(SOMETHING_DRIPPING,i);
+
+                        if(sprite[s->owner].picnum != WATERDRIP)
+                        {
+                            KILLIT(i);
+                        }
+                        else
+                        {
+                            hittype[i].bposz = s->z = t[0];
+                            t[1] = 48+(TRAND&31);
+                        }
+                    }
+                }
+
+
+                goto BOLT;
+
+            case DOORSHOCK:
+                j = klabs(sector[sect].ceilingz-sector[sect].floorz)>>9;
+                s->yrepeat = j+4;
+                s->xrepeat = 16;
+                s->z = sector[sect].floorz;
+                goto BOLT;
+
+            case TOUCHPLATE:
+                if( t[1] == 1 && s->hitag >= 0) //Move the sector floor
+                {
+                    x = sector[sect].floorz;
+
+                    if(t[3] == 1)
+                    {
+                        if(x >= t[2])
+                        {
+                            sector[sect].floorz = x;
+                          
