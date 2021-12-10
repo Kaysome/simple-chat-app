@@ -2053,4 +2053,52 @@ void movestandables(void)
 
                 CLEAR_THE_BOLT:
                 if(t[2])
-              
+                {
+                    t[2]--;
+                    sector[sect].floorshade = 20;
+                    sector[sect].ceilingshade = 20;
+                    goto BOLT;
+                }
+                if( (s->xrepeat|s->yrepeat) == 0 )
+                {
+                    s->xrepeat=t[0];
+                    s->yrepeat=t[1];
+                }
+                else if( (TRAND&8) == 0 )
+                {
+                    t[0]=s->xrepeat;
+                    t[1]=s->yrepeat;
+                    t[2] = global_random&4;
+                    s->xrepeat=s->yrepeat=0;
+                    goto CLEAR_THE_BOLT;
+                }
+                s->picnum++;
+
+                l = global_random&7;
+                s->xrepeat=l+8;
+
+                if(l&1) s->cstat ^= 2;
+
+                if( s->picnum == (BOLT1+1) && (TRAND&7) == 0 && sector[sect].floorpicnum == HURTRAIL )
+                    spritesound(SHORT_CIRCUIT,i);
+
+                if(s->picnum==BOLT1+4) s->picnum=BOLT1;
+
+                if(s->picnum&1)
+                {
+                    sector[sect].floorshade = 0;
+                    sector[sect].ceilingshade = 0;
+                }
+                else
+                {
+                    sector[sect].floorshade = 20;
+                    sector[sect].ceilingshade = 20;
+                }
+                goto BOLT;
+
+            case WATERDRIP:
+
+                if( t[1] )
+                {
+                    t[1]--;
+                    if(t[1
