@@ -2001,4 +2001,56 @@ void movestandables(void)
                     if( klabs(s->xvel) < 48 )
                         s->xvel += (TRAND&3);
                 }
+                else KILLIT(i);
+                break;
+
+            case SIDEBOLT1:
+            case SIDEBOLT1+1:
+            case SIDEBOLT1+2:
+            case SIDEBOLT1+3:
+                p = findplayer(s, &x);
+                if( x > 20480 ) goto BOLT;
+
+                CLEAR_THE_BOLT2:
+                if(t[2])
+                {
+                    t[2]--;
+                    goto BOLT;
+                }
+                if( (s->xrepeat|s->yrepeat) == 0 )
+                {
+                    s->xrepeat=t[0];
+                    s->yrepeat=t[1];
+                }
+                if( (TRAND&8) == 0 )
+                {
+                    t[0]=s->xrepeat;
+                    t[1]=s->yrepeat;
+                    t[2] = global_random&4;
+                    s->xrepeat=s->yrepeat=0;
+                    goto CLEAR_THE_BOLT2;
+                }
+                s->picnum++;
+
+                if(l&1) s->cstat ^= 2;
+
+                if( (TRAND&1) && sector[sect].floorpicnum == HURTRAIL )
+                    spritesound(SHORT_CIRCUIT,i);
+
+                if(s->picnum == SIDEBOLT1+4) s->picnum = SIDEBOLT1;
+
+                goto BOLT;
+
+            case BOLT1:
+            case BOLT1+1:
+            case BOLT1+2:
+            case BOLT1+3:
+                p = findplayer(s, &x);
+                if( x > 20480 ) goto BOLT;
+
+                if( t[3] == 0 )
+                    t[3]=sector[sect].floorshade;
+
+                CLEAR_THE_BOLT:
+                if(t[2])
               
