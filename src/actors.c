@@ -1950,4 +1950,55 @@ void movestandables(void)
                             }
                             else if(sprite[j].statnum == 6)
                             {
-                
+                                switch(sprite[j].picnum)
+                                {
+                                    case SEENINE:
+                                    case OOZFILTER:
+                                        sprite[j].shade = -31;
+                                        break;
+                                }
+                            }
+                            j = nextspritesect[j];
+                        }
+                        KILLIT(i);
+                    }
+                }
+                goto BOLT;
+        }
+
+        switch(s->picnum)
+        {
+            case VIEWSCREEN:
+            case VIEWSCREEN2:
+
+                if(s->xrepeat == 0) KILLIT(i);
+
+                p = findplayer(s, &x);
+
+                if( x < 2048 )
+                {
+                    if( SP == 1 )
+                        camsprite = i;
+                }
+                else if( camsprite != -1 && T1 == 1)
+                {
+                    camsprite = -1;
+                    T1 = 0;
+                    //loadtile(s->picnum);
+            //invalidatetile(s->picnum,-1,255);
+            walock[TILE_VIEWSCR] = 199;
+                }
+
+                goto BOLT;
+
+            case TRASH:
+
+                if(s->xvel == 0) s->xvel = 1;
+                IFMOVING
+                {
+                    makeitfall(i);
+                    if(TRAND&1) s->zvel -= 256;
+                    if( klabs(s->xvel) < 48 )
+                        s->xvel += (TRAND&3);
+                }
+              
