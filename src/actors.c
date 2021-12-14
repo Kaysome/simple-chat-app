@@ -2149,4 +2149,43 @@ void movestandables(void)
                         if(x >= t[2])
                         {
                             sector[sect].floorz = x;
-                          
+                            t[1] = 0;
+                        }
+                        else
+                        {
+                            sector[sect].floorz += sector[sect].extra;
+                            p = checkcursectnums(sect);
+                            if(p >= 0) ps[p].posz += sector[sect].extra;
+                        }
+                    }
+                    else
+                    {
+                        if(x <= s->z)
+                        {
+                            sector[sect].floorz = s->z;
+                            t[1] = 0;
+                        }
+                        else
+                        {
+                            sector[sect].floorz -= sector[sect].extra;
+                            p = checkcursectnums(sect);
+                            if(p >= 0)
+                                ps[p].posz -= sector[sect].extra;
+                        }
+                    }
+                    goto BOLT;
+                }
+
+                if(t[5] == 1) goto BOLT;
+
+                p = checkcursectnums(sect);
+                if( p >= 0 && ( ps[p].on_ground || s->ang == 512) )
+                {
+                    if( t[0] == 0 && !check_activator_motion(s->lotag) )
+                    {
+                        t[0] = 1;
+                        t[1] = 1;
+                        t[3] = !t[3];
+                        operatemasterswitches(s->lotag);
+                        operateactivators(s->lotag,p);
+                        if
