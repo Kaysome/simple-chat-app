@@ -2291,4 +2291,53 @@ void bounce(short i)
     }
 
     s->zvel = zvect;
-    s->xv
+    s->xvel = ksqrt(dmulscale8(xvect,xvect,yvect,yvect));
+    s->ang = getangle(xvect,yvect);
+}
+
+void moveweapons(void)
+{
+    short i, j, k, nexti, p, q;
+    int dax,day,daz, x, ll;
+    unsigned int qq;
+    spritetype *s;
+
+    i = headspritestat[4];
+    while(i >= 0)
+    {
+        nexti = nextspritestat[i];
+        s = &sprite[i];
+
+        if(s->sectnum < 0) KILLIT(i);
+
+        hittype[i].bposx = s->x;
+        hittype[i].bposy = s->y;
+        hittype[i].bposz = s->z;
+
+        switch(s->picnum)
+        {
+            case RADIUSEXPLOSION:
+            case KNEE:
+                KILLIT(i);
+            case TONGUE:
+                T1 = sintable[(T2)&2047]>>9;
+                T2 += 32;
+                if(T2 > 2047) KILLIT(i);
+
+                if(sprite[s->owner].statnum == MAXSTATUS)
+                    if(badguy(&sprite[s->owner]) == 0)
+                        KILLIT(i);
+
+                s->ang = sprite[s->owner].ang;
+                s->x = sprite[s->owner].x;
+                s->y = sprite[s->owner].y;
+                if(sprite[s->owner].picnum == APLAYER)
+                    s->z = sprite[s->owner].z-(34<<8);
+                for(k=0;k<T1;k++)
+                {
+                    q = EGS(s->sectnum,
+                        s->x+((k*sintable[(s->ang+512)&2047])>>9),
+                        s->y+((k*sintable[s->ang&2047])>>9),
+                        s->z+((k*ksgn(s->zvel))*klabs(s->zvel/12)),TONGUE,-40+(k<<1),
+                        8,8,0,0,0,i,5);
+       
