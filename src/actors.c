@@ -2188,4 +2188,50 @@ void movestandables(void)
                         t[3] = !t[3];
                         operatemasterswitches(s->lotag);
                         operateactivators(s->lotag,p);
-                        if
+                        if(s->hitag > 0)
+                        {
+                            s->hitag--;
+                            if(s->hitag == 0) t[5] = 1;
+                        }
+                    }
+                }
+                else t[0] = 0;
+
+                if(t[1] == 1)
+                {
+                    j = headspritestat[6];
+                    while(j >= 0)
+                    {
+                        if(j != i && sprite[j].picnum == TOUCHPLATE && sprite[j].lotag == s->lotag)
+                        {
+                            hittype[j].temp_data[1] = 1;
+                            hittype[j].temp_data[3] = t[3];
+                        }
+                        j = nextspritestat[j];
+                    }
+                }
+                goto BOLT;
+
+            case CANWITHSOMETHING:
+            case CANWITHSOMETHING2:
+            case CANWITHSOMETHING3:
+            case CANWITHSOMETHING4:
+                makeitfall(i);
+                IFHIT
+                {
+                    spritesound(VENT_BUST,i);
+                    for(j=0;j<10;j++)
+                        RANDOMSCRAP;
+
+                    if(s->lotag) spawn(i,s->lotag);
+
+                    KILLIT(i);
+                }
+                goto BOLT;
+
+            case EXPLODINGBARREL:
+            case WOODENHORSE:
+            case HORSEONSIDE:
+            case FLOORFLAME:
+            case FIREBARREL:
+            case FI
