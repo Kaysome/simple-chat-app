@@ -2234,4 +2234,61 @@ void movestandables(void)
             case HORSEONSIDE:
             case FLOORFLAME:
             case FIREBARREL:
-            case FI
+            case FIREVASE:
+            case NUKEBARREL:
+            case NUKEBARRELDENTED:
+            case NUKEBARRELLEAKED:
+            case TOILETWATER:
+            case RUBBERCAN:
+            case STEAM:
+            case CEILINGSTEAM:
+                p = findplayer(s, &x);
+                execute(i,p,x);
+                goto BOLT;
+            case WATERBUBBLEMAKER:
+                p = findplayer(s, &x);
+                execute(i,p,x);
+                goto BOLT;
+        }
+
+        BOLT:
+        i = nexti;
+    }
+}
+
+void bounce(short i)
+{
+    int k, l, daang, dax, day, daz, xvect, yvect, zvect;
+    short hitsect;
+    spritetype *s = &sprite[i];
+
+    xvect = mulscale10(s->xvel,sintable[(s->ang+512)&2047]);
+    yvect = mulscale10(s->xvel,sintable[s->ang&2047]);
+    zvect = s->zvel;
+
+    hitsect = s->sectnum;
+
+    k = sector[hitsect].wallptr; l = wall[k].point2;
+    daang = getangle(wall[l].x-wall[k].x,wall[l].y-wall[k].y);
+
+    if ( s->z < (hittype[i].floorz+hittype[i].ceilingz)>>1)
+        k = sector[hitsect].ceilingheinum;
+    else
+        k = sector[hitsect].floorheinum;
+
+    dax = mulscale14(k,sintable[(daang)&2047]);
+    day = mulscale14(k,sintable[(daang+1536)&2047]);
+    daz = 4096;
+
+    k = xvect*dax+yvect*day+zvect*daz;
+    l = dax*dax+day*day+daz*daz;
+    if ((klabs(k)>>14) < l)
+    {
+        k = divscale17(k,l);
+        xvect -= mulscale16(dax,k);
+        yvect -= mulscale16(day,k);
+        zvect -= mulscale16(daz,k);
+    }
+
+    s->zvel = zvect;
+    s->xv
