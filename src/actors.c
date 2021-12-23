@@ -2340,4 +2340,46 @@ void moveweapons(void)
                         s->y+((k*sintable[s->ang&2047])>>9),
                         s->z+((k*ksgn(s->zvel))*klabs(s->zvel/12)),TONGUE,-40+(k<<1),
                         8,8,0,0,0,i,5);
-       
+                    sprite[q].cstat = 128;
+                    sprite[q].pal = 8;
+                }
+                q = EGS(s->sectnum,
+                    s->x+((k*sintable[(s->ang+512)&2047])>>9),
+                    s->y+((k*sintable[s->ang&2047])>>9),
+                    s->z+((k*ksgn(s->zvel))*klabs(s->zvel/12)),INNERJAW,-40,
+                    32,32,0,0,0,i,5);
+                sprite[q].cstat = 128;
+                if( T2 > 512 && T2 < (1024) )
+                    sprite[q].picnum = INNERJAW+1;
+
+                goto BOLT;
+
+            case FREEZEBLAST:
+                if(s->yvel < 1 || s->extra < 2 || (s->xvel|s->zvel) == 0)
+                {
+                    j = spawn(i,TRANSPORTERSTAR);
+                    sprite[j].pal = 1;
+                    sprite[j].xrepeat = 32;
+                    sprite[j].yrepeat = 32;
+                    KILLIT(i);
+                }
+                // fall through
+            case SHRINKSPARK:
+            case RPG:
+            case FIRELASER:
+            case SPIT:
+            case COOLEXPLOSION1:
+
+                if( s->picnum == COOLEXPLOSION1 )
+                    if( !issoundplaying(WIERDSHOT_FLY, 1) )
+                        spritesound(WIERDSHOT_FLY,i);
+
+                p = -1;
+
+                if(s->picnum == RPG && sector[s->sectnum].lotag == 2)
+                {
+                    k = s->xvel>>1;
+                    ll = s->zvel>>1;
+                }
+                else
+    
