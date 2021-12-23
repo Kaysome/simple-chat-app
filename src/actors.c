@@ -2382,4 +2382,44 @@ void moveweapons(void)
                     ll = s->zvel>>1;
                 }
                 else
-    
+                {
+                    k = s->xvel;
+                    ll = s->zvel;
+                }
+
+                dax = s->x; day = s->y; daz = s->z;
+
+                getglobalz(i);
+                qq = CLIPMASK1;
+
+                switch(s->picnum)
+                {
+                    case RPG:
+                        if(hittype[i].picnum != BOSS2 && s->xrepeat >= 10 && sector[s->sectnum].lotag != 2)
+                        {
+                            j = spawn(i,SMALLSMOKE);
+                            sprite[j].z += (1<<8);
+                        }
+                        break;
+                }
+
+                j = movesprite(i,
+                    (k*(sintable[(s->ang+512)&2047]))>>14,
+                    (k*(sintable[s->ang&2047]))>>14,ll,qq);
+
+                if(s->picnum == RPG && s->yvel >= 0)
+                    if( FindDistance2D(s->x-sprite[s->yvel].x,s->y-sprite[s->yvel].y) < 256 )
+                        j = 49152|s->yvel;
+
+                if(s->sectnum < 0) { KILLIT(i); }
+
+                if( (j&49152) != 49152)
+                    if(s->picnum != FREEZEBLAST)
+                {
+                    if(s->z < hittype[i].ceilingz)
+                    {
+                        j = 16384|(s->sectnum);
+                        s->zvel = -1;
+                    }
+                    else
+                        if( ( s->z > hittype[i].floorz && sector[s->sectnum].lot
