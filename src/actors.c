@@ -2529,4 +2529,42 @@ void moveweapons(void)
                                     s->yvel--;
                                 }
 
-                                
+                                k = getangle(
+                                    wall[wall[j].point2].x-wall[j].x,
+                                    wall[wall[j].point2].y-wall[j].y);
+                                s->ang = ((k<<1) - s->ang)&2047;
+                                goto BOLT;
+                            }
+                        }
+                    }
+                    else if( (j&49152) == 16384)
+                    {
+                        setsprite(i,dax,day,daz);
+
+                        if(s->zvel < 0)
+                        {
+                            if( sector[s->sectnum].ceilingstat&1 )
+                                if(sector[s->sectnum].ceilingpal == 0)
+                                    KILLIT(i);
+
+                            checkhitceiling(s->sectnum);
+                        }
+
+                        if(s->picnum == FREEZEBLAST)
+                        {
+                            bounce(i);
+                            ssp(i,qq);
+                            s->extra >>= 1;
+                            if(s->xrepeat > 8)
+                                s->xrepeat -= 2;
+                            if(s->yrepeat > 8)
+                                s->yrepeat -= 2;
+                            s->yvel--;
+                            goto BOLT;
+                        }
+                    }
+
+                    if(s->picnum != SPIT)
+                    {
+                        if(s->picnum == RPG)
+               
