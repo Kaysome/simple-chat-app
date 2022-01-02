@@ -2567,4 +2567,34 @@ void moveweapons(void)
                     if(s->picnum != SPIT)
                     {
                         if(s->picnum == RPG)
-               
+                        {
+                            k = spawn(i,EXPLOSION2);
+                            sprite[k].x = dax;
+                            sprite[k].y = day;
+                            sprite[k].z = daz;
+
+                            if(s->xrepeat < 10)
+                            {
+                                sprite[k].xrepeat = 6;
+                                sprite[k].yrepeat = 6;
+                            }
+                            else if( (j&49152) == 16384)
+                            {
+                                if( s->zvel > 0)
+                                    spawn(i,EXPLOSION2BOT);
+                                else { sprite[k].cstat |= 8; sprite[k].z += (48<<8); }
+                            }
+                        }
+                        else if(s->picnum == SHRINKSPARK)
+                        {
+                            spawn(i,SHRINKEREXPLOSION);
+                            spritesound(SHRINKER_HIT,i);
+                            hitradius(i,shrinkerblastradius,0,0,0,0);
+                        }
+                        else if( s->picnum != COOLEXPLOSION1 && s->picnum != FREEZEBLAST && s->picnum != FIRELASER)
+                        {
+                            k = spawn(i,EXPLOSION2);
+                            sprite[k].xrepeat = sprite[k].yrepeat = s->xrepeat>>1;
+                            if( (j&49152) == 16384)
+                            {
+     
