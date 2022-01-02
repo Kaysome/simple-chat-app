@@ -2460,4 +2460,39 @@ void moveweapons(void)
 
                     if( (j&49152) == 49152 )
                     {
-                        j &= (MAXSPRITES
+                        j &= (MAXSPRITES-1);
+
+                        if(s->picnum == FREEZEBLAST && sprite[j].pal == 1 )
+                            if( badguy(&sprite[j]) || sprite[j].picnum == APLAYER )
+                        {
+                            j = spawn(i,TRANSPORTERSTAR);
+                            sprite[j].pal = 1;
+                            sprite[j].xrepeat = 32;
+                            sprite[j].yrepeat = 32;
+
+                            KILLIT(i);
+                        }
+
+                        checkhitsprite(j,i);
+
+                        if(sprite[j].picnum == APLAYER)
+                        {
+                            p = sprite[j].yvel;
+                            spritesound(PISTOL_BODYHIT,j);
+
+                            if(s->picnum == SPIT)
+                            {
+                                ps[p].horiz += 32;
+                                ps[p].return_to_center = 8;
+
+                                if(ps[p].loogcnt == 0)
+                                {
+                                    if(!isspritemakingsound(ps[p].i, DUKE_LONGTERM_PAIN))
+                                        spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
+
+                                    j = 3+(TRAND&3);
+                                    ps[p].numloogs = j;
+                                    ps[p].loogcnt = 24*4;
+                                    for(x=0;x < j;x++)
+                                    {
+                                        ps[p].loogiex[x] 
