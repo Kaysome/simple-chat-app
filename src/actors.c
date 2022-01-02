@@ -2495,4 +2495,38 @@ void moveweapons(void)
                                     ps[p].loogcnt = 24*4;
                                     for(x=0;x < j;x++)
                                     {
-                                        ps[p].loogiex[x] 
+                                        ps[p].loogiex[x] = TRAND%xdim;
+                                        ps[p].loogiey[x] = TRAND%ydim;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if( (j&49152) == 32768 )
+                    {
+                        j &= (MAXWALLS-1);
+
+                        if(s->picnum != RPG && s->picnum != FREEZEBLAST && s->picnum != SPIT && ( wall[j].overpicnum == MIRROR || wall[j].picnum == MIRROR ) )
+                        {
+                            k = getangle(
+                                    wall[wall[j].point2].x-wall[j].x,
+                                    wall[wall[j].point2].y-wall[j].y);
+                            s->ang = ((k<<1) - s->ang)&2047;
+                            s->owner = i;
+                            spawn(i,TRANSPORTERSTAR);
+                            goto BOLT;
+                        }
+                        else
+                        {
+                            setsprite(i,dax,day,daz);
+                            checkhitwall(i,j,s->x,s->y,s->z,s->picnum);
+
+                            if(s->picnum == FREEZEBLAST)
+                            {
+                                if( wall[j].overpicnum != MIRROR && wall[j].picnum != MIRROR )
+                                {
+                                    s->extra >>= 1;
+                                    s->yvel--;
+                                }
+
+                                
