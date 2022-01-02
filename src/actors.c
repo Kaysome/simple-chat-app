@@ -2597,4 +2597,48 @@ void moveweapons(void)
                             sprite[k].xrepeat = sprite[k].yrepeat = s->xrepeat>>1;
                             if( (j&49152) == 16384)
                             {
-     
+                                if( s->zvel < 0)
+                                    { sprite[k].cstat |= 8; sprite[k].z += (72<<8); }
+                            }
+                        }
+                        if( s->picnum == RPG )
+                        {
+                            spritesound(RPG_EXPLODE,i);
+
+                            if(s->xrepeat >= 10)
+                            {
+                                x = s->extra;
+                                hitradius( i,rpgblastradius, x>>2,x>>1,x-(x>>2),x);
+                            }
+                            else
+                            {
+                                x = s->extra+(global_random&3);
+                                hitradius( i,(rpgblastradius>>1),x>>2,x>>1,x-(x>>2),x);
+                            }
+                        }
+                    }
+                    if(s->picnum != COOLEXPLOSION1) KILLIT(i);
+                }
+                if(s->picnum == COOLEXPLOSION1)
+                {
+                    s->shade++;
+                    if(s->shade >= 40) KILLIT(i);
+                }
+                else if(s->picnum == RPG && sector[s->sectnum].lotag == 2 && s->xrepeat >= 10 && rnd(140))
+                    spawn(i,WATERBUBBLE);
+
+                goto BOLT;
+
+
+            case SHOTSPARK1:
+                p = findplayer(s,&x);
+                execute(i,p,x);
+                goto BOLT;
+        }
+        BOLT:
+        i = nexti;
+    }
+}
+
+
+void movetransp
