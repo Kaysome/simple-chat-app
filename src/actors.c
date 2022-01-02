@@ -2422,4 +2422,42 @@ void moveweapons(void)
                         s->zvel = -1;
                     }
                     else
-                        if( ( s->z > hittype[i].floorz && sector[s->sectnum].lot
+                        if( ( s->z > hittype[i].floorz && sector[s->sectnum].lotag != 1 ) ||
+                            ( s->z > hittype[i].floorz+(16<<8) && sector[s->sectnum].lotag == 1 ) )
+                    {
+                        j = 16384|(s->sectnum);
+                        if(sector[s->sectnum].lotag != 1)
+                            s->zvel = 1;
+                    }
+                }
+
+                if(s->picnum == FIRELASER)
+                {
+                    for(k=-3;k<2;k++)
+                    {
+                        x = EGS(s->sectnum,
+                            s->x+((k*sintable[(s->ang+512)&2047])>>9),
+                            s->y+((k*sintable[s->ang&2047])>>9),
+                            s->z+((k*ksgn(s->zvel))*klabs(s->zvel/24)),FIRELASER,-40+(k<<2),
+                            s->xrepeat,s->yrepeat,0,0,0,s->owner,5);
+
+                        sprite[x].cstat = 128;
+                        sprite[x].pal = s->pal;
+                    }
+                }
+                else if(s->picnum == SPIT) if(s->zvel < 6144)
+                    s->zvel += gc-112;
+
+                if( j != 0 )
+                {
+                    if(s->picnum == COOLEXPLOSION1)
+                    {
+                        if( (j&49152) == 49152 && sprite[j&(MAXSPRITES-1)].picnum != APLAYER)
+                            goto BOLT;
+                        s->xvel = 0;
+                        s->zvel = 0;
+                    }
+
+                    if( (j&49152) == 49152 )
+                    {
+                        j &= (MAXSPRITES
