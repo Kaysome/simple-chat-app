@@ -2641,4 +2641,57 @@ void moveweapons(void)
 }
 
 
-void movetransp
+void movetransports(void)
+{
+    char warpspriteto;
+    short i, j, k, l, p, sect, sectlotag, nexti, nextj;
+    int ll,onfloorz,q;
+
+    i = headspritestat[9]; //Transporters
+
+    while(i >= 0)
+    {
+        sect = SECT;
+        sectlotag = sector[sect].lotag;
+
+        nexti = nextspritestat[i];
+
+        if(OW == i)
+        {
+            i = nexti;
+            continue;
+        }
+
+        onfloorz = T5;
+
+        if(T1 > 0) T1--;
+
+        j = headspritesect[sect];
+        while(j >= 0)
+        {
+            nextj = nextspritesect[j];
+
+            switch(sprite[j].statnum)
+            {
+                case 10:    // Player
+
+                    if( sprite[j].owner != -1 )
+                    {
+                        p = sprite[j].yvel;
+
+                        ps[p].on_warping_sector = 1;
+
+                        if( ps[p].transporter_hold == 0 && ps[p].jumping_counter == 0 )
+                        {
+                            if(ps[p].on_ground && sectlotag == 0 && onfloorz && ps[p].jetpack_on == 0 )
+                            {
+                                if(sprite[i].pal == 0)
+                                {
+                                    spawn(i,TRANSPORTERBEAM);
+                                    spritesound(TELEPORTER,i);
+                                }
+
+                                for(k=connecthead;k>=0;k=connectpoint2[k])
+                                    if(ps[k].cursectnum == sprite[OW].sectnum)
+                                {
+                  
