@@ -2789,4 +2789,41 @@ void movetransports(void)
                         if(k == 1)
                         {
                             ps[p].oposx = ps[p].posx += sprite[OW].x-SX;
-                            ps[p].oposy = ps[p
+                            ps[p].oposy = ps[p].posy += sprite[OW].y-SY;
+
+                            if(sprite[OW].owner != OW)
+                                ps[p].transporter_hold = -2;
+                            ps[p].cursectnum = sprite[OW].sectnum;
+
+                            changespritesect(j,sprite[OW].sectnum);
+                            setsprite(ps[p].i,ps[p].posx,ps[p].posy,ps[p].posz+PHEIGHT);
+
+                            setpal(&ps[p]);
+
+                            if( (TRAND&255) < 32 )
+                                spawn(j,WATERSPLASH2);
+
+                            if(sectlotag == 1)
+                                for(l = 0;l < 9;l++)
+                            {
+                                q = spawn(ps[p].i,WATERBUBBLE);
+                                sprite[q].z += TRAND&16383;
+                            }
+                        }
+                    }
+                    break;
+
+                case 1:
+                    switch(sprite[j].picnum)
+                    {
+                        case SHARK:
+                        case COMMANDER:
+                        case OCTABRAIN:
+                        case GREENSLIME:
+                        case GREENSLIME+1:
+                        case GREENSLIME+2:
+                        case GREENSLIME+3:
+                        case GREENSLIME+4:
+                        case GREENSLIME+5:
+                        case GREENSLIME+6:
+  
