@@ -2864,4 +2864,33 @@ void movetransports(void)
                             case BULLETHOLE:
                             case WATERSPLASH2:
                             case BURNING:
-                            
+                            case BURNING2:
+                            case FIRE:
+                            case FIRE2:
+                            case TOILETWATER:
+                            case LASERLINE:
+                                goto JBOLT;
+                            case PLAYERONWATER:
+                                if(sectlotag == 2)
+                                {
+                                    sprite[j].cstat &= 32767;
+                                    break;
+                                }
+                                // fall through
+                            default:
+                                if(sprite[j].statnum == 5 && !(sectlotag == 1 || sectlotag == 2) )
+                                    break;
+                                // fall through
+
+                            case WATERBUBBLE:
+//                                if( rnd(192) && sprite[j].picnum == WATERBUBBLE)
+  //                                 break;
+
+                                if(sectlotag > 0)
+                                {
+                                    k = spawn(j,WATERSPLASH2);
+                                    if( sectlotag == 1 && sprite[j].statnum == 4 )
+                                    {
+                                        sprite[k].xvel = sprite[j].xvel>>1;
+                                        sprite[k].ang = sprite[j].ang;
+                                        ssp(k,CLIPMASK0);
