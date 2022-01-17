@@ -2826,4 +2826,42 @@ void movetransports(void)
                         case GREENSLIME+4:
                         case GREENSLIME+5:
                         case GREENSLIME+6:
-  
+                        case GREENSLIME+7:
+                            if(sprite[j].extra > 0)
+                                goto JBOLT;
+                    }
+                    // fall through
+                case 4:
+                case 5:
+                case 12:
+                case 13:
+
+                    ll = klabs(sprite[j].zvel);
+
+                    {
+                        warpspriteto = 0;
+                        if( ll && sectlotag == 2 && sprite[j].z < (sector[sect].ceilingz+ll) )
+                            warpspriteto = 1;
+
+                        if( ll && sectlotag == 1 && sprite[j].z > (sector[sect].floorz-ll) )
+                            warpspriteto = 1;
+
+                        if( sectlotag == 0 && ( onfloorz || klabs(sprite[j].z-SZ) < 4096) )
+                        {
+                            if( sprite[OW].owner != OW && onfloorz && T1 > 0 && sprite[j].statnum != 5 )
+                            {
+                                T1++;
+                                goto BOLT;
+                            }
+                            warpspriteto = 1;
+                        }
+
+                        if( warpspriteto ) switch(sprite[j].picnum)
+                        {
+                            case TRANSPORTERSTAR:
+                            case TRANSPORTERBEAM:
+                            case TRIPBOMB:
+                            case BULLETHOLE:
+                            case WATERSPLASH2:
+                            case BURNING:
+                            
