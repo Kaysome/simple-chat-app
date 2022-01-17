@@ -2894,3 +2894,29 @@ void movetransports(void)
                                         sprite[k].xvel = sprite[j].xvel>>1;
                                         sprite[k].ang = sprite[j].ang;
                                         ssp(k,CLIPMASK0);
+                                    }
+                                }
+
+                                switch(sectlotag)
+                                {
+                                    case 0:
+                                        if(onfloorz)
+                                        {
+                                            if( sprite[j].statnum == 4 || ( checkcursectnums(sect) == -1 && checkcursectnums(sprite[OW].sectnum)  == -1 ) )
+                                            {
+                                                sprite[j].x += (sprite[OW].x-SX);
+                                                sprite[j].y += (sprite[OW].y-SY);
+                                                sprite[j].z -= SZ - sector[sprite[OW].sectnum].floorz;
+                                                sprite[j].ang = sprite[OW].ang;
+
+                                                hittype[j].bposx = sprite[j].x;
+                                                hittype[j].bposy = sprite[j].y;
+                                                hittype[j].bposz = sprite[j].z;
+
+                                                if(sprite[i].pal == 0)
+                                                {
+                                                    k = spawn(i,TRANSPORTERBEAM);
+                                                    spritesound(TELEPORTER,k);
+
+                                                    k = spawn(OW,TRANSPORTERBEAM);
+       
