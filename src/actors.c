@@ -2756,4 +2756,37 @@ void movetransports(void)
                             if(screenpeek == p)
                             {
                                 FX_StopAllSounds();
-                 
+                                clearsoundlocks();
+                            }
+                            if(sprite[ps[p].i].extra > 0)
+                                spritesound(DUKE_UNDERWATER,j);
+                            ps[p].oposz = ps[p].posz =
+                                sector[sprite[OW].sectnum].ceilingz+(7<<8);
+
+                            ps[p].posxv = 4096-(TRAND&8192);
+                            ps[p].posyv = 4096-(TRAND&8192);
+
+                        }
+
+                        if( onfloorz && sectlotag == 2 && ps[p].posz < (sector[sect].ceilingz+(6<<8)) )
+                        {
+                            k = 1;
+//                            if( sprite[j].extra <= 0) break;
+                            if(screenpeek == p)
+                            {
+                                FX_StopAllSounds();
+                                clearsoundlocks();
+                            }
+                            spritesound(DUKE_GASP,j);
+
+                            ps[p].oposz = ps[p].posz =
+                                sector[sprite[OW].sectnum].floorz-(7<<8);
+
+                            ps[p].jumping_toggle = 1;
+                            ps[p].jumping_counter = 0;
+                        }
+
+                        if(k == 1)
+                        {
+                            ps[p].oposx = ps[p].posx += sprite[OW].x-SX;
+                            ps[p].oposy = ps[p
