@@ -2694,4 +2694,36 @@ void movetransports(void)
                                 for(k=connecthead;k>=0;k=connectpoint2[k])
                                     if(ps[k].cursectnum == sprite[OW].sectnum)
                                 {
-                  
+                                    ps[k].frag_ps = p;
+                                    sprite[ps[k].i].extra = 0;
+                                }
+
+                                ps[p].ang = sprite[OW].ang;
+
+                                if(sprite[OW].owner != OW)
+                                {
+                                    T1 = 13;
+                                    hittype[OW].temp_data[0] = 13;
+                                    ps[p].transporter_hold = 13;
+                                }
+
+                                ps[p].bobposx = ps[p].oposx = ps[p].posx = sprite[OW].x;
+                                ps[p].bobposy = ps[p].oposy = ps[p].posy = sprite[OW].y;
+                                ps[p].oposz = ps[p].posz = sprite[OW].z-PHEIGHT;
+
+                                changespritesect(j,sprite[OW].sectnum);
+                                ps[p].cursectnum = sprite[j].sectnum;
+
+                                if(sprite[i].pal == 0)
+                                {
+                                    k = spawn(OW,TRANSPORTERBEAM);
+                                    spritesound(TELEPORTER,k);
+                                }
+
+                                break;
+                            }
+                        }
+                        else if( !(sectlotag == 1 && ps[p].on_ground == 1)  ) break;
+
+                        if(onfloorz == 0 && klabs(SZ-ps[p].posz) < 6144 )
+                            if( (ps[p].jetpack_on == 0 ) || (ps[p
