@@ -2726,4 +2726,34 @@ void movetransports(void)
                         else if( !(sectlotag == 1 && ps[p].on_ground == 1)  ) break;
 
                         if(onfloorz == 0 && klabs(SZ-ps[p].posz) < 6144 )
-                            if( (ps[p].jetpack_on == 0 ) || (ps[p
+                            if( (ps[p].jetpack_on == 0 ) || (ps[p].jetpack_on && (sync[p].bits&1) ) ||
+                                (ps[p].jetpack_on && (sync[p].bits&2) ) )
+                        {
+                            ps[p].oposx = ps[p].posx += sprite[OW].x-SX;
+                            ps[p].oposy = ps[p].posy += sprite[OW].y-SY;
+
+                            if( ps[p].jetpack_on && ( (sync[p].bits&1) || ps[p].jetpack_on < 11 ) )
+                                ps[p].posz = sprite[OW].z-6144;
+                            else ps[p].posz = sprite[OW].z+6144;
+                            ps[p].oposz = ps[p].posz;
+
+                            hittype[ps[p].i].bposx = ps[p].posx;
+                            hittype[ps[p].i].bposy = ps[p].posy;
+                            hittype[ps[p].i].bposz = ps[p].posz;
+
+                            changespritesect(j,sprite[OW].sectnum);
+                            ps[p].cursectnum = sprite[OW].sectnum;
+
+                            break;
+                        }
+
+                        k = 0;
+
+                        if( onfloorz && sectlotag == 1 && ps[p].on_ground && ps[p].posz > (sector[sect].floorz-(16<<8)) && ( (sync[p].bits&2) || ps[p].poszv > 2048 ) )
+//                        if( onfloorz && sectlotag == 1 && ps[p].posz > (sector[sect].floorz-(6<<8)) )
+                        {
+                            k = 1;
+                            if(screenpeek == p)
+                            {
+                                FX_StopAllSounds();
+                 
