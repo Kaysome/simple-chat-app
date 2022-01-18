@@ -3129,4 +3129,44 @@ void moveactors(void)
                     j = clipmove(&s->x,&s->y,&s->z,&s->sectnum,
                         (((s->xvel*(sintable[(s->ang+512)&2047]))>>14)*TICSPERFRAME)<<11,
                         (((s->xvel*(sintable[s->ang&2047]))>>14)*TICSPERFRAME)<<11,
-                        24L,(4<<8),
+                        24L,(4<<8),(4<<8),CLIPMASK1);
+
+                    if(j&49152)
+                    {
+                        if( (j&49152) == 32768 )
+                        {
+                            j &= (MAXWALLS-1);
+                            k = getangle(
+                                wall[wall[j].point2].x-wall[j].x,
+                                wall[wall[j].point2].y-wall[j].y);
+                            s->ang = ((k<<1) - s->ang)&2047;
+                        }
+                        else if( (j&49152) == 49152 )
+                        {
+                            j &= (MAXSPRITES-1);
+                            checkhitsprite(i,j);
+                        }
+                    }
+                    s->xvel --;
+                    if(s->xvel < 0) s->xvel = 0;
+                    if( s->picnum == STRIPEBALL )
+                    {
+                        s->cstat = 257;
+                        s->cstat |= 4&s->xvel;
+                        s->cstat |= 8&s->xvel;
+                    }
+                }
+                else
+                {
+                    p = findplayer(s,&x);
+
+                    if( x < 1596)
+                    {
+
+//                        if(s->pal == 12)
+                        {
+                            j = getincangle(ps[p].ang,getangle(s->x-ps[p].posx,s->y-ps[p].posy));
+                            if( j > -64 && j < 64 && (sync[p].bits&(1<<29)) )
+                                if(ps[p].toggle_key_flag == 1)
+                            {
+                           
