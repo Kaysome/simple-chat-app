@@ -2946,4 +2946,52 @@ void movetransports(void)
                                         break;
                                     case 1:
                                         sprite[j].x += (sprite[OW].x-SX);
-                         
+                                        sprite[j].y += (sprite[OW].y-SY);
+                                        sprite[j].z = sector[sprite[OW].sectnum].ceilingz+ll;
+
+                                        hittype[j].bposx = sprite[j].x;
+                                        hittype[j].bposy = sprite[j].y;
+                                        hittype[j].bposz = sprite[j].z;
+
+                                        changespritesect(j,sprite[OW].sectnum);
+
+                                        break;
+                                    case 2:
+                                        sprite[j].x += (sprite[OW].x-SX);
+                                        sprite[j].y += (sprite[OW].y-SY);
+                                        sprite[j].z = sector[sprite[OW].sectnum].floorz-ll;
+
+                                        hittype[j].bposx = sprite[j].x;
+                                        hittype[j].bposy = sprite[j].y;
+                                        hittype[j].bposz = sprite[j].z;
+
+                                        changespritesect(j,sprite[OW].sectnum);
+
+                                        break;
+                                }
+
+                                break;
+                        }
+                }
+                break;
+
+            }
+            JBOLT:
+            j = nextj;
+        }
+        BOLT:
+        i = nexti;
+    }
+}
+
+
+
+void moveactors(void)
+{
+    int x, m, l, *t;
+    short a, i, j, nexti, nextj, sect, p;
+    spritetype *s;
+    unsigned short k;
+    char namBoom = 0;
+
+    i = heads
