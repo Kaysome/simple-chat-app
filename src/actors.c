@@ -3091,4 +3091,42 @@ void moveactors(void)
                     sound(RPG_EXPLODE);
                     for(j=0;j<32;j++) RANDOMSCRAP;
                     earthquaketime = 16;
-    
+                    KILLIT(i);
+                }
+                else if((t[0]&3) == 0)
+                    spawn(i,EXPLOSION2);
+                ssp(i,CLIPMASK0);
+                break;
+            case RAT:
+                makeitfall(i);
+                IFMOVING
+                {
+                    if( (TRAND&255) < 3 ) spritesound(RATTY,i);
+                    s->ang += (TRAND&31)-15+(sintable[(t[0]<<8)&2047]>>11);
+                }
+                else
+                {
+                    T1++;
+                    if(T1 > 1) { KILLIT(i); }
+                    else s->ang = (TRAND&2047);
+                }
+                if(s->xvel < 128)
+                    s->xvel+=2;
+                s->ang += (TRAND&3)-6;
+                break;
+            case QUEBALL:
+            case STRIPEBALL:
+                if(s->xvel)
+                {
+                    j = headspritestat[0];
+                    while(j >= 0)
+                    {
+                        nextj = nextspritestat[j];
+                        if( sprite[j].picnum == POCKET && ldist(&sprite[j],s) < 52 ) KILLIT(i);
+                        j = nextj;
+                    }
+
+                    j = clipmove(&s->x,&s->y,&s->z,&s->sectnum,
+                        (((s->xvel*(sintable[(s->ang+512)&2047]))>>14)*TICSPERFRAME)<<11,
+                        (((s->xvel*(sintable[s->ang&2047]))>>14)*TICSPERFRAME)<<11,
+                        24L,(4<<8),
