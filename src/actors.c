@@ -2994,4 +2994,57 @@ void moveactors(void)
     unsigned short k;
     char namBoom = 0;
 
-    i = heads
+    i = headspritestat[1];
+    while(i >= 0)
+    {
+        nexti = nextspritestat[i];
+
+        s = &sprite[i];
+
+        sect = s->sectnum;
+
+        if( s->xrepeat == 0 || sect < 0 || sect >= MAXSECTORS)
+            KILLIT(i);
+
+        t = &hittype[i].temp_data[0];
+
+        hittype[i].bposx = s->x;
+        hittype[i].bposy = s->y;
+        hittype[i].bposz = s->z;
+
+
+        switch(s->picnum)
+        {
+            case DUCK:
+            case TARGET:
+                if(s->cstat&32)
+                {
+                    t[0]++;
+                    if(t[0] > 60)
+                    {
+                        t[0] = 0;
+                        s->cstat = 128+257+16;
+                        s->extra = 1;
+                    }
+                }
+                else
+                {
+                    j = ifhitbyweapon(i);
+                    if( j >= 0 )
+                    {
+                        s->cstat = 32+128;
+                        k = 1;
+
+                        j = headspritestat[1];
+                        while(j >= 0)
+                        {
+                            if( sprite[j].lotag == s->lotag &&
+                                sprite[j].picnum == s->picnum )
+                            {
+                                if( ( sprite[j].hitag && !(sprite[j].cstat&32) ) ||
+                                    ( !sprite[j].hitag && (sprite[j].cstat&32) )
+                                  )
+                                {
+                                    k = 0;
+                                    break;
+            
