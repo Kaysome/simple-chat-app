@@ -2919,4 +2919,31 @@ void movetransports(void)
                                                     spritesound(TELEPORTER,k);
 
                                                     k = spawn(OW,TRANSPORTERBEAM);
-       
+                                                    spritesound(TELEPORTER,k);
+                                                }
+
+                                                if( sprite[OW].owner != OW )
+                                                {
+                                                    T1 = 13;
+                                                    hittype[OW].temp_data[0] = 13;
+                                                }
+
+                                                changespritesect(j,sprite[OW].sectnum);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            sprite[j].x += (sprite[OW].x-SX);
+                                            sprite[j].y += (sprite[OW].y-SY);
+                                            sprite[j].z = sprite[OW].z+4096;
+
+                                            hittype[j].bposx = sprite[j].x;
+                                            hittype[j].bposy = sprite[j].y;
+                                            hittype[j].bposz = sprite[j].z;
+
+                                            changespritesect(j,sprite[OW].sectnum);
+                                        }
+                                        break;
+                                    case 1:
+                                        sprite[j].x += (sprite[OW].x-SX);
+                         
