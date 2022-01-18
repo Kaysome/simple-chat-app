@@ -3169,4 +3169,33 @@ void moveactors(void)
                             if( j > -64 && j < 64 && (sync[p].bits&(1<<29)) )
                                 if(ps[p].toggle_key_flag == 1)
                             {
-                           
+                                a = headspritestat[1];
+                                while(a >= 0)
+                                {
+                                    if(sprite[a].picnum == QUEBALL || sprite[a].picnum == STRIPEBALL)
+                                    {
+                                        j = getincangle(ps[p].ang,getangle(sprite[a].x-ps[p].posx,sprite[a].y-ps[p].posy));
+                                        if( j > -64 && j < 64 )
+                                        {
+                                            findplayer(&sprite[a],&l);
+                                            if(x > l) break;
+                                        }
+                                    }
+                                    a = nextspritestat[a];
+                                }
+                                if(a == -1)
+                                {
+                                    if(s->pal == 12)
+                                        s->xvel = 164;
+                                    else s->xvel = 140;
+                                    s->ang = ps[p].ang;
+                                    ps[p].toggle_key_flag = 2;
+                                }
+                            }
+                        }
+                    }
+                    if( x < 512 && s->sectnum == ps[p].cursectnum )
+                    {
+                        s->ang = getangle(s->x-ps[p].posx,s->y-ps[p].posy);
+                        s->xvel = 48;
+                    }
