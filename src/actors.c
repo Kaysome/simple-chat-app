@@ -3047,4 +3047,48 @@ void moveactors(void)
                                 {
                                     k = 0;
                                     break;
-            
+                                }
+                            }
+
+                            j = nextspritestat[j];
+                        }
+
+                        if(k == 1)
+                        {
+                            operateactivators(s->lotag,-1);
+                            operateforcefields(i,s->lotag);
+                            operatemasterswitches(s->lotag);
+                        }
+                    }
+                }
+                goto BOLT;
+
+            case RESPAWNMARKERRED:
+            case RESPAWNMARKERYELLOW:
+            case RESPAWNMARKERGREEN:
+                T1++;
+                if(T1 > respawnitemtime)
+                {
+                    KILLIT(i);
+                }
+                if( T1 >= (respawnitemtime>>1) && T1 < ((respawnitemtime>>1)+(respawnitemtime>>2)) )
+                    PN = RESPAWNMARKERYELLOW;
+                else if( T1 > ((respawnitemtime>>1)+(respawnitemtime>>2)) )
+                    PN = RESPAWNMARKERGREEN;
+                makeitfall(i);
+                break;
+
+            case HELECOPT:
+            case DUKECAR:
+
+                s->z += s->zvel;
+                t[0]++;
+
+                if(t[0] == 4) spritesound(WAR_AMBIENCE2,i);
+
+                if( t[0] > (26*8) )
+                {
+                    sound(RPG_EXPLODE);
+                    for(j=0;j<32;j++) RANDOMSCRAP;
+                    earthquaketime = 16;
+    
