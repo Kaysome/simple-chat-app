@@ -3199,3 +3199,44 @@ void moveactors(void)
                         s->ang = getangle(s->x-ps[p].posx,s->y-ps[p].posy);
                         s->xvel = 48;
                     }
+                }
+
+                break;
+            case FORCESPHERE:
+
+                if(s->yvel == 0)
+                {
+                    s->yvel = 1;
+
+                    for(l=512;l<(2048-512);l+= 128)
+                        for(j=0;j<2048;j += 128)
+                    {
+                        k = spawn(i,FORCESPHERE);
+                        sprite[k].cstat = 257+128;
+                        sprite[k].clipdist = 64;
+                        sprite[k].ang = j;
+                        sprite[k].zvel = sintable[l&2047]>>5;
+                        sprite[k].xvel = sintable[(l+512)&2047]>>9;
+                        sprite[k].owner = i;
+                    }
+                }
+
+                if(t[3] > 0)
+                {
+                    if(s->zvel < 6144)
+                        s->zvel += 192;
+                    s->z += s->zvel;
+                    if(s->z > sector[sect].floorz)
+                        s->z = sector[sect].floorz;
+                    t[3]--;
+                    if(t[3] == 0)
+                        KILLIT(i);
+                }
+                else if(t[2] > 10)
+                {
+                    j = headspritestat[5];
+                    while(j >= 0)
+                    {
+                        if(sprite[j].owner == i && sprite[j].picnum == FORCESPHERE)
+                            hittype[j].temp_data[1] = 1+(TRAND&63);
+                       
