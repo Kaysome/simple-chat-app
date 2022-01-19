@@ -3400,4 +3400,59 @@ void moveactors(void)
                         j = s->owner = LocateTheLocator(s->hitag,-1);
                         if(j == -1)
                         {
-                          
+                            s->hitag = j = hittype[i].temp_data[5];
+                            s->owner = LocateTheLocator(j,-1);
+                            j = s->owner;
+                            if(j == -1) KILLIT(i);
+                        }
+                        else s->hitag++;
+                    }
+
+                    t[3] = getincangle(s->ang,a);
+                    s->ang += t[3]>>3;
+
+                    if(s->z < sprite[j].z)
+                        s->z += 1024;
+                    else s->z -= 1024;
+                }
+
+                if(!isspritemakingsound(i,RECO_ROAM))
+                    spritesound(RECO_ROAM,i);
+
+                ssp(i,CLIPMASK0);
+
+                goto BOLT;
+
+            case OOZ:
+            case OOZ2:
+
+                getglobalz(i);
+
+                j = (hittype[i].floorz-hittype[i].ceilingz)>>9;
+                if(j > 255) j = 255;
+
+                x = 25-(j>>1);
+                if(x < 8) x = 8;
+                else if(x > 48) x = 48;
+
+                s->yrepeat = j;
+                s->xrepeat = x;
+                s->z = hittype[i].floorz;
+
+                goto BOLT;
+
+            case GREENSLIME:
+            case GREENSLIME+1:
+            case GREENSLIME+2:
+            case GREENSLIME+3:
+            case GREENSLIME+4:
+            case GREENSLIME+5:
+            case GREENSLIME+6:
+            case GREENSLIME+7:
+
+// #ifndef VOLUMEONE
+                if( ud.multimode < 2 )
+                {
+                    if( actor_tog == 1)
+                    {
+       
