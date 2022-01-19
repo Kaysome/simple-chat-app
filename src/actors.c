@@ -3285,4 +3285,44 @@ void moveactors(void)
                     getglobalz(i);
                     s->ang += 96;
                     s->xvel = 128;
-                    j
+                    j = ssp(i,CLIPMASK0);
+                    if(j != 1 || s->z > hittype[i].floorz)
+                    {
+                        for(l=0;l<16;l++)
+                            RANDOMSCRAP;
+                        spritesound(LASERTRIP_EXPLODE,i);
+                        spawn(i,PIGCOP);
+                        ps[myconnectindex].actors_killed++;
+                        KILLIT(i);
+                    }
+                    goto BOLT;
+                }
+                else
+                {
+                    if( s->z > hittype[i].floorz-(48<<8) )
+                        s->z = hittype[i].floorz-(48<<8);
+                }
+
+                p = findplayer(s,&x);
+                j = s->owner;
+
+                // 3 = findplayerz, 4 = shoot
+
+                if( t[0] >= 4 )
+                {
+                    t[2]++;
+                    if( (t[2]&15) == 0 )
+                    {
+                        a = s->ang;
+                        s->ang = hittype[i].tempang;
+                        spritesound(RECO_ATTACK,i);
+                        shoot(i,FIRELASER);
+                        s->ang = a;
+                    }
+                    if( t[2] > (26*3) || !cansee(s->x,s->y,s->z-(16<<8),s->sectnum, ps[p].posx,ps[p].posy,ps[p].posz,ps[p].cursectnum ) )
+                    {
+                        t[0] = 0;
+                        t[2] = 0;
+                    }
+                    else hittype[i].tempang +=
+                        getincangle(hittype[i].tempang,getan
