@@ -3455,4 +3455,50 @@ void moveactors(void)
                 {
                     if( actor_tog == 1)
                     {
-       
+                        s->cstat = (short)32768;
+                        goto BOLT;
+                    }
+                    else if(actor_tog == 2) s->cstat = 257;
+                }
+// #endif
+
+                t[1]+=128;
+
+                if(sector[sect].floorstat&1)
+                    KILLIT(i);
+
+                p = findplayer(s,&x);
+
+                if(x > 20480)
+                {
+                    hittype[i].timetosleep++;
+                    if( hittype[i].timetosleep > SLEEPTIME )
+                    {
+                        hittype[i].timetosleep = 0;
+                        changespritestat(i,2);
+                        goto BOLT;
+                    }
+                }
+
+                if(t[0] == -5) // FROZEN
+                {
+                    t[3]++;
+                    if(t[3] > 280)
+                    {
+                        s->pal = 0;
+                        t[0] = 0;
+                        goto BOLT;
+                    }
+                    makeitfall(i);
+                    s->cstat = 257;
+                    s->picnum = GREENSLIME+2;
+                    s->extra = 1;
+                    s->pal = 1;
+                    IFHIT
+                    {
+                        if(j == FREEZEBLAST) goto BOLT;
+                        for(j=16; j >= 0 ;j--)
+                        {
+                            k = EGS(SECT,SX,SY,SZ,GLASSPIECES+(j%3),-32,36,36,TRAND&2047,32+(TRAND&63),1024-(TRAND&1023),i,5);
+                            sprite[k].pal = 1;
+               
