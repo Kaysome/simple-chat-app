@@ -3501,4 +3501,39 @@ void moveactors(void)
                         {
                             k = EGS(SECT,SX,SY,SZ,GLASSPIECES+(j%3),-32,36,36,TRAND&2047,32+(TRAND&63),1024-(TRAND&1023),i,5);
                             sprite[k].pal = 1;
-               
+                        }
+                        spritesound(GLASS_BREAKING,i);
+                        KILLIT(i);
+                    }
+                    else if(x < 1024 && ps[p].quick_kick == 0)
+                    {
+                        j = getincangle(ps[p].ang,getangle(SX-ps[p].posx,SY-ps[p].posy));
+                        if( j > -128 && j < 128 )
+                            ps[p].quick_kick = 14;
+                    }
+
+                    goto BOLT;
+                }
+
+                if(x < 1596)
+                    s->cstat = 0;
+                else s->cstat = 257;
+
+                if(t[0] == -4) //On the player
+                {
+                    if( sprite[ps[p].i].extra < 1 )
+                    {
+                        t[0] = 0;
+                        goto BOLT;
+                    }
+
+                    setsprite(i,s->x,s->y,s->z);
+
+                    s->ang = ps[p].ang;
+
+                    if( ( (sync[p].bits&4) || (ps[p].quick_kick > 0) ) && sprite[ps[p].i].extra > 0 )
+                        if( ps[p].quick_kick > 0 || ( ps[p].curr_weapon != HANDREMOTE_WEAPON && ps[p].curr_weapon != HANDBOMB_WEAPON && ps[p].curr_weapon != TRIPBOMB_WEAPON && ps[p].ammo_amount[ps[p].curr_weapon] >= 0) )
+                    {
+                        for(x=0;x<8;x++)
+                        {
+                            j = EGS(sect,s->x,s->y,s->z-(8<<8),SCRAP3+(TRAND&3),-8,48,48,TRAND&2047,(TRAND&63)+
