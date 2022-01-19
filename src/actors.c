@@ -3536,4 +3536,45 @@ void moveactors(void)
                     {
                         for(x=0;x<8;x++)
                         {
-                            j = EGS(sect,s->x,s->y,s->z-(8<<8),SCRAP3+(TRAND&3),-8,48,48,TRAND&2047,(TRAND&63)+
+                            j = EGS(sect,s->x,s->y,s->z-(8<<8),SCRAP3+(TRAND&3),-8,48,48,TRAND&2047,(TRAND&63)+64,-(TRAND&4095)-(s->zvel>>2),i,5);
+                            sprite[j].pal = 6;
+                        }
+
+                        spritesound(SLIM_DYING,i);
+                        spritesound(SQUISHED,i);
+                        if( (TRAND&255) < 32 )
+                        {
+                            j = spawn(i,BLOODPOOL);
+                            sprite[j].pal = 0;
+                        }
+                        ps[p].actors_killed ++;
+                        t[0] = -3;
+                        if(ps[p].somethingonplayer == i)
+                            ps[p].somethingonplayer = -1;
+                        KILLIT(i);
+                    }
+
+                    s->z = ps[p].posz+ps[p].pyoff-t[2]+(8<<8);
+
+                    s->z += (100-ps[p].horiz)<<4;
+
+                    if( t[2] > 512)
+                        t[2] -= 128;
+
+                    if( t[2] < 348)
+                        t[2] += 128;
+
+                    if(ps[p].newowner >= 0)
+                    {
+                        ps[p].newowner = -1;
+                        ps[p].posx = ps[p].oposx;
+                        ps[p].posy = ps[p].oposy;
+                        ps[p].posz = ps[p].oposz;
+                        ps[p].ang = ps[p].oang;
+
+                        updatesector(ps[p].posx,ps[p].posy,&ps[p].cursectnum);
+                        setpal(&ps[p]);
+
+                        j = headspritestat[1];
+                        while(j >= 0)
+                     
