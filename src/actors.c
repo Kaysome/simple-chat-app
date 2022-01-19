@@ -3363,4 +3363,41 @@ void moveactors(void)
                     {
                         a = s->ang;
                         s->xvel >>= 1;
-           
+                    }
+                    else a = getangle(sprite[j].x-s->x,sprite[j].y-s->y);
+
+                    if(t[0] == 1 || t[0] == 4) // Found a locator and going with it
+                    {
+                        l = dist(&sprite[j],s);
+
+                        if( l <= 1524 ) { if(t[0] == 1) t[0] = 0; else t[0] = 5; }
+                        else
+                        {
+                            // Control speed here
+                            if(l > 1524) { if( s->xvel < 256 ) s->xvel += 32; }
+                            else
+                            {
+                                if(s->xvel > 0) s->xvel -= 16;
+                                else s->xvel = 0;
+                            }
+                        }
+
+                        if(t[0] < 2) t[2]++;
+
+                        if( x < 6144 && t[0] < 2 && t[2] > (26*4) )
+                        {
+                            t[0] = 2+(TRAND&2);
+                            t[2] = 0;
+                            hittype[i].tempang = s->ang;
+                        }
+                    }
+
+                    if(t[0] == 0 || t[0] == 5)
+                    {
+                        if(t[0] == 0)
+                            t[0] = 1;
+                        else t[0] = 4;
+                        j = s->owner = LocateTheLocator(s->hitag,-1);
+                        if(j == -1)
+                        {
+                          
