@@ -3239,4 +3239,50 @@ void moveactors(void)
                     {
                         if(sprite[j].owner == i && sprite[j].picnum == FORCESPHERE)
                             hittype[j].temp_data[1] = 1+(TRAND&63);
-                       
+                        j = nextspritestat[j];
+                    }
+                    t[3] = 64;
+                }
+
+                goto BOLT;
+
+            case RECON:
+
+                getglobalz(i);
+
+                if (sector[s->sectnum].ceilingstat&1)
+                   s->shade += (sector[s->sectnum].ceilingshade-s->shade)>>1;
+                else s->shade += (sector[s->sectnum].floorshade-s->shade)>>1;
+
+                if( s->z < sector[sect].ceilingz+(32<<8) )
+                    s->z = sector[sect].ceilingz+(32<<8);
+
+                if( ud.multimode < 2 )
+                {
+                    if( actor_tog == 1)
+                    {
+                        s->cstat = (short)32768;
+                        goto BOLT;
+                    }
+                    else if(actor_tog == 2) s->cstat = 257;
+                }
+                IFHIT
+                {
+                    if( s->extra < 0 && t[0] != -1 )
+                    {
+                        t[0] = -1;
+                        s->extra = 0;
+                    }
+                    spritesound(RECO_PAIN,i);
+                    RANDOMSCRAP;
+                }
+
+                if(t[0] == -1)
+                {
+                    s->z += 1024;
+                    t[2]++;
+                    if( (t[2]&3) == 0) spawn(i,EXPLOSION2);
+                    getglobalz(i);
+                    s->ang += 96;
+                    s->xvel = 128;
+                    j
