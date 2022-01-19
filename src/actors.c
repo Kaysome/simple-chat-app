@@ -3325,4 +3325,42 @@ void moveactors(void)
                         t[2] = 0;
                     }
                     else hittype[i].tempang +=
-                        getincangle(hittype[i].tempang,getan
+                        getincangle(hittype[i].tempang,getangle(ps[p].posx-s->x,ps[p].posy-s->y))/3;
+                }
+                else if(t[0] == 2 || t[0] == 3)
+                {
+                    t[3] = 0;
+                    if(s->xvel > 0) s->xvel -= 16;
+                    else s->xvel = 0;
+
+                    if(t[0] == 2)
+                    {
+                        l = ps[p].posz-s->z;
+                        if( klabs(l) < (48<<8) ) t[0] = 3;
+                        else s->z += ksgn(ps[p].posz-s->z)<<10;
+                    }
+                    else
+                    {
+                        t[2]++;
+                        if( t[2] > (26*3) || !cansee(s->x,s->y,s->z-(16<<8),s->sectnum, ps[p].posx,ps[p].posy,ps[p].posz,ps[p].cursectnum ) )
+                        {
+                            t[0] = 1;
+                            t[2] = 0;
+                        }
+                        else if( (t[2]&15) == 0 )
+                        {
+                            spritesound(RECO_ATTACK,i);
+                            shoot(i,FIRELASER);
+                        }
+                    }
+                    s->ang += getincangle(s->ang,getangle(ps[p].posx-s->x,ps[p].posy-s->y))>>2;
+                }
+
+                if( t[0] != 2 && t[0] != 3 )
+                {
+                    l = ldist(&sprite[j],s);
+                    if(l <= 1524)
+                    {
+                        a = s->ang;
+                        s->xvel >>= 1;
+           
