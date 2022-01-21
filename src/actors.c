@@ -3620,4 +3620,44 @@ void moveactors(void)
                     if(ps[p].somethingonplayer == -1)
                     {
                         ps[p].somethingonplayer = i;
-                        if(t[0] == 3 || t[0] == 2) //Falling dow
+                        if(t[0] == 3 || t[0] == 2) //Falling downward
+                            t[2] = (12<<8);
+                        else t[2] = -(13<<8); //Climbing up duke
+                        t[0] = -4;
+                    }
+                }
+
+                    IFHIT
+                    {
+                        spritesound(SLIM_DYING,i);
+
+                        ps[p].actors_killed ++;
+                        if(ps[p].somethingonplayer == i)
+                            ps[p].somethingonplayer = -1;
+
+                        if(j == FREEZEBLAST)
+                        {
+                            spritesound(SOMETHINGFROZE,i); t[0] = -5 ; t[3] = 0 ;
+                            goto BOLT;
+                        }
+
+                        if( (TRAND&255) < 32 )
+                        {
+                            j = spawn(i,BLOODPOOL);
+                            sprite[j].pal = 0;
+                        }
+
+                        for(x=0;x<8;x++)
+                        {
+                            j = EGS(sect,s->x,s->y,s->z-(8<<8),SCRAP3+(TRAND&3),-8,48,48,TRAND&2047,(TRAND&63)+64,-(TRAND&4095)-(s->zvel>>2),i,5);
+                            sprite[j].pal = 6;
+                        }
+                        t[0] = -3;
+                        KILLIT(i);
+                    }
+                        // All weap
+                if(t[0] == -1) //Shrinking down
+                {
+                    makeitfall(i);
+
+                    s->cstat &
