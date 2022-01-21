@@ -3577,4 +3577,47 @@ void moveactors(void)
 
                         j = headspritestat[1];
                         while(j >= 0)
-                     
+                        {
+                            if(sprite[j].picnum==CAMERA1) sprite[j].yvel = 0;
+                            j = nextspritestat[j];
+                        }
+                    }
+
+                    if(t[3]>0)
+                    {
+                        short frames[] = {5,5,6,6,7,7,6,5};
+
+                        s->picnum = GREENSLIME+frames[t[3]];
+
+                        if( t[3] == 5 )
+                        {
+                            sprite[ps[p].i].extra += -(5+(TRAND&3));
+                            spritesound(SLIM_ATTACK,i);
+                        }
+
+                        if(t[3] < 7) t[3]++;
+                        else t[3] = 0;
+
+                    }
+                    else
+                    {
+                        s->picnum = GREENSLIME+5;
+                        if(rnd(32))
+                            t[3] = 1;
+                    }
+
+                    s->xrepeat = 20+(sintable[t[1]&2047]>>13);
+                    s->yrepeat = 15+(sintable[t[1]&2047]>>13);
+
+                    s->x = ps[p].posx + (sintable[(ps[p].ang+512)&2047]>>7);
+                    s->y = ps[p].posy + (sintable[ps[p].ang&2047]>>7);
+
+                    goto BOLT;
+                }
+
+                else if(s->xvel < 64 && x < 768)
+                {
+                    if(ps[p].somethingonplayer == -1)
+                    {
+                        ps[p].somethingonplayer = i;
+                        if(t[0] == 3 || t[0] == 2) //Falling dow
