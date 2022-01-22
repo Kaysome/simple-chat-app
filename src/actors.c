@@ -3660,4 +3660,48 @@ void moveactors(void)
                 {
                     makeitfall(i);
 
-                    s->cstat &
+                    s->cstat &= 65535-8;
+                    s->picnum = GREENSLIME+4;
+
+//                    if(s->yrepeat > 62)
+  //                      guts(s,JIBS6,5,myconnectindex);
+
+                    if(s->xrepeat > 32) s->xrepeat -= TRAND&7;
+                    if(s->yrepeat > 16) s->yrepeat -= TRAND&7;
+                    else
+                    {
+                        s->xrepeat = 40;
+                        s->yrepeat = 16;
+                        t[5] = -1;
+                        t[0] = 0;
+                    }
+
+                    goto BOLT;
+                }
+                else if(t[0] != -2) getglobalz(i);
+
+                if(t[0] == -2) //On top of somebody (an enemy)
+                {
+                    makeitfall(i);
+                    sprite[t[5]].xvel = 0;
+
+                    l = sprite[t[5]].ang;
+
+                    s->z = sprite[t[5]].z;
+                    s->x = sprite[t[5]].x+(sintable[(l+512)&2047]>>11);
+                    s->y = sprite[t[5]].y+(sintable[l&2047]>>11);
+
+                    s->picnum =  GREENSLIME+2+(global_random&1);
+
+                    if(s->yrepeat < 64) s->yrepeat+=2;
+                    else
+                    {
+                        if(s->xrepeat < 32) s->xrepeat += 4;
+                        else
+                        {
+                            t[0] = -1;
+                            x = ldist(s,&sprite[t[5]]);
+                            if(x < 768) {
+                    sprite[t[5]].xrepeat = 0;
+
+                    // JBF 20041129: a slimer eating ano
