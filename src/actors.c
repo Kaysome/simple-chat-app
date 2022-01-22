@@ -3704,4 +3704,43 @@ void moveactors(void)
                             if(x < 768) {
                     sprite[t[5]].xrepeat = 0;
 
-                    // JBF 20041129: a slimer eating ano
+                    // JBF 20041129: a slimer eating another enemy really ought
+                    // to decrease the maximum kill count by one.
+                    // JBF 20051024: additionally, the enemy has to be alive for
+                    // the max enemy count to be decremented.
+                    if (sprite[t[5]].extra > 0) ps[myconnectindex].max_actors_killed--;
+                }
+                        }
+                    }
+
+                    goto BOLT;
+                }
+
+                //Check randomly to see of there is an actor near
+                if(rnd(32))
+                {
+                    j = headspritesect[sect];
+                    while(j>=0)
+                    {
+                        switch(sprite[j].picnum)
+                        {
+                            case LIZTROOP:
+                            case LIZMAN:
+                            case PIGCOP:
+                            case NEWBEAST:
+                                if( ldist(s,&sprite[j]) < 768 && (klabs(s->z-sprite[j].z)<8192) ) //Gulp them
+                                {
+                                    t[5] = j;
+                                    t[0] = -2;
+                                    t[1] = 0;
+                                    goto BOLT;
+                                }
+                        }
+
+                        j = nextspritesect[j];
+                    }
+                }
+
+                //Moving on the ground or ceiling
+
+               
