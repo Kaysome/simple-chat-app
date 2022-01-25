@@ -3788,4 +3788,48 @@ void moveactors(void)
                     s->xrepeat = 36 + (sintable[(t[1]+512)&2047]>>11);
                     s->yrepeat = 16 + (sintable[t[1]&2047]>>13);
 
-                 
+                    if(rnd(4) && (sector[sect].ceilingstat&1) == 0 &&
+                        klabs(hittype[i].floorz-hittype[i].ceilingz)
+                            < (192<<8) )
+                            {
+                                s->zvel = 0;
+                                t[0]++;
+                            }
+
+                }
+
+                if(t[0]==1)
+                {
+                    s->picnum = GREENSLIME;
+                    if(s->yrepeat < 40) s->yrepeat+=8;
+                    if(s->xrepeat > 8) s->xrepeat-=4;
+                    if(s->zvel > -(2048+1024))
+                        s->zvel -= 348;
+                    s->z += s->zvel;
+                    if(s->z < hittype[i].ceilingz+4096)
+                    {
+                        s->z = hittype[i].ceilingz+4096;
+                        s->xvel = 0;
+                        t[0] = 2;
+                    }
+                }
+
+                if(t[0]==3)
+                {
+                    s->picnum = GREENSLIME+1;
+
+                    makeitfall(i);
+
+                    if(s->z > hittype[i].floorz-(8<<8))
+                    {
+                        s->yrepeat-=4;
+                        s->xrepeat+=2;
+                    }
+                    else
+                    {
+                        if(s->yrepeat < (40-4)) s->yrepeat+=8;
+                        if(s->xrepeat > 8) s->xrepeat-=4;
+                    }
+
+                    if(s->z > hittype[i].floorz-2048)
+      
