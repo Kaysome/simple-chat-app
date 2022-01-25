@@ -3743,4 +3743,49 @@ void moveactors(void)
 
                 //Moving on the ground or ceiling
 
-               
+                if(t[0] == 0 || t[0] == 2)
+                {
+                    s->picnum = GREENSLIME;
+
+                    if( (TRAND&511) == 0 )
+                        spritesound(SLIM_ROAM,i);
+
+                    if(t[0]==2)
+                    {
+                        s->zvel = 0;
+                        s->cstat &= (65535-8);
+
+                        if( (sector[sect].ceilingstat&1) || (hittype[i].ceilingz+6144) < s->z)
+                        {
+                            s->z += 2048;
+                            t[0] = 3;
+                            goto BOLT;
+                        }
+                    }
+                    else
+                    {
+                        s->cstat |= 8;
+                        makeitfall(i);
+                    }
+
+                    if( everyothertime&1 ) ssp(i,CLIPMASK0);
+
+                    if(s->xvel > 96)
+                    {
+                        s->xvel -= 2;
+                        goto BOLT;
+                    }
+                    else
+                    {
+                        if(s->xvel < 32) s->xvel += 4;
+                        s->xvel = 64 - (sintable[(t[1]+512)&2047]>>9);
+
+                        s->ang += getincangle(s->ang,
+                               getangle(ps[p].posx-s->x,ps[p].posy-s->y))>>3;
+// TJR
+                    }
+
+                    s->xrepeat = 36 + (sintable[(t[1]+512)&2047]>>11);
+                    s->yrepeat = 16 + (sintable[t[1]&2047]>>13);
+
+                 
