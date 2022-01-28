@@ -4013,4 +4013,39 @@ void moveactors(void)
                     }
                 }
                 else if(s->picnum == HEAVYHBOMB && x < 788 && t[0] > 7 && s->xvel == 0)
-                    if( cansee(s->x,s->y,s->z-(8<<8),s
+                    if( cansee(s->x,s->y,s->z-(8<<8),s->sectnum,ps[p].posx,ps[p].posy,ps[p].posz,ps[p].cursectnum) )
+                        if(ps[p].ammo_amount[HANDBOMB_WEAPON] < max_ammo_amount[HANDBOMB_WEAPON] )
+                {
+                    if(ud.coop >= 1 && s->owner == i)
+                    {
+                        for(j=0;j<ps[p].weapreccnt;j++)
+                            if(ps[p].weaprecs[j] == s->picnum)
+                                goto BOLT;
+
+                        if(ps[p].weapreccnt < 255)
+                            ps[p].weaprecs[ps[p].weapreccnt++] = s->picnum;
+                    }
+
+                    addammo(HANDBOMB_WEAPON,&ps[p],1);
+                    spritesound(DUKE_GET,ps[p].i);
+
+                    if( ps[p].gotweapon[HANDBOMB_WEAPON] == 0 || s->owner == ps[p].i )
+                        addweapon(&ps[p],HANDBOMB_WEAPON);
+
+                    if( sprite[s->owner].picnum != APLAYER )
+                    {
+                        ps[p].pals[0] = 0;
+                        ps[p].pals[1] = 32;
+                        ps[p].pals[2] = 0;
+                        ps[p].pals_time = 32;
+                    }
+
+                    if( s->owner != i || ud.respawn_items == 0 )
+                    {
+                        if(s->owner == i && ud.coop >= 1)
+                            goto BOLT;
+                        KILLIT(i);
+                    }
+                    else
+                    {
+                        t[2] = respawnitemtim
