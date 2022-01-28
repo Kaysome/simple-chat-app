@@ -3884,4 +3884,43 @@ void moveactors(void)
 
                     if( sector[sect].lotag != 1 && s->z >= hittype[i].floorz-(FOURSLEIGHT) && s->yvel < 3 )
                     {
-    
+                        if( s->yvel > 0 || (s->yvel == 0 && hittype[i].floorz == sector[sect].floorz ))
+                            spritesound(PIPEBOMB_BOUNCE,i);
+                        s->zvel = -((4-s->yvel)<<8);
+                        if(sector[s->sectnum].lotag== 2)
+                            s->zvel >>= 2;
+                        s->yvel++;
+                    }
+                    if( s->z < hittype[i].ceilingz ) // && sector[sect].lotag != 2 )
+                    {
+                        s->z = hittype[i].ceilingz+(3<<8);
+                        s->zvel = 0;
+                    }
+                }
+
+                j = movesprite(i,
+                    (s->xvel*(sintable[(s->ang+512)&2047]))>>14,
+                    (s->xvel*(sintable[s->ang&2047]))>>14,
+                    s->zvel,CLIPMASK0);
+
+                if(sector[SECT].lotag == 1 && s->zvel == 0)
+                {
+                    s->z += (32<<8);
+                    if(t[5] == 0)
+                    {
+                        t[5] = 1;
+                        spawn(i,WATERSPLASH2);
+                    }
+                }
+                else t[5] = 0;
+
+                if(t[3] == 0 && ( s->picnum == BOUNCEMINE || s->picnum == MORTER ) && (j || x < 844) )
+                {
+                    t[3] = 1;
+                    t[4] = 0;
+                    l = 0;
+                    s->xvel = 0;
+                    goto DETONATEB;
+                }
+
+                if(s
