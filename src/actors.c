@@ -3923,4 +3923,57 @@ void moveactors(void)
                     goto DETONATEB;
                 }
 
-                if(s
+                if(sprite[s->owner].picnum == APLAYER)
+                    l = sprite[s->owner].yvel;
+                else l = -1;
+
+                if(s->xvel > 0)
+                {
+                    s->xvel -= 5;
+                    if(sector[sect].lotag == 2)
+                        s->xvel -= 10;
+
+                    if(s->xvel < 0)
+                        s->xvel = 0;
+                    if(s->xvel&8) s->cstat ^= 4;
+                }
+
+                if( (j&49152) == 32768 )
+                {
+                    j &= (MAXWALLS-1);
+
+                    checkhitwall(i,j,s->x,s->y,s->z,s->picnum);
+
+                    k = getangle(
+                        wall[wall[j].point2].x-wall[j].x,
+                        wall[wall[j].point2].y-wall[j].y);
+
+                    s->ang = ((k<<1) - s->ang)&2047;
+                    s->xvel >>= 1;
+                }
+
+                DETONATEB:
+
+        namBoom = 0;
+        if( ( l >= 0 && ps[l].hbomb_on == 0 ) || t[3] == 1)
+            namBoom=1;
+        if (NAM) {
+            if( s->picnum == HEAVYHBOMB)
+            {
+                s->extra--; // FIXME: bug
+                if(s->extra <= 0)
+                    namBoom=1;
+            }
+        }
+
+        if (namBoom)
+                {
+                    t[4]++;
+
+                    if(t[4] == 2)
+                    {
+                        x = s->extra;
+                        m = 0;
+                        switch(s->picnum)
+                        {
+      
