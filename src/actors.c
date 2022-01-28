@@ -4048,4 +4048,43 @@ void moveactors(void)
                     }
                     else
                     {
-                        t[2] = respawnitemtim
+                        t[2] = respawnitemtime;
+                        spawn(i,RESPAWNMARKERRED);
+                        s->cstat = (short) 32768;
+                    }
+                }
+
+                if(t[0] < 8) t[0]++;
+                goto BOLT;
+
+            case REACTORBURNT:
+            case REACTOR2BURNT:
+                goto BOLT;
+
+            case REACTOR:
+            case REACTOR2:
+
+                if( t[4] == 1 )
+                {
+                    j = headspritesect[sect];
+                    while(j >= 0)
+                    {
+                        switch(sprite[j].picnum)
+                        {
+                            case SECTOREFFECTOR:
+                                if(sprite[j].lotag == 1)
+                                {
+                                    sprite[j].lotag = (short) 65535;
+                                    sprite[j].hitag = (short) 65535;
+                                }
+                                break;
+                            case REACTOR:
+                                sprite[j].picnum = REACTORBURNT;
+                                break;
+                            case REACTOR2:
+                                sprite[j].picnum = REACTOR2BURNT;
+                                break;
+                            case REACTORSPARK:
+                            case REACTOR2SPARK:
+                                sprite[j].cstat = (short) 32768;
+                           
