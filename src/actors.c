@@ -3976,4 +3976,41 @@ void moveactors(void)
                         m = 0;
                         switch(s->picnum)
                         {
-      
+                            case HEAVYHBOMB: m = pipebombblastradius;break;
+                            case MORTER: m = morterblastradius;break;
+                            case BOUNCEMINE: m = bouncemineblastradius;break;
+                        }
+
+                        hitradius( i, m,x>>2,x>>1,x-(x>>2),x);
+                        spawn(i,EXPLOSION2);
+                        if( s->zvel == 0 )
+                            spawn(i,EXPLOSION2BOT);
+                        spritesound(PIPEBOMB_EXPLODE,i);
+                        for(x=0;x<8;x++)
+                            RANDOMSCRAP;
+                    }
+
+                    if(s->yrepeat)
+                    {
+                        s->yrepeat = 0;
+                        goto BOLT;
+                    }
+
+                    if(t[4] > 20)
+                    {
+                        if(s->owner != i || ud.respawn_items == 0)
+                        {
+                            KILLIT(i);
+                        }
+                        else
+                        {
+                            t[2] = respawnitemtime;
+                            spawn(i,RESPAWNMARKERRED);
+                            s->cstat = (short) 32768;
+                            s->yrepeat = 9;
+                            goto BOLT;
+                        }
+                    }
+                }
+                else if(s->picnum == HEAVYHBOMB && x < 788 && t[0] > 7 && s->xvel == 0)
+                    if( cansee(s->x,s->y,s->z-(8<<8),s
