@@ -3832,4 +3832,56 @@ void moveactors(void)
                     }
 
                     if(s->z > hittype[i].floorz-2048)
-      
+                    {
+                        s->z = hittype[i].floorz-2048;
+                        t[0] = 0;
+                        s->xvel = 0;
+                    }
+                }
+                goto BOLT;
+
+            case BOUNCEMINE:
+            case MORTER:
+                j = spawn(i, (PLUTOPAK ? FRAMEEFFECT1 : FRAMEEFFECT1_13) );
+                hittype[j].temp_data[0] = 3;
+                // fall through
+
+            case HEAVYHBOMB:
+
+                if( (s->cstat&32768) )
+                {
+                    t[2]--;
+                    if(t[2] <= 0)
+                    {
+                        spritesound(TELEPORTER,i);
+                        spawn(i,TRANSPORTERSTAR);
+                        s->cstat = 257;
+                    }
+                    goto BOLT;
+                }
+
+                p = findplayer(s,&x);
+
+                if( x < 1220 ) s->cstat &= ~257;
+                else s->cstat |= 257;
+
+                if(t[3] == 0 )
+                {
+                    j = ifhitbyweapon(i);
+                    if(j >= 0)
+                    {
+                        t[3] = 1;
+                        t[4] = 0;
+                        l = 0;
+                        s->xvel = 0;
+                        goto DETONATEB;
+                    }
+                }
+
+                if( s->picnum != BOUNCEMINE )
+                {
+                    makeitfall(i);
+
+                    if( sector[sect].lotag != 1 && s->z >= hittype[i].floorz-(FOURSLEIGHT) && s->yvel < 3 )
+                    {
+    
