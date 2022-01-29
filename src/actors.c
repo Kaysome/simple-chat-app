@@ -4325,4 +4325,56 @@ void moveexplosions(void)  // STATNUM 5
                         ps[sprite[s->owner].yvel].fist_incs = 1;
                     }
                     if( ps[sprite[s->owner].yvel].fist_incs == 26 )
-                        
+                        s->picnum = NUKEBUTTON+3;
+                }
+                goto BOLT;
+
+            case FORCESPHERE:
+
+                l = s->xrepeat;
+                if(t[1] > 0)
+                {
+                    t[1]--;
+                    if(t[1] == 0)
+                    {
+                        KILLIT(i);
+                    }
+                }
+                if(hittype[s->owner].temp_data[1] == 0)
+                {
+                    if(t[0] < 64)
+                    {
+                        t[0]++;
+                        l += 3;
+                    }
+                }
+                else
+                    if(t[0] > 64)
+                    {
+                        t[0]--;
+                        l -= 3;
+                    }
+
+                s->x = sprite[s->owner].x;
+                s->y = sprite[s->owner].y;
+                s->z = sprite[s->owner].z;
+                s->ang += hittype[s->owner].temp_data[0];
+
+                if(l > 64) l = 64;
+                else if(l < 1) l = 1;
+
+                s->xrepeat = l;
+                s->yrepeat = l;
+                s->shade = (l>>1)-48;
+
+                for(j=t[0];j > 0;j--)
+                    ssp(i,CLIPMASK0);
+                goto BOLT;
+            case WATERSPLASH2:
+
+                t[0]++;
+                if(t[0] == 1 )
+                {
+                    if(sector[sect].lotag != 1 && sector[sect].lotag != 2)
+                        KILLIT(i);
+/*                
