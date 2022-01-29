@@ -4087,4 +4087,54 @@ void moveactors(void)
                             case REACTORSPARK:
                             case REACTOR2SPARK:
                                 sprite[j].cstat = (short) 32768;
-                           
+                                break;
+                        }
+                        j = nextspritesect[j];
+                    }
+                    goto BOLT;
+                }
+
+                if(t[1] >= 20)
+                {
+                    t[4] = 1;
+                    goto BOLT;
+                }
+
+                p = findplayer(s,&x);
+
+                t[2]++;
+                if( t[2] == 4 ) t[2]=0;
+
+                if( x < 4096 )
+                {
+                    if( (TRAND&255) < 16 )
+                    {
+                        if(!isspritemakingsound(ps[p].i, DUKE_LONGTERM_PAIN))
+                            spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
+
+                        spritesound(SHORT_CIRCUIT,i);
+
+                        sprite[ps[p].i].extra --;
+                        ps[p].pals_time = 32;
+                        ps[p].pals[0] = 32;
+                        ps[p].pals[1] = 0;
+                        ps[p].pals[2] = 0;
+                    }
+                    t[0] += 128;
+                    if( t[3] == 0 )
+                        t[3] = 1;
+                }
+                else t[3] = 0;
+
+                if( t[1] )
+                {
+                    t[1]++;
+
+                    t[4] = s->z;
+                    s->z = sector[sect].floorz-(TRAND%(sector[sect].floorz-sector[sect].ceilingz));
+
+                    switch( t[1] )
+                    {
+                        case 3:
+                            //Turn on all of those flashing sectoreffector.
+                
