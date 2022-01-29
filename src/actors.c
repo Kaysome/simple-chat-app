@@ -4214,3 +4214,64 @@ void moveactors(void)
                     if(camerashitable)
                     {
                         IFHIT
+                        {
+                            t[0] = 1; // static
+                            s->cstat = (short)32768;
+                            for(x=0;x<5;x++) RANDOMSCRAP;
+                            goto BOLT;
+                        }
+                    }
+
+                    if(s->hitag > 0)
+                    {
+                        if(t[1]<s->hitag)
+                            s->ang+=8;
+                        else if(t[1]<(s->hitag*3))
+                            s->ang-=8;
+                        else if(t[1] < (s->hitag<<2) )
+                            s->ang+=8;
+                        else
+                        {
+                            t[1]=8;
+                            s->ang+=16;
+                        }
+                    }
+                }
+                goto BOLT;
+        }
+
+
+// #ifndef VOLOMEONE
+        if( ud.multimode < 2 && badguy(s) )
+        {
+            if( actor_tog == 1)
+            {
+                s->cstat = (short)32768;
+                goto BOLT;
+            }
+            else if(actor_tog == 2) s->cstat = 257;
+        }
+// #endif
+
+        p = findplayer(s,&x);
+
+        execute(i,p,x);
+
+        BOLT:
+
+        i = nexti;
+    }
+
+}
+
+
+void moveexplosions(void)  // STATNUM 5
+{
+    short i, j, nexti, sect, p;
+    int l, x, *t;
+    spritetype *s;
+
+    i = headspritestat[5];
+    while(i >= 0)
+    {
+        nexti = nextspritestat[i
