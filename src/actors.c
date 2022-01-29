@@ -4137,4 +4137,32 @@ void moveactors(void)
                     {
                         case 3:
                             //Turn on all of those flashing sectoreffector.
-                
+                            hitradius( i, 4096,
+                                       impact_damage<<2,
+                                       impact_damage<<2,
+                                       impact_damage<<2,
+                                       impact_damage<<2 );
+/*
+                            j = headspritestat[3];
+                            while(j>=0)
+                            {
+                                if( sprite[j].lotag  == 3 )
+                                    hittype[j].temp_data[4]=1;
+                                else if(sprite[j].lotag == 12)
+                                {
+                                    hittype[j].temp_data[4] = 1;
+                                    sprite[j].lotag = 3;
+                                    sprite[j].owner = 0;
+                                    hittype[j].temp_data[0] = s->shade;
+                                }
+                                j = nextspritestat[j];
+                            }
+*/
+                            j = headspritestat[6];
+                            while(j >= 0)
+                            {
+                                if(sprite[j].picnum == MASTERSWITCH)
+                                    if(sprite[j].hitag == s->hitag)
+                                        if(sprite[j].yvel == 0)
+                                            sprite[j].yvel = 1;
+                        
