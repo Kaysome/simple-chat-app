@@ -4274,4 +4274,55 @@ void moveexplosions(void)  // STATNUM 5
     i = headspritestat[5];
     while(i >= 0)
     {
-        nexti = nextspritestat[i
+        nexti = nextspritestat[i];
+
+        t = &hittype[i].temp_data[0];
+        s = &sprite[i];
+        sect = s->sectnum;
+
+        if( sect < 0 || s->xrepeat == 0 ) KILLIT(i);
+
+        hittype[i].bposx = s->x;
+        hittype[i].bposy = s->y;
+        hittype[i].bposz = s->z;
+
+        switch(s->picnum)
+        {
+            case NEON1:
+            case NEON2:
+            case NEON3:
+            case NEON4:
+            case NEON5:
+            case NEON6:
+
+                if( (global_random/(s->lotag+1)&31) > 4) s->shade = -127;
+                else s->shade = 127;
+                goto BOLT;
+
+            case BLOODSPLAT1:
+            case BLOODSPLAT2:
+            case BLOODSPLAT3:
+            case BLOODSPLAT4:
+
+                if( t[0] == 7*26 ) goto BOLT;
+                s->z += 16+(TRAND&15);
+                t[0]++;
+                if( (t[0]%9) == 0 ) s->yrepeat++;
+                goto BOLT;
+
+            case NUKEBUTTON:
+            case NUKEBUTTON+1:
+            case NUKEBUTTON+2:
+            case NUKEBUTTON+3:
+
+                if(t[0])
+                {
+                    t[0]++;
+                    if(t[0] == 8) s->picnum = NUKEBUTTON+1;
+                    else if(t[0] == 16)
+                    {
+                        s->picnum = NUKEBUTTON+2;
+                        ps[sprite[s->owner].yvel].fist_incs = 1;
+                    }
+                    if( ps[sprite[s->owner].yvel].fist_incs == 26 )
+                        
