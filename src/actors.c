@@ -4165,4 +4165,52 @@ void moveactors(void)
                                     if(sprite[j].hitag == s->hitag)
                                         if(sprite[j].yvel == 0)
                                             sprite[j].yvel = 1;
-                        
+                                j = nextspritestat[j];
+                            }
+                            break;
+
+                        case 4:
+                        case 7:
+                        case 10:
+                        case 15:
+                            j = headspritesect[sect];
+                            while(j >= 0)
+                            {
+                                l = nextspritesect[j];
+
+                                if(j != i)
+                                {
+                                    deletesprite(j);
+                                    break;
+                                }
+                                j = l;
+                            }
+                            break;
+                    }
+                    for(x=0;x<16;x++)
+                        RANDOMSCRAP;
+
+                    s->z = t[4];
+                    t[4] = 0;
+
+                }
+                else
+                {
+                    IFHIT
+                    {
+                        for(x=0;x<32;x++)
+                            RANDOMSCRAP;
+                        if(s->extra < 0)
+                            t[1] = 1;
+                    }
+                }
+                goto BOLT;
+
+            case CAMERA1:
+
+                if( t[0] == 0 )
+                {
+                    t[1]+=8;
+                    if(camerashitable)
+                    {
+                        IFHIT
