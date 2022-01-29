@@ -4424,4 +4424,52 @@ void moveexplosions(void)  // STATNUM 5
                     ps[p].pals_time = 32;
                     ps[p].pals[0] = 32;
                     ps[p].pals[1] = 0;
-           
+                    ps[p].pals[2] = 0;
+                    sprite[ps[p].i].extra -= 4;
+                }
+                // fall through
+
+            case FIRELASER:
+                if(s->extra != 999)
+                    s->extra = 999;
+                else KILLIT(i);
+                break;
+            case TONGUE:
+                KILLIT(i);
+            case MONEY+1:
+            case MAIL+1:
+            case PAPER+1:
+                hittype[i].floorz = s->z = getflorzofslope(s->sectnum,s->x,s->y);
+                break;
+            case MONEY:
+            case MAIL:
+            case PAPER:
+
+                s->xvel = (TRAND&7)+(sintable[T1&2047]>>9);
+                T1 += (TRAND&63);
+                if( (T1&2047) > 512 && (T1&2047) < 1596)
+                {
+                    if(sector[sect].lotag == 2)
+                    {
+                        if(s->zvel < 64)
+                            s->zvel += (gc>>5)+(TRAND&7);
+                    }
+                    else
+                        if(s->zvel < 144)
+                            s->zvel += (gc>>5)+(TRAND&7);
+                }
+
+                ssp(i,CLIPMASK0);
+
+                if( (TRAND&3) == 0 )
+                    setsprite(i,s->x,s->y,s->z);
+
+                if(s->sectnum == -1) KILLIT(i);
+                l = getflorzofslope(s->sectnum,s->x,s->y);
+
+                if( s->z > l )
+                {
+                    s->z = l;
+
+                    insertspriteq(i);
+                    PN
