@@ -4377,4 +4377,51 @@ void moveexplosions(void)  // STATNUM 5
                 {
                     if(sector[sect].lotag != 1 && sector[sect].lotag != 2)
                         KILLIT(i);
-/*                
+/*                    else
+                    {
+                        l = getflorzofslope(sect,s->x,s->y)-s->z;
+                        if( l > (16<<8) ) KILLIT(i);
+                    }
+                    else */ if (!issoundplaying(ITEM_SPLASH, 1))
+                        spritesound(ITEM_SPLASH,i);
+                }
+                if(t[0] == 3)
+                {
+                    t[0] = 0;
+                    t[1]++;
+                }
+                if(t[1] == 5)
+                    deletesprite(i);
+                goto BOLT;
+
+            case FRAMEEFFECT1_13:
+                if (PLUTOPAK) goto BOLT;    // JBF: ideally this should never happen...
+                // fall through
+            case FRAMEEFFECT1:
+
+                if(s->owner >= 0)
+                {
+                    t[0]++;
+
+                    if( t[0] > 7 )
+                    {
+                        KILLIT(i);
+                    }
+                    else if( t[0] > 4 )
+                        s->cstat |= 512+2;
+                    else if( t[0] > 2 )
+                        s->cstat |= 2;
+                    s->xoffset = sprite[s->owner].xoffset;
+                    s->yoffset = sprite[s->owner].yoffset;
+                }
+                goto BOLT;
+            case INNERJAW:
+            case INNERJAW+1:
+
+                p = findplayer(s,&x);
+                if(x < 512)
+                {
+                    ps[p].pals_time = 32;
+                    ps[p].pals[0] = 32;
+                    ps[p].pals[1] = 0;
+           
