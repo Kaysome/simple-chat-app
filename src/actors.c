@@ -4472,4 +4472,58 @@ void moveexplosions(void)  // STATNUM 5
                     s->z = l;
 
                     insertspriteq(i);
-                    PN
+                    PN ++;
+
+                    j = headspritestat[5];
+                    while(j >= 0)
+                    {
+                        if(sprite[j].picnum == BLOODPOOL)
+                            if(ldist(s,&sprite[j]) < 348)
+                        {
+                            s->pal = 2;
+                            break;
+                        }
+                        j = nextspritestat[j];
+                    }
+                }
+
+                break;
+
+            case JIBS1:
+            case JIBS2:
+            case JIBS3:
+            case JIBS4:
+            case JIBS5:
+            case JIBS6:
+            case HEADJIB1:
+            case ARMJIB1:
+            case LEGJIB1:
+            case LIZMANHEAD1:
+            case LIZMANARM1:
+            case LIZMANLEG1:
+            case DUKETORSO:
+            case DUKEGUN:
+            case DUKELEG:
+
+                if(s->xvel > 0) s->xvel--;
+                else s->xvel = 0;
+
+                if( t[5] < 30*10 )
+                    t[5]++;
+                else { KILLIT(i); }
+
+
+                if(s->zvel > 1024 && s->zvel < 1280)
+                {
+                    setsprite(i,s->x,s->y,s->z);
+                    sect = s->sectnum;
+                }
+
+                l = getflorzofslope(sect,s->x,s->y);
+                x = getceilzofslope(sect,s->x,s->y);
+                if(x == l || sect < 0 || sect >= MAXSECTORS) KILLIT(i);
+
+                if( s->z < l-(2<<8) )
+                {
+                    if(t[1] < 2) t[1]++;
+   
