@@ -4526,4 +4526,44 @@ void moveexplosions(void)  // STATNUM 5
                 if( s->z < l-(2<<8) )
                 {
                     if(t[1] < 2) t[1]++;
-   
+                    else if(sector[sect].lotag != 2)
+                    {
+                        t[1] = 0;
+                        if( s->picnum == DUKELEG || s->picnum == DUKETORSO || s->picnum == DUKEGUN )
+                        {
+                            if(t[0] > 6) t[0] = 0;
+                            else t[0]++;
+                        }
+                        else
+                        {
+                            if(t[0] > 2)
+                                t[0] = 0;
+                            else t[0]++;
+                        }
+                    }
+
+                    if(s->zvel < 6144)
+                    {
+                        if(sector[sect].lotag == 2)
+                        {
+                            if(s->zvel < 1024)
+                                s->zvel += 48;
+                            else s->zvel = 1024;
+                        }
+                        else s->zvel += gc-50;
+                    }
+
+                    s->x += (s->xvel*sintable[(s->ang+512)&2047])>>14;
+                    s->y += (s->xvel*sintable[s->ang&2047])>>14;
+                    s->z += s->zvel;
+
+                }
+                else
+                {
+                    if(t[2] == 0)
+                    {
+                        if( s->sectnum == -1) { KILLIT(i); }
+                        if( (sector[s->sectnum].floorstat&2) ) { KILLIT(i); }
+                        t[2]++;
+                    }
+                    l = getflorzofslope(s->sectnum,s->x,s->
