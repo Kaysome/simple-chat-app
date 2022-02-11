@@ -4566,4 +4566,52 @@ void moveexplosions(void)  // STATNUM 5
                         if( (sector[s->sectnum].floorstat&2) ) { KILLIT(i); }
                         t[2]++;
                     }
-                    l = getflorzofslope(s->sectnum,s->x,s->
+                    l = getflorzofslope(s->sectnum,s->x,s->y);
+
+                    s->z = l-(2<<8);
+                    s->xvel = 0;
+
+                    if(s->picnum == JIBS6)
+                    {
+                        t[1]++;
+                        if( (t[1]&3) == 0 && t[0] < 7)
+                            t[0]++;
+                        if(t[1] > 20) KILLIT(i);
+                    }
+                    else { s->picnum = JIBS6; t[0] = 0; t[1] = 0; }
+                }
+                goto BOLT;
+
+            case BLOODPOOL:
+            case PUKE:
+
+                if(t[0] == 0)
+                {
+                    t[0] = 1;
+                    if(sector[sect].floorstat&2) { KILLIT(i); }
+                    else insertspriteq(i);
+                }
+
+                makeitfall(i);
+
+                p = findplayer(s,&x);
+
+                s->z = hittype[i].floorz-(FOURSLEIGHT);
+
+                if(t[2] < 32)
+                {
+                    t[2]++;
+                    if(hittype[i].picnum == TIRE)
+                    {
+                        if(s->xrepeat < 64 && s->yrepeat < 64)
+                        {
+                            s->xrepeat += TRAND&3;
+                            s->yrepeat += TRAND&3;
+                        }
+                    }
+                    else
+                    {
+                        if(s->xrepeat < 32 && s->yrepeat < 32)
+                        {
+                            s->xrepeat += TRAND&3;
+                            
