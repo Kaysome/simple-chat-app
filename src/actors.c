@@ -4614,4 +4614,47 @@ void moveexplosions(void)  // STATNUM 5
                         if(s->xrepeat < 32 && s->yrepeat < 32)
                         {
                             s->xrepeat += TRAND&3;
-                            
+                            s->yrepeat += TRAND&3;
+                        }
+                    }
+                }
+
+                if(x < 844 && s->xrepeat > 6 && s->yrepeat > 6)
+                {
+                    if( s->pal == 0 && (TRAND&255) < 16 && s->picnum != PUKE)
+                    {
+                        if(ps[p].boot_amount > 0)
+                            ps[p].boot_amount--;
+                        else
+                        {
+                            if(!isspritemakingsound(ps[p].i,DUKE_LONGTERM_PAIN))
+                                spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
+                            sprite[ps[p].i].extra --;
+                            ps[p].pals_time = 32;
+                            ps[p].pals[0] = 16;
+                            ps[p].pals[1] = 0;
+                            ps[p].pals[2] = 0;
+                        }
+                    }
+
+                    if(t[1] == 1) goto BOLT;
+                    t[1] = 1;
+
+                    if(hittype[i].picnum == TIRE)
+                        ps[p].footprintcount = 10;
+                    else ps[p].footprintcount = 3;
+
+                    ps[p].footprintpal = s->pal;
+                    ps[p].footprintshade = s->shade;
+
+                    if(t[2] == 32)
+                    {
+                        s->xrepeat -= 6;
+                        s->yrepeat -= 6;
+                    }
+                }
+                else t[1] = 0;
+                goto BOLT;
+
+            case BURNING:
+    
