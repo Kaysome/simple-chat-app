@@ -4705,4 +4705,54 @@ void moveexplosions(void)  // STATNUM 5
                         t[0] &= 3;
                     }
                     if(s->zvel < 512) s->zvel += (gc/3); // 52;
-                    if(s->xvel
+                    if(s->xvel > 0)
+                        s->xvel --;
+                    else KILLIT(i);
+                }
+
+                goto BOLT;
+
+            case GLASSPIECES:
+            case GLASSPIECES+1:
+            case GLASSPIECES+2:
+
+                makeitfall(i);
+
+                if(s->zvel > 4096) s->zvel = 4096;
+                if(sect < 0) KILLIT(i);
+
+                if( s->z == hittype[i].floorz-(FOURSLEIGHT) && t[0] < 3)
+                {
+                    s->zvel = -((3-t[0])<<8)-(TRAND&511);
+                    if(sector[sect].lotag == 2)
+                        s->zvel >>= 1;
+                    s->xrepeat >>= 1;
+                    s->yrepeat >>= 1;
+                    if( rnd(96) )
+                      setsprite(i,s->x,s->y,s->z);
+                    t[0]++;//Number of bounces
+                }
+                else if( t[0] == 3 ) KILLIT(i);
+
+                if(s->xvel > 0)
+                {
+                    s->xvel -= 2;
+                    s->cstat = ((s->xvel&3)<<2);
+                }
+                else s->xvel = 0;
+
+                ssp(i,CLIPMASK0);
+
+                goto BOLT;
+        }
+
+        IFWITHIN(SCRAP6,SCRAP5+3)
+        {
+                if(s->xvel > 0)
+                    s->xvel--;
+                else s->xvel = 0;
+
+                if(s->zvel > 1024 && s->zvel < 1280)
+                {
+                    setsprite(i,s->x,s->y,s->z);
+                    sect = s->
