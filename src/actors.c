@@ -4657,4 +4657,52 @@ void moveexplosions(void)  // STATNUM 5
                 goto BOLT;
 
             case BURNING:
-    
+            case BURNING2:
+            case FECES:
+            case WATERBUBBLE:
+            case SMALLSMOKE:
+            case EXPLOSION2:
+            case SHRINKEREXPLOSION:
+            case EXPLOSION2BOT:
+            case BLOOD:
+            case LASERSITE:
+            case FORCERIPPLE:
+            case TRANSPORTERSTAR:
+            case TRANSPORTERBEAM:
+                p = findplayer(s,&x);
+                execute(i,p,x);
+                goto BOLT;
+
+            case SHELL:
+            case SHOTGUNSHELL:
+
+                ssp(i,CLIPMASK0);
+
+                if(sect < 0 || ( sector[sect].floorz+(24<<8) ) < s->z ) KILLIT(i);
+
+                if(sector[sect].lotag == 2)
+                {
+                    t[1]++;
+                    if(t[1] > 8)
+                    {
+                        t[1] = 0;
+                        t[0]++;
+                        t[0] &= 3;
+                    }
+                    if(s->zvel < 128) s->zvel += (gc/13); // 8
+                    else s->zvel -= 64;
+                    if(s->xvel > 0)
+                        s->xvel -= 4;
+                    else s->xvel = 0;
+                }
+                else
+                {
+                    t[1]++;
+                    if(t[1] > 3)
+                    {
+                        t[1] = 0;
+                        t[0]++;
+                        t[0] &= 3;
+                    }
+                    if(s->zvel < 512) s->zvel += (gc/3); // 52;
+                    if(s->xvel
