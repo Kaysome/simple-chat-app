@@ -4805,4 +4805,59 @@ void moveexplosions(void)  // STATNUM 5
 void moveeffectors(void)   //STATNUM 3
 {
     int q=0, l, m, x, st, j, *t;
-    s
+    short i, k, nexti, nextk, p, sh, nextj;
+    spritetype *s;
+    sectortype *sc;
+    walltype *wal;
+
+    fricxv = fricyv = 0;
+
+    i = headspritestat[3];
+    while(i >= 0)
+    {
+        nexti = nextspritestat[i];
+        s = &sprite[i];
+
+        sc = &sector[s->sectnum];
+        st = s->lotag;
+        sh = s->hitag;
+
+        t = &hittype[i].temp_data[0];
+
+        switch(st)
+        {
+            case 0:
+            {
+                int zchange = 0;
+
+                zchange = 0;
+
+                j = s->owner;
+
+                if( sprite[j].lotag == (short) 65535 )
+                    KILLIT(i);
+
+                q = sc->extra>>3;
+                l = 0;
+
+                if(sc->lotag == 30)
+                {
+                    q >>= 2;
+
+                    if( sprite[i].extra == 1 )
+                    {
+                        if(hittype[i].tempang < 256)
+                        {
+                            hittype[i].tempang += 4;
+                            if(hittype[i].tempang >= 256)
+                                callsound(s->sectnum,i);
+                            if(s->clipdist) l = 1;
+                            else l = -1;
+                        }
+                        else hittype[i].tempang = 256;
+
+                        if( sc->floorz > s->z ) //z's are touching
+                        {
+                            sc->floorz -= 512;
+                            zchange = -512;
+       
