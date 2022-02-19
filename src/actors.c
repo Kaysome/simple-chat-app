@@ -4755,4 +4755,54 @@ void moveexplosions(void)  // STATNUM 5
                 if(s->zvel > 1024 && s->zvel < 1280)
                 {
                     setsprite(i,s->x,s->y,s->z);
-                    sect = s->
+                    sect = s->sectnum;
+                }
+
+                if( s->z < sector[sect].floorz-(2<<8) )
+                {
+                    if(t[1] < 1) t[1]++;
+                    else
+                    {
+                        t[1] = 0;
+
+                        if(s->picnum < SCRAP6+8)
+                        {
+                            if(t[0] > 6)
+                                t[0] = 0;
+                            else t[0]++;
+                        }
+                        else
+                        {
+                            if(t[0] > 2)
+                                t[0] = 0;
+                            else t[0]++;
+                        }
+                    }
+                    if(s->zvel < 4096) s->zvel += gc-50;
+                    s->x += (s->xvel*sintable[(s->ang+512)&2047])>>14;
+                    s->y += (s->xvel*sintable[s->ang&2047])>>14;
+                    s->z += s->zvel;
+                }
+                else
+                {
+                    if(s->picnum == SCRAP1 && s->yvel > 0)
+                    {
+                        j = spawn(i,s->yvel);
+                        setsprite(j,s->x,s->y,s->z);
+                        getglobalz(j);
+                        sprite[j].hitag = sprite[j].lotag = 0;
+                    }
+                    KILLIT(i);
+                }
+                goto BOLT;
+        }
+
+        BOLT:
+        i = nexti;
+    }
+}
+
+void moveeffectors(void)   //STATNUM 3
+{
+    int q=0, l, m, x, st, j, *t;
+    s
