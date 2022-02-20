@@ -4982,4 +4982,47 @@ void moveeffectors(void)   //STATNUM 3
             }
 
             break;
-            case 1: //Nothing for now 
+            case 1: //Nothing for now used as the pivot
+                if(s->owner == -1) //Init
+                {
+                    s->owner = i;
+
+                    j = headspritestat[3];
+                    while(j >= 0)
+                    {
+                        if( sprite[j].lotag == 19 && sprite[j].hitag == sh )
+                        {
+                            t[0] = 0;
+                            break;
+                        }
+                        j = nextspritestat[j];
+                    }
+                }
+
+                break;
+            case 6:
+                k = sc->extra;
+
+                if(t[4] > 0)
+                {
+                    t[4]--;
+                    if( t[4] >= (k-(k>>3)) )
+                        s->xvel -= (k>>5);
+                    if( t[4] > ((k>>1)-1) && t[4] < (k-(k>>3)) )
+                        s->xvel = 0;
+                    if( t[4] < (k>>1) )
+                        s->xvel += (k>>5);
+                    if( t[4] < ((k>>1)-(k>>3)) )
+                    {
+                        t[4] = 0;
+                        s->xvel = k;
+                    }
+                }
+                else s->xvel = k;
+
+                j = headspritestat[3];
+                while( j >= 0)
+                {
+                    if( (sprite[j].lotag == 14) && (sh == sprite[j].hitag) && (hittype[j].temp_data[0] == t[0]) )
+                    {
+                        sprite[j].xvel =
