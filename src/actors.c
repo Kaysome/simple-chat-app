@@ -4896,4 +4896,45 @@ void moveeffectors(void)   //STATNUM 3
                         {
                             sc->floorz += 512;
                             zchange = 512;
-              
+                            if( sc->floorz > T4 )
+                                sc->floorz = T4;
+                        }
+                    }
+
+                    s->ang += (l*q);
+                    t[2] += (l*q);
+                }
+                else
+                {
+                    if( hittype[j].temp_data[0] == 0 ) break;
+                    if( hittype[j].temp_data[0] == 2 ) KILLIT(i);
+
+                    if( sprite[j].ang > 1024 )
+                        l = -1;
+                    else l = 1;
+                    if( t[3] == 0 )
+                        t[3] = ldist(s,&sprite[j]);
+                    s->xvel = t[3];
+                    s->x = sprite[j].x;
+                    s->y = sprite[j].y;
+                    s->ang += (l*q);
+                    t[2] += (l*q);
+                }
+
+                if( l && (sc->floorstat&64) )
+                {
+                    for(p=connecthead;p>=0;p=connectpoint2[p])
+                    {
+                        if( ps[p].cursectnum == s->sectnum && ps[p].on_ground == 1)
+                        {
+
+                            ps[p].ang += (l*q);
+                            ps[p].ang &= 2047;
+
+                            ps[p].posz += zchange;
+
+                            rotatepoint( sprite[j].x,sprite[j].y,
+                                ps[p].posx,ps[p].posy,(q*l),
+                                &m,&x);
+
+                            ps[p].bobposx += m-ps[p].pos
