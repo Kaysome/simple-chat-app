@@ -4860,4 +4860,40 @@ void moveeffectors(void)   //STATNUM 3
                         {
                             sc->floorz -= 512;
                             zchange = -512;
-       
+                            if( sc->floorz < s->z )
+                                sc->floorz = s->z;
+                        }
+
+                        else if( sc->floorz < s->z ) //z's are touching
+                        {
+                            sc->floorz += 512;
+                            zchange = 512;
+                            if( sc->floorz > s->z )
+                                sc->floorz = s->z;
+                        }
+                    }
+                    else if(sprite[i].extra == 3)
+                    {
+                        if(hittype[i].tempang > 0)
+                        {
+                            hittype[i].tempang -= 4;
+                            if(hittype[i].tempang <= 0)
+                                callsound(s->sectnum,i);
+                            if( s->clipdist ) l = -1;
+                            else l = 1;
+                        }
+                        else hittype[i].tempang = 0;
+
+                        if( sc->floorz > T4 ) //z's are touching
+                        {
+                            sc->floorz -= 512;
+                            zchange = -512;
+                            if( sc->floorz < T4 )
+                                sc->floorz = T4;
+                        }
+
+                        else if( sc->floorz < T4 ) //z's are touching
+                        {
+                            sc->floorz += 512;
+                            zchange = 512;
+              
