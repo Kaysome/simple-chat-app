@@ -4937,4 +4937,49 @@ void moveeffectors(void)   //STATNUM 3
                                 ps[p].posx,ps[p].posy,(q*l),
                                 &m,&x);
 
-                            ps[p].bobposx += m-ps[p].pos
+                            ps[p].bobposx += m-ps[p].posx;
+                            ps[p].bobposy += x-ps[p].posy;
+
+                            ps[p].posx = m;
+                            ps[p].posy = x;
+
+                            if(sprite[ps[p].i].extra <= 0)
+                            {
+                                sprite[ps[p].i].x = m;
+                                sprite[ps[p].i].y = x;
+                            }
+                        }
+                    }
+
+                    p = headspritesect[s->sectnum];
+                    while(p >= 0)
+                    {
+                        if(sprite[p].statnum != 3 && sprite[p].statnum != 4)
+                            if( sprite[p].picnum != LASERLINE )
+                        {
+                            if(sprite[p].picnum == APLAYER && sprite[p].owner >= 0)
+                            {
+                                p = nextspritesect[p];
+                                continue;
+                            }
+
+                            sprite[p].ang += (l*q);
+                            sprite[p].ang &= 2047;
+
+                            sprite[p].z += zchange;
+
+                            rotatepoint(sprite[j].x,sprite[j].y,
+                                sprite[p].x,sprite[p].y,(q*l),
+                                &sprite[p].x,&sprite[p].y);
+
+                        }
+                        p = nextspritesect[p];
+                    }
+
+                }
+
+                ms(i);
+            }
+
+            break;
+            case 1: //Nothing for now 
