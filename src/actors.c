@@ -5063,4 +5063,41 @@ void moveeffectors(void)   //STATNUM 3
                     t[3]++;
                     s->owner = LocateTheLocator(t[3],t[0]);
                     if(s->owner==-1)
-      
+                    {
+                        t[3]=0;
+                        s->owner = LocateTheLocator(0,t[0]);
+                    }
+                }
+
+                if(s->xvel)
+                {
+                    x = getangle(sprite[s->owner].x-s->x,sprite[s->owner].y-s->y);
+                    q = getincangle(s->ang,x)>>3;
+
+                    t[2] += q;
+                    s->ang += q;
+
+                    if(s->xvel == sc->extra )
+                    {
+                        if( (sc->floorstat&1) == 0 && (sc->ceilingstat&1) == 0 )
+                        {
+                            if( !issoundplaying(hittype[i].lastvx, 1) )
+                                spritesound(hittype[i].lastvx,i);
+                        }
+                        else if( ud.monsters_off == 0 && sc->floorpal == 0 && (sc->floorstat&1) && rnd(8) )
+                        {
+                            p = findplayer(s,&x);
+                            if(x < 20480)
+                            {
+                                j = s->ang;
+                                s->ang = getangle(s->x-ps[p].posx,s->y-ps[p].posy);
+                                shoot(i,RPG);
+                                s->ang = j;
+                            }
+                        }
+                    }
+
+                    if(s->xvel <= 64 && (sc->floorstat&1) == 0 && (sc->ceilingstat&1) == 0 )
+                        stopspritesound(hittype[i].lastvx,i);
+
+              
