@@ -5133,4 +5133,41 @@ void moveeffectors(void)   //STATNUM 3
                         }
 
                         if(s->sectnum == sprite[ps[p].i].sectnum)
-                
+                        {
+                            rotatepoint(s->x,s->y,ps[p].posx,ps[p].posy,q,&ps[p].posx,&ps[p].posy);
+
+                            ps[p].posx += m;
+                            ps[p].posy += x;
+
+                            ps[p].bobposx += m;
+                            ps[p].bobposy += x;
+
+                            ps[p].ang += q;
+
+                            if(numplayers > 1)
+                            {
+                                ps[p].oposx = ps[p].posx;
+                                ps[p].oposy = ps[p].posy;
+                            }
+                            if( sprite[ps[p].i].extra <= 0 )
+                            {
+                                sprite[ps[p].i].x = ps[p].posx;
+                                sprite[ps[p].i].y = ps[p].posy;
+                            }
+                        }
+                    }
+                    j = headspritesect[s->sectnum];
+                    while(j >= 0)
+                    {
+                        if (sprite[j].statnum != 10 && sector[sprite[j].sectnum].lotag != 2 && sprite[j].picnum != SECTOREFFECTOR && sprite[j].picnum != LOCATORS )
+                        {
+                            rotatepoint(s->x,s->y,
+                                sprite[j].x,sprite[j].y,q,
+                                &sprite[j].x,&sprite[j].y);
+
+                            sprite[j].x+= m;
+                            sprite[j].y+= x;
+
+                            sprite[j].ang+=q;
+
+                            if(
