@@ -5100,4 +5100,37 @@ void moveeffectors(void)   //STATNUM 3
                     if(s->xvel <= 64 && (sc->floorstat&1) == 0 && (sc->ceilingstat&1) == 0 )
                         stopspritesound(hittype[i].lastvx,i);
 
-              
+                    if( (sc->floorz-sc->ceilingz) < (108<<8) )
+                    {
+                        if(ud.clipping == 0 && s->xvel >= 192)
+                            for(p=connecthead;p>=0;p=connectpoint2[p])
+                                if(sprite[ps[p].i].extra > 0)
+                        {
+                            k = ps[p].cursectnum;
+                            updatesector(ps[p].posx,ps[p].posy,&k);
+                            if( ( k == -1 && ud.clipping == 0 ) || ( k == s->sectnum && ps[p].cursectnum != s->sectnum ) )
+                            {
+                                ps[p].posx = s->x;
+                                ps[p].posy = s->y;
+                                ps[p].cursectnum = s->sectnum;
+
+                                setsprite(ps[p].i,s->x,s->y,s->z);
+                                quickkill(&ps[p]);
+                            }
+                        }
+                    }
+
+                    m = (s->xvel*sintable[(s->ang+512)&2047])>>14;
+                    x = (s->xvel*sintable[s->ang&2047])>>14;
+
+                    for(p = connecthead;p >= 0;p=connectpoint2[p])
+                       if(sector[ps[p].cursectnum].lotag != 2)
+                    {
+                        if(po[p].os == s->sectnum)
+                        {
+                            po[p].ox += m;
+                            po[p].oy += x;
+                        }
+
+                        if(s->sectnum == sprite[ps[p].i].sectnum)
+                
