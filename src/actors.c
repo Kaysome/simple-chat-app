@@ -5025,4 +5025,42 @@ void moveeffectors(void)   //STATNUM 3
                 {
                     if( (sprite[j].lotag == 14) && (sh == sprite[j].hitag) && (hittype[j].temp_data[0] == t[0]) )
                     {
-                        sprite[j].xvel =
+                        sprite[j].xvel = s->xvel;
+//                        if( t[4] == 1 )
+                        {
+                            if(hittype[j].temp_data[5] == 0)
+                                hittype[j].temp_data[5] = dist(&sprite[j],s);
+                            x = ksgn( dist(&sprite[j],s)-hittype[j].temp_data[5] );
+                            if(sprite[j].extra)
+                                x = -x;
+                            s->xvel += x;
+                        }
+                        hittype[j].temp_data[4] = t[4];
+                    }
+                    j = nextspritestat[j];
+                }
+                x = 0;
+                // fall through
+
+
+            case 14:
+                if(s->owner==-1)
+                    s->owner = LocateTheLocator((short)t[3],(short)t[0]);
+
+                if(s->owner == -1)
+                {
+                    Bsprintf(buf,"Could not find any locators for SE# 6 and 14 with a hitag of %d.\n",t[3]);
+                    gameexit(buf);
+                }
+
+                j = ldist(&sprite[s->owner],s);
+
+                if( j < 1024L )
+                {
+                    if(st==6)
+                        if(sprite[s->owner].hitag&1)
+                            t[4]=sc->extra; //Slow it down
+                    t[3]++;
+                    s->owner = LocateTheLocator(t[3],t[0]);
+                    if(s->owner==-1)
+      
