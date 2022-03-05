@@ -5205,4 +5205,41 @@ void moveeffectors(void)   //STATNUM 3
                         while(j >= 0)
                         {
                             l = nextspritesect[j];
-   
+                            if (sprite[j].statnum == 1 && badguy(&sprite[j]) && sprite[j].picnum != SECTOREFFECTOR && sprite[j].picnum != LOCATORS )
+                            {
+                                k = sprite[j].sectnum;
+                                updatesector(sprite[j].x,sprite[j].y,&k);
+                                if( sprite[j].extra >= 0 && k == s->sectnum )
+                                {
+                                    gutsdir(&sprite[j],JIBS6,72,myconnectindex);
+                                    spritesound(SQUISHED,i);
+                                    deletesprite(j);
+                                }
+                            }
+                            j = l;
+                        }
+                    }
+                }
+
+                break;
+
+            case 30:
+                if(s->owner == -1)
+                {
+                    t[3] = !t[3];
+                    s->owner = LocateTheLocator(t[3],t[0]);
+                }
+                else
+                {
+
+                    if(t[4] == 1) // Starting to go
+                    {
+                        if( ldist( &sprite[s->owner],s ) < (2048-128) )
+                            t[4] = 2;
+                        else
+                        {
+                            if(s->xvel == 0)
+                                operateactivators(s->hitag+(!t[3]),-1);
+                            if(s->xvel < 256)
+                                s->xvel += 16;
+                        
