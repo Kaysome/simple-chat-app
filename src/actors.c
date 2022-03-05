@@ -5170,4 +5170,39 @@ void moveeffectors(void)   //STATNUM 3
 
                             sprite[j].ang+=q;
 
-                            if(
+                            if(numplayers > 1)
+                            {
+                                hittype[j].bposx = sprite[j].x;
+                                hittype[j].bposy = sprite[j].y;
+                            }
+                        }
+                        j = nextspritesect[j];
+                    }
+
+                    ms(i);
+                    setsprite(i,s->x,s->y,s->z);
+
+                    if( (sc->floorz-sc->ceilingz) < (108<<8) )
+                    {
+                        if(ud.clipping == 0 && s->xvel >= 192)
+                            for(p=connecthead;p>=0;p=connectpoint2[p])
+                                if(sprite[ps[p].i].extra > 0)
+                        {
+                            k = ps[p].cursectnum;
+                            updatesector(ps[p].posx,ps[p].posy,&k);
+                            if( ( k == -1 && ud.clipping == 0 ) || ( k == s->sectnum && ps[p].cursectnum != s->sectnum ) )
+                            {
+                                ps[p].oposx = ps[p].posx = s->x;
+                                ps[p].oposy = ps[p].posy = s->y;
+                                ps[p].cursectnum = s->sectnum;
+
+                                setsprite(ps[p].i,s->x,s->y,s->z);
+                                quickkill(&ps[p]);
+                            }
+                        }
+
+                        j = headspritesect[sprite[OW].sectnum];
+                        while(j >= 0)
+                        {
+                            l = nextspritesect[j];
+   
