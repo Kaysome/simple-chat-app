@@ -5355,4 +5355,34 @@ void moveeffectors(void)   //STATNUM 3
                         if(ud.clipping == 0)
                             for(p=connecthead;p>=0;p=connectpoint2[p])
                                 if(sprite[ps[p].i].extra > 0)
-            
+                        {
+                            k = ps[p].cursectnum;
+                            updatesector(ps[p].posx,ps[p].posy,&k);
+                            if( ( k == -1 && ud.clipping == 0 ) || ( k == s->sectnum && ps[p].cursectnum != s->sectnum ) )
+                            {
+                                ps[p].posx = s->x;
+                                ps[p].posy = s->y;
+
+                                ps[p].oposx = ps[p].posx;
+                                ps[p].oposy = ps[p].posy;
+
+                                ps[p].cursectnum = s->sectnum;
+
+                                setsprite(ps[p].i,s->x,s->y,s->z);
+                                quickkill(&ps[p]);
+                            }
+                        }
+
+                        j = headspritesect[sprite[OW].sectnum];
+                        while(j >= 0)
+                        {
+                            l = nextspritesect[j];
+                            if (sprite[j].statnum == 1 && badguy(&sprite[j]) && sprite[j].picnum != SECTOREFFECTOR && sprite[j].picnum != LOCATORS )
+                            {
+            //                    if(sprite[j].sectnum != s->sectnum)
+                                {
+                                    k = sprite[j].sectnum;
+                                    updatesector(sprite[j].x,sprite[j].y,&k);
+                                    if( sprite[j].extra >= 0 && k == s->sectnum )
+                                    {
+                              
