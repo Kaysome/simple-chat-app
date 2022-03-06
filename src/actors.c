@@ -5317,4 +5317,42 @@ void moveeffectors(void)   //STATNUM 3
                             ps[p].bobposy += x;
                         }
 
-                        if( po[
+                        if( po[p].os == s->sectnum )
+                        {
+                            po[p].ox += l;
+                            po[p].oy += x;
+                        }
+                    }
+
+                    j = headspritesect[s->sectnum];
+                    while(j >= 0)
+                    {
+                        if(sprite[j].picnum != SECTOREFFECTOR && sprite[j].picnum != LOCATORS )
+                        {
+                            if(numplayers < 2)
+                            {
+                                hittype[j].bposx = sprite[j].x;
+                                hittype[j].bposy = sprite[j].y;
+                            }
+
+                            sprite[j].x += l;
+                            sprite[j].y += x;
+
+                            if(numplayers > 1)
+                            {
+                                hittype[j].bposx = sprite[j].x;
+                                hittype[j].bposy = sprite[j].y;
+                            }
+                        }
+                        j = nextspritesect[j];
+                    }
+
+                    ms(i);
+                    setsprite(i,s->x,s->y,s->z);
+
+                    if( (sc->floorz-sc->ceilingz) < (108<<8) )
+                    {
+                        if(ud.clipping == 0)
+                            for(p=connecthead;p>=0;p=connectpoint2[p])
+                                if(sprite[ps[p].i].extra > 0)
+            
