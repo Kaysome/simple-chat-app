@@ -5242,4 +5242,44 @@ void moveeffectors(void)   //STATNUM 3
                                 operateactivators(s->hitag+(!t[3]),-1);
                             if(s->xvel < 256)
                                 s->xvel += 16;
-                        
+                        }
+                    }
+                    if(t[4] == 2)
+                    {
+                        l = FindDistance2D(sprite[s->owner].x-s->x,sprite[s->owner].y-s->y);
+
+                        if(l <= 128)
+                            s->xvel = 0;
+
+                        if( s->xvel > 0 )
+                            s->xvel -= 16;
+                        else
+                        {
+                            s->xvel = 0;
+                            operateactivators(s->hitag+(short)t[3],-1);
+                            s->owner = -1;
+                            s->ang += 1024;
+                            t[4] = 0;
+                            operateforcefields(i,s->hitag);
+
+                            j = headspritesect[s->sectnum];
+                            while(j >= 0)
+                            {
+                                if(sprite[j].picnum != SECTOREFFECTOR && sprite[j].picnum != LOCATORS )
+                                {
+                                    hittype[j].bposx = sprite[j].x;
+                                    hittype[j].bposy = sprite[j].y;
+                                }
+                                j = nextspritesect[j];
+                            }
+
+                        }
+                    }
+                }
+
+                if(s->xvel)
+                {
+                    l = (s->xvel*sintable[(s->ang+512)&2047])>>14;
+                    x = (s->xvel*sintable[s->ang&2047])>>14;
+
+                   
