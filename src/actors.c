@@ -5385,4 +5385,53 @@ void moveeffectors(void)   //STATNUM 3
                                     updatesector(sprite[j].x,sprite[j].y,&k);
                                     if( sprite[j].extra >= 0 && k == s->sectnum )
                                     {
-                              
+                                        gutsdir(&sprite[j],JIBS6,24,myconnectindex);
+                                        spritesound(SQUISHED,j);
+                                        deletesprite(j);
+                                    }
+                                }
+
+                            }
+                            j = l;
+                        }
+                    }
+                }
+
+                break;
+
+
+            case 2://Quakes
+                if(t[4] > 0 && t[0] == 0 )
+                {
+                    if( t[4] < sh )
+                        t[4]++;
+                    else t[0] = 1;
+                }
+
+                if(t[0] > 0)
+                {
+                    t[0]++;
+
+                    s->xvel = 3;
+
+                    if(t[0] > 96)
+                    {
+                        t[0] = -1; //Stop the quake
+                        t[4] = -1;
+                        KILLIT(i);
+                    }
+                    else
+                    {
+                        if( (t[0]&31) ==  8 )
+                        {
+                            earthquaketime = 48;
+                            spritesound(EARTHQUAKE,ps[screenpeek].i);
+                        }
+
+                        if( klabs( sc->floorheinum-t[5] ) < 8 )
+                            sc->floorheinum = t[5];
+                        else sc->floorheinum += ( ksgn(t[5]-sc->floorheinum)<<4 );
+                    }
+
+                    m = (s->xvel*sintable[(s->ang+512)&2047])>>14;
+                    x = (
