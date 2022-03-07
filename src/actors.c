@@ -5434,4 +5434,47 @@ void moveeffectors(void)   //STATNUM 3
                     }
 
                     m = (s->xvel*sintable[(s->ang+512)&2047])>>14;
-                    x = (
+                    x = (s->xvel*sintable[s->ang&2047])>>14;
+
+
+                    for(p=connecthead;p>=0;p=connectpoint2[p])
+                        if(ps[p].cursectnum == s->sectnum && ps[p].on_ground)
+                        {
+                            ps[p].posx += m;
+                            ps[p].posy += x;
+
+                            ps[p].bobposx += m;
+                            ps[p].bobposy += x;
+                        }
+
+                    j = headspritesect[s->sectnum];
+                    while(j >= 0)
+                    {
+                        nextj = nextspritesect[j];
+
+                        if (sprite[j].picnum != SECTOREFFECTOR)
+                        {
+                            sprite[j].x+=m;
+                            sprite[j].y+=x;
+                            setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
+                        }
+                        j = nextj;
+                    }
+                    ms(i);
+                    setsprite(i,s->x,s->y,s->z);
+                }
+                break;
+
+            //Flashing sector lights after reactor EXPLOSION2
+
+            case 3:
+
+                if( t[4] == 0 ) break;
+                p = findplayer(s,&x);
+
+            //    if(t[5] > 0) { t[5]--; break; }
+
+                if( (global_random/(sh+1)&31) < 4 && !t[2])
+                {
+             //       t[5] = 4+(global_random&7);
+                    sc->ceilin
