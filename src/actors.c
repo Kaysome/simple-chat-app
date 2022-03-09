@@ -5706,4 +5706,37 @@ void moveeffectors(void)   //STATNUM 3
                             else if(sector[sn].floorshade > hittype[j].temp_data[0])
                                 sector[sn].floorshade = hittype[j].temp_data[0];
 
-           
+                            if(sector[sn].ceilingshade < m)
+                                sector[sn].ceilingshade = m;
+                            else if(sector[sn].ceilingshade > hittype[j].temp_data[1])
+                                sector[sn].ceilingshade = hittype[j].temp_data[1];
+
+                        }
+                        j = nextspritestat[j];
+                    }
+                }
+                break;
+            case 10:
+
+                if( (sc->lotag&0xff) == 27 || ( sc->floorz > sc->ceilingz && (sc->lotag&0xff) != 23 ) || sc->lotag == (short) 32791 )
+                {
+                    j = 1;
+
+                    if( (sc->lotag&0xff) != 27)
+                        for(p=connecthead;p>=0;p=connectpoint2[p])
+                            if( sc->lotag != 30 && sc->lotag != 31 && sc->lotag != 0 )
+                                if(s->sectnum == sprite[ps[p].i].sectnum)
+                                    j = 0;
+
+                    if(j == 1)
+                    {
+                        if(t[0] > sh )
+                            switch(sector[s->sectnum].lotag)
+                            {
+                                case 20:
+                                case 21:
+                                case 22:
+                                case 26:
+                                  if( getanimationgoal(&sector[s->sectnum].ceilingz) >= 0 )
+                                      break;
+   
