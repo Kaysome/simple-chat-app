@@ -5572,4 +5572,55 @@ void moveeffectors(void)   //STATNUM 3
                     j = s->ang;
                     s->ang = getangle(s->x-ps[p].posx,s->y-ps[p].posy);
                     shoot(i,FIRELASER);
-      
+                    s->ang = j;
+                }
+
+                if(s->owner==-1) //Start search
+                {
+                    t[4]=0;
+                    l = 0x7fffffff;
+                    while(1) //Find the shortest dist
+                    {
+                        s->owner = LocateTheLocator((short)t[4],-1); //t[0] hold sectnum
+
+                        if(s->owner==-1) break;
+
+                        m = ldist(&sprite[ps[p].i],&sprite[s->owner]);
+
+                        if(l > m)
+                        {
+                            q = s->owner;
+                            l = m;
+                        }
+
+                        t[4]++;
+                    }
+
+                    s->owner = q;
+                    s->zvel = ksgn(sprite[q].z-s->z)<<4;
+                }
+
+                if(ldist(&sprite[s->owner],s) < 1024)
+                {
+                    short ta;
+                    ta = s->ang;
+                    s->ang = getangle(ps[p].posx-s->x,ps[p].posy-s->y);
+                    s->ang = ta;
+                    s->owner = -1;
+                    goto BOLT;
+
+                }
+                else s->xvel=256;
+
+                x = getangle(sprite[s->owner].x-s->x,sprite[s->owner].y-s->y);
+                q = getincangle(s->ang,x)>>3;
+                s->ang += q;
+
+                if(rnd(32))
+                {
+                    t[2]+=q;
+                    sc->ceilingshade = 127;
+                }
+                else
+                {
+           
