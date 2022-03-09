@@ -5521,4 +5521,55 @@ void moveeffectors(void)   //STATNUM 3
                 else
                 {
                     t[1] = t[2];
-     
+                    t[0] = t[3];
+
+                    sc->ceilingpal = s->pal;
+                    sc->floorpal = s->pal;
+
+                    j = 0;
+                }
+
+                sc->floorshade = t[1];
+                sc->ceilingshade = t[1];
+
+                wal = &wall[sc->wallptr];
+
+                for(x=sc->wallnum;x > 0; x--,wal++)
+                {
+                    if(j) wal->pal = (s->owner&0xff);
+                    else wal->pal = s->pal;
+
+                    if( wal->hitag != 1 )
+                    {
+                        wal->shade = t[0];
+                        if((wal->cstat&2) && wal->nextwall >= 0)
+                            wall[wal->nextwall].shade = wal->shade;
+                    }
+                }
+
+                j = headspritesect[SECT];
+                while(j >= 0)
+                {
+                    if(sprite[j].cstat&16)
+                    {
+                        if (sc->ceilingstat&1)
+                            sprite[j].shade = sc->ceilingshade;
+                        else sprite[j].shade = sc->floorshade;
+                    }
+
+                    j = nextspritesect[j];
+                }
+
+                if(t[4]) KILLIT(i);
+
+                break;
+
+            //BOSS
+            case 5:
+                p = findplayer(s,&x);
+                if(x < 8192)
+                {
+                    j = s->ang;
+                    s->ang = getangle(s->x-ps[p].posx,s->y-ps[p].posy);
+                    shoot(i,FIRELASER);
+      
