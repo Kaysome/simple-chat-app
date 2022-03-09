@@ -5477,4 +5477,48 @@ void moveeffectors(void)   //STATNUM 3
                 if( (global_random/(sh+1)&31) < 4 && !t[2])
                 {
              //       t[5] = 4+(global_random&7);
-                    sc->ceilin
+                    sc->ceilingpal = s->owner>>8;
+                    sc->floorpal = s->owner&0xff;
+                    t[0] = s->shade + (global_random&15);
+                }
+                else
+                {
+             //       t[5] = 4+(global_random&3);
+                    sc->ceilingpal = s->pal;
+                    sc->floorpal = s->pal;
+                    t[0] = t[3];
+                }
+
+                sc->ceilingshade = t[0];
+                sc->floorshade = t[0];
+
+                wal = &wall[sc->wallptr];
+
+                for(x=sc->wallnum;x > 0;x--,wal++)
+                {
+                    if( wal->hitag != 1 )
+                    {
+                        wal->shade = t[0];
+                        if((wal->cstat&2) && wal->nextwall >= 0)
+                        {
+                            wall[wal->nextwall].shade = wal->shade;
+                        }
+                    }
+                }
+
+                break;
+
+            case 4:
+
+                if((global_random/(sh+1)&31) < 4 )
+                {
+                    t[1] = s->shade + (global_random&15);//Got really bright
+                    t[0] = s->shade + (global_random&15);
+                    sc->ceilingpal = s->owner>>8;
+                    sc->floorpal = s->owner&0xff;
+                    j = 1;
+                }
+                else
+                {
+                    t[1] = t[2];
+     
