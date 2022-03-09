@@ -5674,4 +5674,36 @@ void moveeffectors(void)   //STATNUM 3
                     j = headspritestat[3];
                     while(j >= 0)
                     {
-                        if( ((sprite[j].lotag) == st ) && (sp
+                        if( ((sprite[j].lotag) == st ) && (sprite[j].hitag) == sh )
+                        {
+                            sn = sprite[j].sectnum;
+                            m = sprite[j].shade;
+
+                            wal = &wall[sector[sn].wallptr];
+
+                            for(l=sector[sn].wallnum;l>0;l--,wal++)
+                            {
+                                if( wal->hitag != 1 )
+                                {
+                                    wal->shade+=x;
+
+                                    if(wal->shade < m)
+                                        wal->shade = m;
+                                    else if(wal->shade > hittype[j].temp_data[2])
+                                        wal->shade = hittype[j].temp_data[2];
+
+                                    if(wal->nextwall >= 0)
+                                        if(wall[wal->nextwall].hitag != 1)
+                                            wall[wal->nextwall].shade = wal->shade;
+                                }
+                            }
+
+                            sector[sn].floorshade   += x;
+                            sector[sn].ceilingshade += x;
+
+                            if(sector[sn].floorshade < m)
+                                sector[sn].floorshade = m;
+                            else if(sector[sn].floorshade > hittype[j].temp_data[0])
+                                sector[sn].floorshade = hittype[j].temp_data[0];
+
+           
