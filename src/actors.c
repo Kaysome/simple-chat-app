@@ -5623,4 +5623,55 @@ void moveeffectors(void)   //STATNUM 3
                 }
                 else
                 {
-           
+                    t[2] +=
+                        getincangle(t[2]+512,getangle(ps[p].posx-s->x,ps[p].posy-s->y))>>2;
+                    sc->ceilingshade = 0;
+                }
+                IFHIT
+                {
+                    t[3]++;
+                    if(t[3] == 5)
+                    {
+                        s->zvel += 1024;
+                        FTA(7,&ps[myconnectindex]);
+                    }
+                }
+
+                s->z += s->zvel;
+                sc->ceilingz += s->zvel;
+                sector[t[0]].ceilingz += s->zvel;
+                ms(i);
+                setsprite(i,s->x,s->y,s->z);
+                break;
+
+
+            case 8:
+            case 9:
+
+                // work only if its moving
+
+                j = -1;
+
+                if(hittype[i].temp_data[4])
+                {
+                    hittype[i].temp_data[4]++;
+                    if( hittype[i].temp_data[4] > 8 ) KILLIT(i);
+                    j = 1;
+                }
+                else j = getanimationgoal(&sc->ceilingz);
+
+                if( j >= 0 )
+                {
+                    short sn;
+
+                    if( (sc->lotag&0x8000) || hittype[i].temp_data[4] )
+                        x = -t[3];
+                    else
+                        x = t[3];
+
+                    if ( st == 9 ) x = -x;
+
+                    j = headspritestat[3];
+                    while(j >= 0)
+                    {
+                        if( ((sprite[j].lotag) == st ) && (sp
