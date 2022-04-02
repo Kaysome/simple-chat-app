@@ -5866,4 +5866,43 @@ void moveeffectors(void)   //STATNUM 3
                     {
                         if(sprite[j].cstat&16)
                         {
-                  
+                            if (sc->ceilingstat&1)
+                                sprite[j].shade = sc->ceilingshade;
+                            else sprite[j].shade = sc->floorshade;
+                        }
+                        j = nextspritesect[j];
+                    }
+                }
+                break;
+
+
+            case 13:
+                if( t[2] )
+                {
+                    j = (SP<<5)|1;
+
+                    if( s->ang == 512 )
+                    {
+                        if( s->owner )
+                        {
+                            if( klabs(t[0]-sc->ceilingz) >= j )
+                                sc->ceilingz += ksgn(t[0]-sc->ceilingz)*j;
+                            else sc->ceilingz = t[0];
+                        }
+                        else
+                        {
+                            if( klabs(t[1]-sc->floorz) >= j )
+                                sc->floorz += ksgn(t[1]-sc->floorz)*j;
+                            else sc->floorz = t[1];
+                        }
+                    }
+                    else
+                    {
+                        if( klabs(t[1]-sc->floorz) >= j )
+                            sc->floorz += ksgn(t[1]-sc->floorz)*j;
+                        else sc->floorz = t[1];
+                        if( klabs(t[0]-sc->ceilingz) >= j )
+                            sc->ceilingz += ksgn(t[0]-sc->ceilingz)*j;
+                        sc->ceilingz = t[0];
+                    }
+
