@@ -5779,4 +5779,48 @@ void moveeffectors(void)   //STATNUM 3
                         while(k >= 0)
                         {
                             if( sprite[k].owner >= 0 && clipinsidebox(sprite[k].x,sprite[k].y,j,144L) == 1 )
-                    
+                            {
+                                t[5] = 8; // Delay
+                                k = (SP>>3)*t[3];
+                                t[2]-=k;
+                                t[4]-=k;
+                                ms(i);
+                                setsprite(i,s->x,s->y,s->z);
+                                goto BOLT;
+                            }
+                            k = nextspritestat[k];
+                        }
+                    }
+
+                    k = (SP>>3)*t[3];
+                    t[2]+=k;
+                    t[4]+=k;
+                    ms(i);
+                    setsprite(i,s->x,s->y,s->z);
+
+                    if(t[4] <= -511 || t[4] >= 512)
+                    {
+                        t[4] = 0;
+                        t[2] &= 0xffffff00;
+                        ms(i);
+                        setsprite(i,s->x,s->y,s->z);
+                        break;
+                    }
+                }
+                break;
+            case 12:
+                if( t[0] == 3 || t[3] == 1 ) //Lights going off
+                {
+                    sc->floorpal = 0;
+                    sc->ceilingpal = 0;
+
+                    wal = &wall[sc->wallptr];
+                    for(j = sc->wallnum;j > 0; j--, wal++)
+                        if(wal->hitag != 1)
+                        {
+                            wal->shade = t[1];
+                            wal->pal = 0;
+                        }
+
+                    sc->floorshade = t[1];
+                    sc->ceilingsh
