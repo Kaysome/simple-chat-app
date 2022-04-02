@@ -5739,4 +5739,44 @@ void moveeffectors(void)   //STATNUM 3
                                 case 26:
                                   if( getanimationgoal(&sector[s->sectnum].ceilingz) >= 0 )
                                       break;
-   
+                                  // fall through
+                                default:
+                                  activatebysector(s->sectnum,i);
+                                  t[0] = 0;
+                                  break;
+                            }
+                        else t[0]++;
+                    }
+                }
+                else t[0]=0;
+                break;
+            case 11: //Swingdoor
+
+                if( t[5] > 0)
+                {
+                    t[5]--;
+                    break;
+                }
+
+                if( t[4] )
+                {
+                    short startwall,endwall;
+
+                    startwall = sc->wallptr;
+                    endwall = startwall+sc->wallnum;
+
+                    for(j=startwall;j<endwall;j++)
+                    {
+                        k = headspritestat[1];
+                        while(k >= 0)
+                        {
+                            if( sprite[k].extra > 0 && badguy(&sprite[k]) && clipinsidebox(sprite[k].x,sprite[k].y,j,256L) == 1 )
+                                goto BOLT;
+                            k = nextspritestat[k];
+                        }
+
+                        k = headspritestat[10];
+                        while(k >= 0)
+                        {
+                            if( sprite[k].owner >= 0 && clipinsidebox(sprite[k].x,sprite[k].y,j,144L) == 1 )
+                    
