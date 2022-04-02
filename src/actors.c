@@ -5823,4 +5823,47 @@ void moveeffectors(void)   //STATNUM 3
                         }
 
                     sc->floorshade = t[1];
-                    sc->ceilingsh
+                    sc->ceilingshade = t[2];
+                    t[0]=0;
+
+                    j = headspritesect[SECT];
+                    while(j >= 0)
+                    {
+                        if(sprite[j].cstat&16)
+                        {
+                            if (sc->ceilingstat&1)
+                                sprite[j].shade = sc->ceilingshade;
+                            else sprite[j].shade = sc->floorshade;
+                        }
+                        j = nextspritesect[j];
+
+                    }
+
+                    if(t[3] == 1) KILLIT(i);
+                }
+                if( t[0] == 1 ) //Lights flickering on
+                {
+                    if( sc->floorshade > s->shade )
+                    {
+                        sc->floorpal = s->pal;
+                        sc->ceilingpal = s->pal;
+
+                        sc->floorshade -= 2;
+                        sc->ceilingshade -= 2;
+
+                        wal = &wall[sc->wallptr];
+                        for(j=sc->wallnum;j>0;j--,wal++)
+                            if(wal->hitag != 1)
+                            {
+                                wal->pal = s->pal;
+                                wal->shade -= 2;
+                            }
+                    }
+                    else t[0] = 2;
+
+                    j = headspritesect[SECT];
+                    while(j >= 0)
+                    {
+                        if(sprite[j].cstat&16)
+                        {
+                  
