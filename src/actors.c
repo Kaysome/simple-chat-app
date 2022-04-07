@@ -5906,3 +5906,52 @@ void moveeffectors(void)   //STATNUM 3
                         sc->ceilingz = t[0];
                     }
 
+                    if( t[3] == 1 )
+                    {
+                        //Change the shades
+
+                        t[3]++;
+                        sc->ceilingstat ^= 1;
+
+                        if(s->ang == 512)
+                        {
+                            wal = &wall[sc->wallptr];
+                            for(j=sc->wallnum;j>0;j--,wal++)
+                                wal->shade = s->shade;
+
+                            sc->floorshade = s->shade;
+
+                            if(ps[0].one_parallax_sectnum >= 0)
+                            {
+                                sc->ceilingpicnum =
+                                    sector[ps[0].one_parallax_sectnum].ceilingpicnum;
+                                sc->ceilingshade  =
+                                    sector[ps[0].one_parallax_sectnum].ceilingshade;
+                            }
+                        }
+                    }
+                    t[2]++;
+                    if(t[2] > 256)
+                        KILLIT(i);
+                }
+
+
+                if( t[2] == 4 && s->ang != 512)
+                    for(x=0;x<7;x++) RANDOMSCRAP;
+                break;
+
+
+            case 15:
+
+                if(t[4])
+                {
+                    s->xvel = 16;
+
+                    if(t[4] == 1) //Opening
+                    {
+                        if( t[3] >= (SP>>3) )
+                        {
+                            t[4] = 0; //Turn off the sliders
+                            callsound(s->sectnum,i);
+                            break;
+         
