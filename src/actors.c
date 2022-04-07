@@ -5954,4 +5954,50 @@ void moveeffectors(void)   //STATNUM 3
                             t[4] = 0; //Turn off the sliders
                             callsound(s->sectnum,i);
                             break;
-         
+                        }
+                        t[3]++;
+                    }
+                    else if(t[4] == 2)
+                    {
+                        if(t[3]<1)
+                        {
+                            t[4] = 0;
+                            callsound(s->sectnum,i);
+                            break;
+                        }
+                        t[3]--;
+                    }
+
+                    ms(i);
+                    setsprite(i,s->x,s->y,s->z);
+                }
+                break;
+
+            case 16: //Reactor
+
+                t[2]+=32;
+                if(sc->floorz<sc->ceilingz) s->shade=0;
+
+                else if( sc->ceilingz < t[3] )
+                {
+
+                    //The following code check to see if
+                    //there is any other sprites in the sector.
+                    //If there isn't, then kill this sectoreffector
+                    //itself.....
+
+                    j = headspritesect[s->sectnum];
+                    while(j >= 0)
+                    {
+                        if(sprite[j].picnum == REACTOR || sprite[j].picnum == REACTOR2)
+                            break;
+                        j = nextspritesect[j];
+                    }
+                    if(j == -1) { KILLIT(i); }
+                    else s->shade=1;
+                }
+
+                if(s->shade) sc->ceilingz+=1024;
+                else sc->ceilingz-=512;
+
+                ms(i
