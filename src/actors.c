@@ -6000,4 +6000,52 @@ void moveeffectors(void)   //STATNUM 3
                 if(s->shade) sc->ceilingz+=1024;
                 else sc->ceilingz-=512;
 
-                ms(i
+                ms(i);
+                setsprite(i,s->x,s->y,s->z);
+
+                break;
+
+            case 17:
+
+                q = t[0]*(SP<<2);
+
+                sc->ceilingz += q;
+                sc->floorz += q;
+
+                j = headspritesect[s->sectnum];
+                while(j >= 0)
+                {
+                    if(sprite[j].statnum == 10 && sprite[j].owner >= 0)
+                    {
+                        p = sprite[j].yvel;
+                        if(numplayers < 2)
+                            ps[p].oposz = ps[p].posz;
+                        ps[p].posz += q;
+                        ps[p].truefz += q;
+                        ps[p].truecz += q;
+                        if(numplayers > 1)
+                            ps[p].oposz = ps[p].posz;
+                    }
+                    if( sprite[j].statnum != 3 )
+                    {
+                        hittype[j].bposz = sprite[j].z;
+                        sprite[j].z += q;
+                    }
+
+                    hittype[j].floorz = sc->floorz;
+                    hittype[j].ceilingz = sc->ceilingz;
+
+                    j = nextspritesect[j];
+                }
+
+                if( t[0] )                if(t[0]) //If in motion
+                {
+                    if( klabs(sc->floorz-t[2]) <= SP)
+                    {
+                        activatewarpelevators(i,0);
+                        break;
+                    }
+
+                    if(t[0]==-1)
+                    {
+        
