@@ -6179,4 +6179,43 @@ void moveeffectors(void)   //STATNUM 3
                                         if( ps[sprite[j].yvel].on_ground == 1 )
                                             ps[sprite[j].yvel].posz -= sc->extra;
                                     if( sprite[j].zvel == 0 && sprite[j].statnum != 3 && sprite[j].statnum != 4)
-                       
+                                    {
+                                        hittype[j].bposz = sprite[j].z -= sc->extra;
+                                        hittype[j].floorz = sc->floorz;
+                                    }
+                                    j = nextspritesect[j];
+                                }
+                            if(sc->floorz <= s->z)
+                            {
+                                sc->floorz = s->z;
+                                KILLIT(i);
+                            }
+                        }
+                    }
+
+                    t[2]++;
+                    if(t[2] >= s->hitag)
+                    {
+                        t[2] = 0;
+                        t[0] = 0;
+                    }
+                }
+                break;
+
+            case 19: //Battlestar galactia shields
+
+                if(t[0])
+                {
+                    if(t[0] == 1)
+                    {
+                        t[0]++;
+                        x = sc->wallptr;
+                        q = x+sc->wallnum;
+                        for(j=x;j<q;j++)
+                            if(wall[j].overpicnum == BIGFORCE)
+                            {
+                                wall[j].cstat &= (128+32+8+4+2);
+                                wall[j].overpicnum = 0;
+                                if(wall[j].nextwall >= 0)
+                                {
+                                    wall[wall[j].next
