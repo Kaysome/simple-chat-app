@@ -6083,4 +6083,33 @@ void moveeffectors(void)   //STATNUM 3
                             ps[p].posz = sector[sprite[j].sectnum].floorz-(sc->floorz-ps[p].posz);
 
                             hittype[k].floorz = sector[sprite[j].sectnum].floorz;
- 
+                            hittype[k].ceilingz = sector[sprite[j].sectnum].ceilingz;
+
+                            ps[p].bobposx = ps[p].oposx = ps[p].posx;
+                            ps[p].bobposy = ps[p].oposy = ps[p].posy;
+                            ps[p].oposz = ps[p].posz;
+
+                            ps[p].truefz = hittype[k].floorz;
+                            ps[p].truecz = hittype[k].ceilingz;
+                            ps[p].bobcounter = 0;
+
+                            changespritesect(k,sprite[j].sectnum);
+                            ps[p].cursectnum = sprite[j].sectnum;
+                        }
+                        else if( sprite[k].statnum != 3 )
+                        {
+                            sprite[k].x +=
+                                sprite[j].x-s->x;
+                            sprite[k].y +=
+                                sprite[j].y-s->y;
+                            sprite[k].z = sector[sprite[j].sectnum].floorz-
+                                (sc->floorz-sprite[k].z);
+
+                            hittype[k].bposx = sprite[k].x;
+                            hittype[k].bposy = sprite[k].y;
+                            hittype[k].bposz = sprite[k].z;
+
+                            changespritesect(k,sprite[j].sectnum);
+                            setsprite(k,sprite[k].x,sprite[k].y,sprite[k].z);
+
+                            hittype[k].floorz = sector[sprite[j].sectnum].
