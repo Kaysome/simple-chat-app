@@ -6112,4 +6112,39 @@ void moveeffectors(void)   //STATNUM 3
                             changespritesect(k,sprite[j].sectnum);
                             setsprite(k,sprite[k].x,sprite[k].y,sprite[k].z);
 
-                            hittype[k].floorz = sector[sprite[j].sectnum].
+                            hittype[k].floorz = sector[sprite[j].sectnum].floorz;
+                            hittype[k].ceilingz = sector[sprite[j].sectnum].ceilingz;
+
+                        }
+                        k = nextk;
+                    }
+                }
+                break;
+
+            case 18:
+                if(t[0])
+                {
+                    if(s->pal)
+                    {
+                        if(s->ang == 512)
+                        {
+                            sc->ceilingz -= sc->extra;
+                            if(sc->ceilingz <= t[1])
+                            {
+                                sc->ceilingz = t[1];
+                                KILLIT(i);
+                            }
+                        }
+                        else
+                        {
+                            sc->floorz += sc->extra;
+                                j = headspritesect[s->sectnum];
+                                while(j >= 0)
+                                {
+                                    if(sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
+                                        if( ps[sprite[j].yvel].on_ground == 1 )
+                                            ps[sprite[j].yvel].posz += sc->extra;
+                                    if( sprite[j].zvel == 0 && sprite[j].statnum != 3 && sprite[j].statnum != 4)
+                                    {
+                                        hittype[j].bposz = sprite[j].z += sc->extra;
+                
