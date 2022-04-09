@@ -6218,4 +6218,38 @@ void moveeffectors(void)   //STATNUM 3
                                 wall[j].overpicnum = 0;
                                 if(wall[j].nextwall >= 0)
                                 {
-                                    wall[wall[j].next
+                                    wall[wall[j].nextwall].overpicnum = 0;
+                                    wall[wall[j].nextwall].cstat &= (128+32+8+4+2);
+                                }
+                            }
+                    }
+
+                    if(sc->ceilingz < sc->floorz)
+                        sc->ceilingz += SP;
+                    else
+                    {
+                        sc->ceilingz = sc->floorz;
+
+                        j = headspritestat[3];
+                        while(j >= 0)
+                        {
+                            if(sprite[j].lotag == 0 && sprite[j].hitag==sh)
+                            {
+                                q = sprite[sprite[j].owner].sectnum;
+                                sector[sprite[j].sectnum].floorpal = sector[sprite[j].sectnum].ceilingpal =
+                                        sector[q].floorpal;
+                                sector[sprite[j].sectnum].floorshade = sector[sprite[j].sectnum].ceilingshade =
+                                    sector[q].floorshade;
+
+                                hittype[sprite[j].owner].temp_data[0] = 2;
+                            }
+                            j = nextspritestat[j];
+                        }
+                        KILLIT(i);
+                    }
+                }
+                else //Not hit yet
+                {
+                    IFHITSECT
+                    {
+                        FTA(8,&
