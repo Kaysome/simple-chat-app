@@ -6252,4 +6252,34 @@ void moveeffectors(void)   //STATNUM 3
                 {
                     IFHITSECT
                     {
-                        FTA(8,&
+                        FTA(8,&ps[myconnectindex]);
+
+                        l = headspritestat[3];
+                        while(l >= 0)
+                        {
+                            x = sprite[l].lotag&0x7fff;
+                            switch( x )
+                            {
+                                case 0:
+                                    if(sprite[l].hitag == sh)
+                                    {
+                                        q = sprite[l].sectnum;
+                                        sector[q].floorshade =
+                                            sector[q].ceilingshade =
+                                                sprite[sprite[l].owner].shade;
+                                        sector[q].floorpal =
+                                            sector[q].ceilingpal =
+                                                sprite[sprite[l].owner].pal;
+                                    }
+                                    break;
+
+                                case 1:
+                                case 12:
+//                                case 18:
+                                case 19:
+
+                                    if( sh == sprite[l].hitag )
+                                        if( hittype[l].temp_data[0] == 0 )
+                                        {
+                                            hittype[l].temp_data[0] = 1; //Shut them all on
+                                            sprit
