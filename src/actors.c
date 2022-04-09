@@ -6147,4 +6147,36 @@ void moveeffectors(void)   //STATNUM 3
                                     if( sprite[j].zvel == 0 && sprite[j].statnum != 3 && sprite[j].statnum != 4)
                                     {
                                         hittype[j].bposz = sprite[j].z += sc->extra;
-                
+                                        hittype[j].floorz = sc->floorz;
+                                    }
+                                    j = nextspritesect[j];
+                                }
+                            if(sc->floorz >= t[1])
+                            {
+                                sc->floorz = t[1];
+                                KILLIT(i);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(s->ang == 512)
+                        {
+                            sc->ceilingz += sc->extra;
+                            if(sc->ceilingz >= s->z)
+                            {
+                                sc->ceilingz = s->z;
+                                KILLIT(i);
+                            }
+                        }
+                        else
+                        {
+                            sc->floorz -= sc->extra;
+                                j = headspritesect[s->sectnum];
+                                while(j >= 0)
+                                {
+                                    if(sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
+                                        if( ps[sprite[j].yvel].on_ground == 1 )
+                                            ps[sprite[j].yvel].posz -= sc->extra;
+                                    if( sprite[j].zvel == 0 && sprite[j].statnum != 3 && sprite[j].statnum != 4)
+                       
