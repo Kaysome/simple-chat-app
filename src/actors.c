@@ -6048,4 +6048,39 @@ void moveeffectors(void)   //STATNUM 3
 
                     if(t[0]==-1)
                     {
-        
+                        if( sc->floorz > t[3] )
+                            break;
+                    }
+                    else if( sc->ceilingz < t[4] ) break;
+
+                    if( t[1] == 0 ) break;
+                    t[1] = 0;
+
+                    j = headspritestat[3];
+                    while(j >= 0)
+                    {
+                                if( i != j && (sprite[j].lotag) == 17)
+                                    if( (sc->hitag-t[0]) ==
+                                        (sector[sprite[j].sectnum].hitag)
+                                        && sh == (sprite[j].hitag))
+                                            break;
+                                j = nextspritestat[j];
+                    }
+
+                    if(j == -1) break;
+
+                    k = headspritesect[s->sectnum];
+                    while(k >= 0)
+                    {
+                        nextk = nextspritesect[k];
+
+                        if(sprite[k].statnum == 10 && sprite[k].owner >= 0)
+                        {
+                            p = sprite[k].yvel;
+
+                            ps[p].posx += sprite[j].x-s->x;
+                            ps[p].posy += sprite[j].y-s->y;
+                            ps[p].posz = sector[sprite[j].sectnum].floorz-(sc->floorz-ps[p].posz);
+
+                            hittype[k].floorz = sector[sprite[j].sectnum].floorz;
+ 
