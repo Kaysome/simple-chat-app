@@ -6372,4 +6372,56 @@ void moveeffectors(void)   //STATNUM 3
 
                 if( t[0] == 1 ) //Decide if the s->sectnum should go up or down
                 {
-                    s->zvel = ksgn(s->z-(*lp)) * 
+                    s->zvel = ksgn(s->z-(*lp)) * (SP<<4);
+                    t[0]++;
+                }
+
+                if( sc->extra == 0 )
+                {
+                    *lp += s->zvel;
+
+                    if(klabs((*lp)-s->z) < 1024)
+                    {
+                        *lp = s->z;
+                        KILLIT(i); //All done
+                    }
+                }
+                else sc->extra--;
+                break;
+            }
+
+            case 22:
+
+                if( t[1] )
+                {
+                    if(getanimationgoal(&sector[t[0]].ceilingz) >= 0)
+                        sc->ceilingz += sc->extra*9;
+                    else t[1] = 0;
+                }
+                break;
+
+            case 24:
+            case 34:
+
+                if(t[4]) break;
+
+                x = (SP*sintable[(s->ang+512)&2047])>>18;
+                l = (SP*sintable[s->ang&2047])>>18;
+
+                k = 0;
+
+                j = headspritesect[s->sectnum];
+                while(j >= 0)
+                {
+                    nextj = nextspritesect[j];
+                    if(sprite[j].zvel >= 0)
+                        switch(sprite[j].statnum)
+                    {
+                        case 5:
+                            switch(sprite[j].picnum)
+                            {
+                                case BLOODPOOL:
+                                case PUKE:
+                                case FOOTPRINTS:
+                                case FOOTPRINTS2:
+        
