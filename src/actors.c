@@ -6282,4 +6282,51 @@ void moveeffectors(void)   //STATNUM 3
                                         if( hittype[l].temp_data[0] == 0 )
                                         {
                                             hittype[l].temp_data[0] = 1; //Shut them all on
-                                            sprit
+                                            sprite[l].owner = i;
+                                        }
+
+                                    break;
+                            }
+                            l = nextspritestat[l];
+                        }
+                    }
+                }
+
+                break;
+
+            case 20: //Extend-o-bridge
+
+                if( t[0] == 0 ) break;
+                if( t[0] == 1 ) s->xvel = 8;
+                else s->xvel = -8;
+
+                if( s->xvel ) //Moving
+                {
+                    x = (s->xvel*sintable[(s->ang+512)&2047])>>14;
+                    l = (s->xvel*sintable[s->ang&2047])>>14;
+
+                    t[3] += s->xvel;
+
+                    s->x += x;
+                    s->y += l;
+
+                    if( t[3] <= 0 || (t[3]>>6) >= (SP>>6) )
+                    {
+                        s->x -= x;
+                        s->y -= l;
+                        t[0] = 0;
+                        callsound(s->sectnum,i);
+                        break;
+                    }
+
+                    j = headspritesect[s->sectnum];
+                    while(j >= 0)
+                    {
+                        nextj = nextspritesect[j];
+
+                        if( sprite[j].statnum != 3 && sprite[j].zvel == 0)
+                        {
+                            sprite[j].x += x;
+                            sprite[j].y += l;
+                            setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
+                            if( sector[sprite[j].sectnum].floorstat&2 
