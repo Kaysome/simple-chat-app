@@ -6424,4 +6424,33 @@ void moveeffectors(void)   //STATNUM 3
                                 case PUKE:
                                 case FOOTPRINTS:
                                 case FOOTPRINTS2:
-        
+                                case FOOTPRINTS3:
+                                case FOOTPRINTS4:
+                                case BULLETHOLE:
+                                case BLOODSPLAT1:
+                                case BLOODSPLAT2:
+                                case BLOODSPLAT3:
+                                case BLOODSPLAT4:
+                                    sprite[j].xrepeat = sprite[j].yrepeat = 0;
+                                    j = nextj;
+                                    continue;
+                                case LASERLINE:
+                                    j = nextj;
+                                    continue;
+                            }
+                            // fall through
+                        case 6:
+                            if(sprite[j].picnum == TRIPBOMB) break;
+                            // fall through
+                        case 1:
+                        case 0:
+                            if(
+                                sprite[j].picnum == BOLT1 ||
+                                sprite[j].picnum == BOLT1+1 ||
+                                sprite[j].picnum == BOLT1+2 ||
+                                sprite[j].picnum == BOLT1+3 ||
+                                sprite[j].picnum == SIDEBOLT1 ||
+                                sprite[j].picnum == SIDEBOLT1+1 ||
+                                sprite[j].picnum == SIDEBOLT1+2 ||
+                                sprite[j].picnum == SIDEBOLT1+3 ||
+           
