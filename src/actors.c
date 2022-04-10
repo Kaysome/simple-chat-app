@@ -6329,4 +6329,47 @@ void moveeffectors(void)   //STATNUM 3
                             sprite[j].x += x;
                             sprite[j].y += l;
                             setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
-                            if( sector[sprite[j].sectnum].floorstat&2 
+                            if( sector[sprite[j].sectnum].floorstat&2 )
+                                if(sprite[j].statnum == 2)
+                                    makeitfall(j);
+                        }
+                        j = nextj;
+                    }
+
+                    dragpoint((short)t[1],wall[t[1]].x+x,wall[t[1]].y+l);
+                    dragpoint((short)t[2],wall[t[2]].x+x,wall[t[2]].y+l);
+
+                    for(p=connecthead;p>=0;p=connectpoint2[p])
+                        if(ps[p].cursectnum == s->sectnum && ps[p].on_ground)
+                        {
+                            ps[p].posx += x;
+                            ps[p].posy += l;
+
+                            ps[p].oposx = ps[p].posx;
+                            ps[p].oposy = ps[p].posy;
+
+                            setsprite(ps[p].i,ps[p].posx,ps[p].posy,ps[p].posz+PHEIGHT);
+                        }
+
+                    sc->floorxpanning-=x>>3;
+                    sc->floorypanning-=l>>3;
+
+                    sc->ceilingxpanning-=x>>3;
+                    sc->ceilingypanning-=l>>3;
+                }
+
+                break;
+
+            case 21: // Cascading effect
+            {
+                int *lp;
+                if( t[0] == 0 ) break;
+
+                if( s->ang == 1536 )
+                    lp = &sc->ceilingz;
+                else
+                    lp = &sc->floorz;
+
+                if( t[0] == 1 ) //Decide if the s->sectnum should go up or down
+                {
+                    s->zvel = ksgn(s->z-(*lp)) * 
