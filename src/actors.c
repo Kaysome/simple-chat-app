@@ -6489,4 +6489,50 @@ void moveeffectors(void)   //STATNUM 3
 
                 sc->floorxpanning += SP>>7;
 
-           
+            break;
+
+            case 35:
+                if(sc->ceilingz > s->z)
+                    for(j = 0;j < 8;j++)
+                {
+                    s->ang += TRAND&511;
+                    k = spawn(i,SMALLSMOKE);
+                    sprite[k].xvel = 96+(TRAND&127);
+                    ssp(k,CLIPMASK0);
+                    setsprite(k,sprite[k].x,sprite[k].y,sprite[k].z);
+                    if( rnd(16) )
+                        spawn(i,EXPLOSION2);
+                }
+
+                switch(t[0])
+                {
+                    case 0:
+                        sc->ceilingz += s->yvel;
+                        if(sc->ceilingz > sc->floorz)
+                            sc->floorz = sc->ceilingz;
+                        if(sc->ceilingz > s->z+(32<<8))
+                            t[0]++;
+                        break;
+                    case 1:
+                        sc->ceilingz-=(s->yvel<<2);
+                        if(sc->ceilingz < t[4])
+                        {
+                            sc->ceilingz = t[4];
+                            t[0] = 0;
+                        }
+                        break;
+                }
+                break;
+
+            case 25: //PISTONS
+
+                if( t[4] == 0 ) break;
+
+                if(sc->floorz <= sc->ceilingz)
+                    s->shade = 0;
+                else if( sc->ceilingz <= t[3])
+                    s->shade = 1;
+
+                if(s->shade)
+                {
+                    sc->ceilingz
