@@ -6453,4 +6453,40 @@ void moveeffectors(void)   //STATNUM 3
                                 sprite[j].picnum == SIDEBOLT1+1 ||
                                 sprite[j].picnum == SIDEBOLT1+2 ||
                                 sprite[j].picnum == SIDEBOLT1+3 ||
+                                wallswitchcheck(j)
+                              )
+                              break;
+
+                            if( !(sprite[j].picnum >= CRANE && sprite[j].picnum <= (CRANE+3)))
+                            {
+                                if( sprite[j].z > (hittype[j].floorz-(16<<8)) )
+                                {
+                                    hittype[j].bposx = sprite[j].x;
+                                    hittype[j].bposy = sprite[j].y;
+
+                                    sprite[j].x += x>>2;
+                                    sprite[j].y += l>>2;
+
+                                    setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
+
+                                    if( sector[sprite[j].sectnum].floorstat&2 )
+                                        if(sprite[j].statnum == 2)
+                                            makeitfall(j);
+                                }
+                            }
+                            break;
+                    }
+                    j = nextj;
+                }
+
+                p = myconnectindex;
+                if(ps[p].cursectnum == s->sectnum && ps[p].on_ground)
+                    if( klabs(ps[p].posz-ps[p].truefz) < PHEIGHT+(9<<8) )
+                {
+                    fricxv += x<<3;
+                    fricyv += l<<3;
+                }
+
+                sc->floorxpanning += SP>>7;
+
            
