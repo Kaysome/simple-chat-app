@@ -6580,4 +6580,46 @@ void moveeffectors(void)   //STATNUM 3
                         sprite[j].z += s->zvel;
                         setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
                     }
-                
+                    j = nextj;
+                }
+
+                p = myconnectindex;
+                if(sprite[ps[p].i].sectnum == s->sectnum && ps[p].on_ground)
+                {
+                    fricxv += l<<5;
+                    fricyv += x<<5;
+                }
+
+                for(p = connecthead;p >= 0;p = connectpoint2[p])
+                    if(sprite[ps[p].i].sectnum == s->sectnum && ps[p].on_ground)
+                        ps[p].posz += s->zvel;
+
+                ms(i);
+                setsprite(i,s->x,s->y,s->z);
+
+                break;
+
+
+            case 27:
+
+                if(ud.recstat == 0) break;
+
+                hittype[i].tempang = s->ang;
+
+                p = findplayer(s,&x);
+                if( sprite[ps[p].i].extra > 0 && myconnectindex == screenpeek)
+                {
+                    if( t[0] < 0 )
+                    {
+                        ud.camerasprite = i;
+                        t[0]++;
+                    }
+                    else if(ud.recstat == 2 && ps[p].newowner == -1)
+                    {
+                        if(cansee(s->x,s->y,s->z,SECT,ps[p].posx,ps[p].posy,ps[p].posz,ps[p].cursectnum))
+                        {
+                            if(x < (int)((unsigned)sh))
+                            {
+                                ud.camerasprite = i;
+                                t[0] = 999;
+                                s->ang += getincangle(s->ang,getangle(ps[p].posx-s->x,ps[p].posy-s->y))>>3;
