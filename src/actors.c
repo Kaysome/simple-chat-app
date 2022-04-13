@@ -6623,3 +6623,50 @@ void moveeffectors(void)   //STATNUM 3
                                 ud.camerasprite = i;
                                 t[0] = 999;
                                 s->ang += getincangle(s->ang,getangle(ps[p].posx-s->x,ps[p].posy-s->y))>>3;
+                                SP = 100+((s->z-ps[p].posz)/257);
+
+                            }
+                            else if(t[0] == 999)
+                            {
+                                if(ud.camerasprite == i)
+                                    t[0] = 0;
+                                else t[0] = -10;
+                                ud.camerasprite = i;
+
+                            }
+                        }
+                        else
+                        {
+                            s->ang = getangle(ps[p].posx-s->x,ps[p].posy-s->y);
+
+                            if(t[0] == 999)
+                            {
+                                if(ud.camerasprite == i)
+                                    t[0] = 0;
+                                else t[0] = -20;
+                                ud.camerasprite = i;
+                            }
+                        }
+                    }
+                }
+                break;
+            case 28:
+                if(t[5] > 0)
+                {
+                    t[5]--;
+                    break;
+                }
+
+                if(T1 == 0)
+                {
+                    p = findplayer(s,&x);
+                    if( x > 15500 )
+                        break;
+                    T1 = 1;
+                    T2 = 64 + (TRAND&511);
+                    T3 = 0;
+                }
+                else
+                {
+                    T3++;
+                    if(T3 > T2)
