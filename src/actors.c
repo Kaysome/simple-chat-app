@@ -6535,4 +6535,49 @@ void moveeffectors(void)   //STATNUM 3
 
                 if(s->shade)
                 {
-                    sc->ceilingz
+                    sc->ceilingz += SP<<4;
+                    if(sc->ceilingz > sc->floorz)
+                        sc->ceilingz = sc->floorz;
+                }
+                else
+                {
+                    sc->ceilingz   -= SP<<4;
+                    if(sc->ceilingz < t[3])
+                        sc->ceilingz = t[3];
+                }
+
+                break;
+
+            case 26:
+
+                s->xvel = 32;
+                l = (s->xvel*sintable[(s->ang+512)&2047])>>14;
+                x = (s->xvel*sintable[s->ang&2047])>>14;
+
+                s->shade++;
+                if( s->shade > 7 )
+                {
+                    s->x = t[3];
+                    s->y = t[4];
+                    sc->floorz -= ((s->zvel*s->shade)-s->zvel);
+                    s->shade = 0;
+                }
+                else
+                    sc->floorz += s->zvel;
+
+                j = headspritesect[s->sectnum];
+                while( j >= 0 )
+                {
+                    nextj = nextspritesect[j];
+                    if(sprite[j].statnum != 3 && sprite[j].statnum != 10)
+                    {
+                        hittype[j].bposx = sprite[j].x;
+                        hittype[j].bposy = sprite[j].y;
+
+                        sprite[j].x += l;
+                        sprite[j].y += x;
+
+                        sprite[j].z += s->zvel;
+                        setsprite(j,sprite[j].x,sprite[j].y,sprite[j].z);
+                    }
+                
