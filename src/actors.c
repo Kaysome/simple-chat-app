@@ -6670,3 +6670,35 @@ void moveeffectors(void)   //STATNUM 3
                 {
                     T3++;
                     if(T3 > T2)
+                    {
+                        T1 = 0;
+                        ps[screenpeek].visibility = ud.const_visibility;
+                        break;
+                    }
+                    else if( T3 == (T2>>1) )
+                        spritesound(THUNDER,i);
+                    else if(T3 == (T2>>3) )
+                        spritesound(LIGHTNING_SLAP,i);
+                    else if( T3 == (T2>>2) )
+                    {
+                        j = headspritestat[0];
+                        while(j >= 0)
+                        {
+                            if( sprite[j].picnum == NATURALLIGHTNING && sprite[j].hitag == s->hitag)
+                                sprite[j].cstat |= 32768;
+                            j = nextspritestat[j];
+                        }
+                    }
+                    else if(T3 > (T2>>3) && T3 < (T2>>2) )
+                    {
+                        if( cansee(s->x,s->y,s->z,s->sectnum,ps[screenpeek].posx,ps[screenpeek].posy,ps[screenpeek].posz,ps[screenpeek].cursectnum ) )
+                            j = 1;
+                        else j = 0;
+
+                        if( rnd(192) && (T3&1) )
+                        {
+                            if(j)
+                                ps[screenpeek].visibility = 0;
+                        }
+                        else if(j)
+                            ps[screenpeek].visibility = ud.const_vis
