@@ -6728,4 +6728,48 @@ void moveeffectors(void)   //STATNUM 3
                                     }
                                     break;
                                 }
-                        
+                                else sprite[j].cstat |= 32768;
+                            }
+
+                            j = nextspritestat[j];
+                        }
+                    }
+                }
+                break;
+            case 29:
+                s->hitag += 64;
+                l = mulscale12((int)s->yvel,sintable[s->hitag&2047]);
+                sc->floorz = s->z + l;
+                break;
+            case 31: // True Drop Floor
+                if(t[0] == 1)
+                {
+                    // Choose dir
+
+                    if(t[3] > 0)
+                    {
+                        t[3]--;
+                        break;
+                    }
+
+                    if(t[2] == 1) // Retract
+                    {
+                        if(SA != 1536)
+                        {
+                            if( klabs( sc->floorz - s->z ) < SP )
+                            {
+                                sc->floorz = s->z;
+                                t[2] = 0;
+                                t[0] = 0;
+                                t[3] = s->hitag;
+                                callsound(s->sectnum,i);
+                            }
+                            else
+                            {
+                                l = ksgn(s->z-sc->floorz)*SP;
+                                sc->floorz += l;
+
+                                j = headspritesect[s->sectnum];
+                                while(j >= 0)
+                                {
+                                    if(sprite[j].picnum
