@@ -6701,4 +6701,31 @@ void moveeffectors(void)   //STATNUM 3
                                 ps[screenpeek].visibility = 0;
                         }
                         else if(j)
-                            ps[screenpeek].visibility = ud.const_vis
+                            ps[screenpeek].visibility = ud.const_visibility;
+
+                        j = headspritestat[0];
+                        while(j >= 0)
+                        {
+                            if( sprite[j].picnum == NATURALLIGHTNING && sprite[j].hitag == s->hitag)
+                            {
+                                if ( rnd(32) && (T3&1) )
+                                {
+                                    sprite[j].cstat &= 32767;
+                                    spawn(j,SMALLSMOKE);
+
+                                    p = findplayer(s,&x);
+                                    x = ldist(&sprite[ps[p].i], &sprite[j]);
+                                    if( x < 768 )
+                                    {
+                                        if(!isspritemakingsound(ps[p].i,DUKE_LONGTERM_PAIN))
+                                            spritesound(DUKE_LONGTERM_PAIN,ps[p].i);
+                                        spritesound(SHORT_CIRCUIT,ps[p].i);
+                                        sprite[ps[p].i].extra -= 8+(TRAND&7);
+                                        ps[p].pals_time = 32;
+                                        ps[p].pals[0] = 16;
+                                        ps[p].pals[1] = 0;
+                                        ps[p].pals[2] = 0;
+                                    }
+                                    break;
+                                }
+                        
