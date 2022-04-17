@@ -6834,4 +6834,35 @@ void moveeffectors(void)   //STATNUM 3
                             j = headspritesect[s->sectnum];
                             while(j >= 0)
                             {
-                                if
+                                if(sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
+                                    if( ps[sprite[j].yvel].on_ground == 1 )
+                                        ps[sprite[j].yvel].posz += l;
+                                if( sprite[j].zvel == 0 && sprite[j].statnum != 3 && sprite[j].statnum != 4 )
+                                {
+                                    hittype[j].bposz = sprite[j].z += l;
+                                    hittype[j].floorz = sc->floorz;
+                                }
+                                j = nextspritesect[j];
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if( klabs( sc->floorz-t[1] ) < SP )
+                        {
+                            t[0] = 0;
+                            callsound(s->sectnum,i);
+                            t[2] = 1;
+                            t[3] = s->hitag;
+                        }
+                        else
+                        {
+                            l = ksgn(s->z-t[1])*SP;
+                            sc->floorz -= l;
+
+                            j = headspritesect[s->sectnum];
+                            while(j >= 0)
+                            {
+                                if(sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
+                                    if( ps[sprite[j].yvel].on_ground == 1 )
+                                  
