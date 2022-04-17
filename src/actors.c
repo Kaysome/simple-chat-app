@@ -6865,4 +6865,40 @@ void moveeffectors(void)   //STATNUM 3
                             {
                                 if(sprite[j].picnum == APLAYER && sprite[j].owner >= 0)
                                     if( ps[sprite[j].yvel].on_ground == 1 )
-                                  
+                                        ps[sprite[j].yvel].posz -= l;
+                                if(sprite[j].zvel == 0 && sprite[j].statnum != 3 && sprite[j].statnum != 4 )
+                                {
+                                    hittype[j].bposz = sprite[j].z -= l;
+                                    hittype[j].floorz = sc->floorz;
+                                }
+                                j = nextspritesect[j];
+                            }
+                        }
+                    }
+                }
+                break;
+
+           case 32: // True Drop Ceiling
+                if(t[0] == 1)
+                {
+                    // Choose dir
+
+                    if(t[2] == 1) // Retract
+                    {
+                        if(SA != 1536)
+                        {
+                            if( klabs( sc->ceilingz - s->z ) <
+                                (SP<<1) )
+                            {
+                                sc->ceilingz = s->z;
+                                callsound(s->sectnum,i);
+                                t[2] = 0;
+                                t[0] = 0;
+                            }
+                            else sc->ceilingz +=
+                                ksgn(s->z-sc->ceilingz)*SP;
+                        }
+                        else
+                        {
+                            if( klabs( sc->ceilingz - t[1] ) <
+                          
