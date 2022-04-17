@@ -6901,4 +6901,46 @@ void moveeffectors(void)   //STATNUM 3
                         else
                         {
                             if( klabs( sc->ceilingz - t[1] ) <
-                          
+                                (SP<<1) )
+                            {
+                                sc->ceilingz = t[1];
+                                callsound(s->sectnum,i);
+                                t[2] = 0;
+                                t[0] = 0;
+                            }
+                            else sc->ceilingz +=
+                                ksgn(t[1]-sc->ceilingz)*SP;
+                        }
+                        break;
+                    }
+
+                    if( (s->ang&2047) == 1536)
+                    {
+                        if( klabs(sc->ceilingz-s->z ) <
+                            (SP<<1) )
+                        {
+                            t[0] = 0;
+                            t[2] = !t[2];
+                            callsound(s->sectnum,i);
+                            sc->ceilingz = s->z;
+                        }
+                        else sc->ceilingz +=
+                            ksgn(s->z-sc->ceilingz)*SP;
+                    }
+                    else
+                    {
+                        if( klabs(sc->ceilingz-t[1] ) < (SP<<1) )
+                        {
+                            t[0] = 0;
+                            t[2] = !t[2];
+                            callsound(s->sectnum,i);
+                        }
+                        else sc->ceilingz -= ksgn(s->z-t[1])*SP;
+                    }
+                }
+                break;
+
+            case 33:
+                if( earthquaketime > 0 && (TRAND&7) == 0 )
+                    RANDOMSCRAP;
+                bre
