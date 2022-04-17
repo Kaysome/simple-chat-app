@@ -6943,4 +6943,53 @@ void moveeffectors(void)   //STATNUM 3
             case 33:
                 if( earthquaketime > 0 && (TRAND&7) == 0 )
                     RANDOMSCRAP;
-                bre
+                break;
+            case 36:
+
+                if( t[0] )
+                {
+                    if( t[0] == 1 )
+                        shoot(i,sc->extra);
+                    else if( t[0] == 26*5 )
+                        t[0] = 0;
+                    t[0]++;
+                }
+                break;
+
+            case 128: //SE to control glass breakage
+
+                wal = &wall[t[2]];
+
+                wal->cstat &= (255-32);
+                wal->cstat |= 16;
+                if(wal->nextwall >= 0)
+                {
+                    wall[wal->nextwall].cstat &= (255-32);
+                    wall[wal->nextwall].cstat |= 16;
+                }
+
+                wal->overpicnum++;
+                if(wal->nextwall >= 0)
+                    wall[wal->nextwall].overpicnum++;
+
+                if(t[0] < t[1]) t[0]++;
+                else
+                {
+                    wal->cstat &= (128+32+8+4+2);
+                    if(wal->nextwall >= 0)
+                        wall[wal->nextwall].cstat &= (128+32+8+4+2);
+                    KILLIT(i);
+                }
+                break;
+
+            case 130:
+                if(t[0] > 80) { KILLIT(i); }
+                else t[0]++;
+
+                x = sc->floorz-sc->ceilingz;
+
+                if( rnd(64) )
+                {
+                    k = spawn(i,EXPLOSION2);
+                    sprite[k].xrepeat = sprite[k].yrepeat = 2+(TRAND&7);
+                    sprite[k].z 
