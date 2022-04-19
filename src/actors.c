@@ -6992,4 +6992,42 @@ void moveeffectors(void)   //STATNUM 3
                 {
                     k = spawn(i,EXPLOSION2);
                     sprite[k].xrepeat = sprite[k].yrepeat = 2+(TRAND&7);
-                    sprite[k].z 
+                    sprite[k].z = sc->floorz-(TRAND%x);
+                    sprite[k].ang += 256-(TRAND%511);
+                    sprite[k].xvel = TRAND&127;
+                    ssp(k,CLIPMASK0);
+                }
+                break;
+            case 131:
+                if(t[0] > 40) { KILLIT(i); }
+                else t[0]++;
+
+                x = sc->floorz-sc->ceilingz;
+
+                if( rnd(32) )
+                {
+                    k = spawn(i,EXPLOSION2);
+                    sprite[k].xrepeat = sprite[k].yrepeat = 2+(TRAND&3);
+                    sprite[k].z = sc->floorz-(TRAND%x);
+                    sprite[k].ang += 256-(TRAND%511);
+                    sprite[k].xvel = TRAND&127;
+                    ssp(k,CLIPMASK0);
+                }
+                break;
+        }
+        BOLT:
+        i = nexti;
+    }
+
+         //Sloped sin-wave floors!
+     for(i=headspritestat[3];i>=0;i=nextspritestat[i])
+     {
+          s = &sprite[i];
+          if (s->lotag != 29) continue;
+          sc = &sector[s->sectnum];
+          if (sc->wallnum != 4) continue;
+          wal = &wall[sc->wallptr+2];
+          alignflorslope(s->sectnum,wal->x,wal->y,sector[wal->nextsector].floorz);
+     }
+}
+
