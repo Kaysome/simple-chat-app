@@ -61,4 +61,91 @@ Duke Lookup Table
         22 : Blue -> Green
         23 : Blue -> Yellow
 
-*************************************************
+********************************************************
+*/
+
+#include "build.h"
+#include "editor.h"
+#include "pragmas.h"
+#include "baselayer.h"
+#include "names.h"
+#include "cache1d.h"
+
+#define TICSPERFRAME 3
+
+//#define VULGARITY
+
+
+
+/*#pragma aux setvmode =\
+        "int 0x10",\
+        parm [eax]\
+*/
+//#include "water.c"
+
+char *Myname[1]= {"stryker@metronet.com"};
+
+char *defsfilename = "duke3d.def";
+
+static int ototalclock = 0;
+
+static int clockval[16], clockcnt = 0;
+
+#define NUMOPTIONS 9
+
+char option[NUMOPTIONS] = {0,0,0,0,0,0,1,0,0};
+int keys[NUMBUILDKEYS] =
+    {
+        0xc8,0xd0,0xcb,0xcd,0x2a,0x9d,0x1d,0x39,
+        0x1e,0x2c,0xd1,0xc9,0x47,0x49,
+        0x9c,0x1c,0xd,0xc,0xf,0x45
+    };
+
+int nextvoxid = 0;
+
+
+
+#define COKE 52
+
+#define MAXHELP2D 9
+const char *Help2d[MAXHELP2D]=
+        {
+    " ' M = Memory",
+    " ' 1 = Captions ",
+//    " ' 2 = ",
+    " ' 3 = Captions Toggle",
+//    " ' 4 = MIN FRAMES RATE",
+//    " ' 5 = MOTORCYCLE",
+    " ' 9 = Swap HI LO",
+//    " ' 0 = SHRINK MAP 50",
+    " F8  = Current Wall/Sprite",
+    " F9  = Current Sector",
+    " [   = Search Forward",
+    " ]   = Search Backward",
+        " ~   = HELP OFF"
+        };
+
+#define MAXMODE32D 7
+const char *Mode32d[MAXMODE32D]=
+        {
+    "NONE",
+    "SECTORS",
+    "WALLS",
+    "SPRITES",
+    "ALL",
+    "ITEMS ONLY",
+    "CURRENT SPRITE ONLY"
+    };
+
+#define MAXSKILL 5
+const char *SKILLMODE[MAXSKILL]=
+        {
+    "BEGINNER",
+    "EASY",
+    "NORMAL",
+    "NOT EASY",
+    "ALL"
+    };
+
+#define MAXNOSPRITES 4
+const char *ALPHABEA
