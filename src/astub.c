@@ -148,4 +148,58 @@ const char *SKILLMODE[MAXSKILL]=
     };
 
 #define MAXNOSPRITES 4
-const char *ALPHABEA
+const char *ALPHABEASTLOADOMAGA1[MAXNOSPRITES]=
+        {
+    "DISPLAY ALL SPRITES",
+    "NO EFFECTORS",
+    "NO ACTORS",
+    "NONE"
+    };
+
+short MinRate=24, MinD=3;
+// CTW - MODIFICATION
+// Good to know Allen has changed in all these years. ;)
+// CTW END - MODIFICATION
+const char *Slow[8]=
+        {
+        "SALES = 0,000,000  ***********************",
+        "100% OF NOTHING IS !! ********************",
+        "RENDER IN PROGRESS ***********************",
+        "YOUR MOTHER IS A WHORE *******************",
+        "YOU SUCK DONKEY **************************",
+        "FUCKIN PISS ANT **************************",
+        "PISS ANT *********************************",
+    "SLOW *************************************"
+    };
+
+#define MAXHELP3D 15
+const char *Help3d[MAXHELP3D]=
+        {
+    "3D KEYS HELP",
+        " ",
+    " F1 = HELP TOGGLE",
+    " ' R = FRAMERATE TOGGLE",
+    " ' D = SKILL MODE",
+    " ' W = TOGGLE SPRITE DISPLAY",
+    " ' G = GRAPHIC TOGGLE",
+    " ' Y = TOGGLE PURPLE BACKGROUND",
+    " ' ENTER = COPY GRAPHIC ONLY",
+    " ' T = CHANGE LOTAG",
+    " ' H = CHANGE HITAG",
+    " ' S = CHANGE SHADE",
+    " ' V = CHANGE VISIBILITY",
+    " ' C = CHANGE GLOBAL SHADE",
+    " ' DEL = CSTAT=0",
+        };
+
+
+/******* VARS ********/
+
+static char tempbuf[1024]; //1024
+static int numsprite[MAXSPRITES];
+static int multisprite[MAXSPRITES];
+static char lo[32];
+static const char *levelname;
+static short curwall=0,wallpicnum=0,curwallnum=0;
+static short cursprite=0,curspritenum=0;
+static short cursector_lota
