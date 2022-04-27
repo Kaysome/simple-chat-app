@@ -473,4 +473,50 @@ const char *ExtGetWallCaption(short wallnum)
         } else
 
         if(wallsprite==2)
- 
+        {
+            if(curspritenum<MAXSPRITES) curspritenum++;
+            for(i=curspritenum;i<=MAXSPRITES;i++)
+            {
+                if(
+                    (sprite[i].picnum==sprite[cursprite].picnum &&
+                        sprite[i].statnum==0 )
+                    &&((search_lotag==0)||
+                      (search_lotag!=0 && search_lotag==sprite[i].lotag))
+                    &&((search_hitag==0)||
+                      (search_hitag!=0 && search_hitag==sprite[i].hitag))
+                  )
+                {
+                    posx=sprite[i].x;
+                    posy=sprite[i].y;
+                    ang= sprite[i].ang;
+                    printmessage16("> Sprite Search : Found");
+//                    curspritenum++;
+                    keystatus[0x1b]=0;
+                    return(tempbuf);
+                }
+                curspritenum++;
+            }
+            printmessage16("> Sprite Search : none");
+        }
+    }
+
+
+        if ((wall[wallnum].lotag|wall[wallnum].hitag) == 0)
+        {
+                tempbuf[0] = 0;
+        }
+        else
+        {
+                Bsprintf(tempbuf,"%hu,%hu",(unsigned short)wall[wallnum].hitag,
+                                                                                  (unsigned short)wall[wallnum].lotag);
+        }
+        return(tempbuf);
+} //end
+
+const char *ExtGetSpriteCaption(short spritenum)
+{
+
+
+    if( onnames!=5 &&
+        onnames!=6 &&
+        (!(onnames==3 || onn
