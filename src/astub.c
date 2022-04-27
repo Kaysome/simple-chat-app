@@ -315,4 +315,76 @@ void overwritesprite (int thex, int they, short tilenum,signed char shade, unsig
 void putsprite (int thex, int they, int zoom, short rot, short tilenum, signed char shade, unsigned char dapalnum)
 {char stat=0;
     rotatesprite(thex<<16,they<<16,65536L-zoom,(rot+(stat&8))<<7,tilenum,shade,dapalnum,
-               
+                (((stat&1)^1)<<4)+(stat&2)+((stat&4)>>2)+(((stat&16)>>2)^((stat&8)>>1)),
+                windowx1,windowy1,windowx2,windowy2);
+}
+
+
+void ExtPreSaveMap(void)
+{
+}
+
+void ExtSaveMap(const char *mapname)
+{
+	wm_setwindowtitle(mapname);
+
+	saveboard("backup.map",&posx,&posy,&posz,&ang,&cursectnum);
+}
+
+const char *ExtGetSectorCaption(short sectnum)
+{
+	if(!(onnames==1 || onnames==4))
+	{
+		tempbuf[0] = 0;
+		return(tempbuf);
+	}
+
+	if ((sector[sectnum].lotag|sector[sectnum].hitag) == 0)
+	{
+		tempbuf[0] = 0;
+	}
+	else
+	{
+		switch((unsigned short)sector[sectnum].lotag)
+		{
+//       case 1 : Bsprintf(lo,"WATER"); break;
+//       case 2 : Bsprintf(lo,"UNDERWATER"); break;
+//       case 3 : Bsprintf(lo,"EARTHQUAKE"); break;
+			default : Bsprintf(lo,"%hu",(unsigned short)sector[sectnum].lotag); break;
+		}
+		Bsprintf(tempbuf,"%hu,%s", (unsigned short)sector[sectnum].hitag, lo);
+        }
+	return(tempbuf);
+}
+
+const char *ExtGetWallCaption(short wallnum)
+{
+    int i=0;
+
+    if(!(onnames==2 || onnames==4))
+    {
+        tempbuf[0] = 0;
+        return(tempbuf);
+    }
+
+
+    if(keystatus[0x57]>0) // f11   Grab pic 0x4e +
+    {
+        wallpicnum = wall[curwall].picnum;
+        Bsprintf(tempbuf,"Grabbed Wall Picnum %d",wallpicnum);
+        printmessage16(tempbuf);
+    }
+
+
+    // HERE
+
+    if(keystatus[0x1a]>0) // [     search backward
+    {
+       keystatus[0x1a]=0;
+        if(wallsprite==0)
+        { SearchSectorsBackward();
+        } else
+
+        if(wallsprite==1)
+        {
+            if(curwallnum>0) curwalln
