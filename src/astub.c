@@ -202,4 +202,68 @@ static char lo[32];
 static const char *levelname;
 static short curwall=0,wallpicnum=0,curwallnum=0;
 static short cursprite=0,curspritenum=0;
-static short cursector_lota
+static short cursector_lotag=0,cursectornum=0;
+static short search_lotag=0,search_hitag=0;
+static unsigned char wallsprite=0;
+static unsigned char helpon=0;
+static unsigned char on2d3d=0;
+//static char onwater=0;
+static unsigned char onnames=4;
+static unsigned char usedcount=0;
+int mousxplc,mousyplc;
+int ppointhighlight;
+static int counter=0;
+unsigned char nosprites=0,purpleon=0,skill=4;
+unsigned char framerateon=1,tabgraphic=0;
+
+
+static unsigned char sidemode=0;
+extern int vel, svel, hvel, angvel;
+int xvel, yvel, timoff;
+
+
+
+void SearchSectorsForward();
+void SearchSectorsBackward();
+void SpriteName(short spritenum, char *lo2);
+int ActorMem(int i);
+void PrintStatus(char *string,int num,char x,char y,char color);
+void Ver();
+void SetBOSS1Palette();
+void SetSLIMEPalette();
+void SetWATERPalette();
+void SetGAMEPalette();
+void kensetpalette(unsigned char *vgapal);
+
+void ExtPreLoadMap(void)
+{
+}
+
+void ExtLoadMap(const char *mapname)
+{
+	int i;
+	int sky=0;
+	int j;
+
+	wm_setwindowtitle(mapname);
+
+	// PreCache Wall Tiles
+	for(j=0;j<numwalls;j++)
+		if(waloff[wall[j].picnum] == 0)
+			loadtile(wall[j].picnum);
+
+
+	// Presize Sprites
+	for(j=0;j<MAXSPRITES;j++)
+	{
+		if(tilesizx[sprite[j].picnum]==0 || tilesizy[sprite[j].picnum]==0)
+			sprite[j].picnum=0;
+
+		if(sprite[j].picnum>=20 && sprite[j].picnum<=59)
+		{
+			if(sprite[j].picnum==26) {sprite[j].xrepeat = 8; sprite[j].yrepeat = 8;}
+			else {sprite[j].xrepeat = 32; sprite[j].yrepeat = 32;}
+		}
+	}
+
+	leveln
