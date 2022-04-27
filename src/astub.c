@@ -387,4 +387,43 @@ const char *ExtGetWallCaption(short wallnum)
 
         if(wallsprite==1)
         {
-            if(curwallnum>0) curwalln
+            if(curwallnum>0) curwallnum--;
+            for(i=curwallnum;i>=0;i--)
+            {
+                if(
+                    (wall[i].picnum==wall[curwall].picnum)
+                    &&((search_lotag==0)||
+                      (search_lotag!=0 && search_lotag==wall[i].lotag))
+                    &&((search_hitag==0)||
+                      (search_hitag!=0 && search_hitag==wall[i].hitag))
+                  )
+                {
+                    posx=(wall[i].x)-(( (wall[i].x)-(wall[wall[i].point2].x) )/2);
+                    posy=(wall[i].y)-(( (wall[i].y)-(wall[wall[i].point2].y) )/2);
+                    printmessage16("< Wall Search : Found");
+//                    curwallnum--;
+                    keystatus[0x1a]=0;
+                    return(tempbuf);
+                }
+                curwallnum--;
+            }
+            printmessage16("< Wall Search : none");
+        } else
+
+        if(wallsprite==2)
+        {
+            if(curspritenum>0) curspritenum--;
+            for(i=curspritenum;i>=0;i--)
+            {
+
+                if(
+                    (sprite[i].picnum==sprite[cursprite].picnum &&
+                        sprite[i].statnum==0 )
+                    &&((search_lotag==0)||
+                      (search_lotag!=0 && search_lotag==sprite[i].lotag))
+                    &&((search_hitag==0)||
+                      (search_hitag!=0 && search_hitag==sprite[i].hitag))
+                  )
+                {
+                    posx=sprite[i].x;
+                    posy=
