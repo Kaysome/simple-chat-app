@@ -266,4 +266,53 @@ void ExtLoadMap(const char *mapname)
 		}
 	}
 
-	leveln
+	levelname=mapname;
+	pskyoff[0]=0;
+	for(i=0;i<8;i++) pskyoff[i]=0;
+
+	for(i=0;i<numsectors;i++)
+	{
+		switch(sector[i].ceilingpicnum)
+		{
+			case MOONSKY1 :
+			case BIGORBIT1 : // orbit
+			case LA : // la city
+				sky=sector[i].ceilingpicnum;
+				break;
+		}
+	}
+
+	switch(sky)
+	{
+		case MOONSKY1 :
+			//        earth          mountian   mountain         sun
+			pskyoff[6]=1; pskyoff[1]=2; pskyoff[4]=2; pskyoff[2]=3;
+			break;
+
+		case BIGORBIT1 : // orbit
+			//       earth1         2           3           moon/sun
+			pskyoff[5]=1; pskyoff[6]=2; pskyoff[7]=3; pskyoff[2]=4;
+			break;
+
+		case LA : // la city
+			//       earth1         2           3           moon/sun
+			pskyoff[0]=1; pskyoff[1]=2; pskyoff[2]=1; pskyoff[3]=3;
+			pskyoff[4]=4; pskyoff[5]=0; pskyoff[6]=2; pskyoff[7]=3;
+			break;
+	}
+
+	pskybits=3;
+	parallaxtype=0;
+}
+
+void overwritesprite (int thex, int they, short tilenum,signed char shade, unsigned char stat, unsigned char dapalnum)
+{
+        rotatesprite(thex<<16,they<<16,65536L,(stat&8)<<7,tilenum,shade,dapalnum,
+                (((stat&1)^1)<<4)+(stat&2)+((stat&4)>>2)+(((stat&16)>>2)^((stat&8)>>1)),
+                windowx1,windowy1,windowx2,windowy2);
+}
+
+void putsprite (int thex, int they, int zoom, short rot, short tilenum, signed char shade, unsigned char dapalnum)
+{char stat=0;
+    rotatesprite(thex<<16,they<<16,65536L-zoom,(rot+(stat&8))<<7,tilenum,shade,dapalnum,
+               
