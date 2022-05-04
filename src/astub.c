@@ -569,4 +569,65 @@ const char *ExtGetSpriteCaption(short spritenum)
 
 //printext16 parameters:
 //printext16(int xpos, int ypos, short col, short backcol,
-//           char name[
+//           char name[82], char fontsize)
+//  xpos 0-639   (top left)
+//  ypos 0-479   (top left)
+//  col 0-15
+//  backcol 0-15, -1 is transparent background
+//  name
+//  fontsize 0=8*8, 1=3*5
+
+//drawline16 parameters:
+// drawline16(int x1, int y1, int x2, int y2, char col)
+//  x1, x2  0-639
+//  y1, y2  0-143  (status bar is 144 high, origin is top-left of STATUS BAR)
+//  col     0-15
+
+
+
+void TotalMem()
+{
+    char incache[MAXTILES];
+    int i,tottiles,totsprites,totactors;
+
+    memset(incache, 0, sizeof(incache));
+
+	for(i=0;i<numsectors;i++)
+	{
+		incache[sector[i].ceilingpicnum] = 1;
+		incache[sector[i].floorpicnum] = 1;
+	}
+	for(i=0;i<numwalls;i++)
+	{
+		incache[wall[i].picnum] = 1;
+		if (wall[i].overpicnum >= 0)
+			incache[wall[i].overpicnum] = 1;
+	}
+
+	tottiles = 0;
+	for(i=0;i<MAXTILES;i++)
+		if (incache[i] > 0)
+			tottiles += tilesizx[i]*tilesizy[i];
+
+    memset(incache, 0, sizeof(incache));
+
+        for(i=0;i<MAXSPRITES;i++)
+                if (sprite[i].statnum < MAXSTATUS)
+                        incache[sprite[i].picnum] = 1;
+        totsprites = 0;
+	totactors = 0;
+
+        for(i=0;i<MAXTILES;i++)
+    {
+                if (incache[i] > 0)
+        {
+         switch(i)
+         {
+            case LIZTROOP :
+            case LIZTROOPRUNNING :
+            case LIZTROOPSTAYPUT :
+            case LIZTROOPSHOOT :
+            case LIZTROOPJETPACK :
+            case LIZTROOPONTOILET :
+            case LIZTROOPDUCKING :
+         
