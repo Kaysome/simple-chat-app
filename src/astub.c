@@ -519,4 +519,54 @@ const char *ExtGetSpriteCaption(short spritenum)
 
     if( onnames!=5 &&
         onnames!=6 &&
-        (!(onnames==3 || onn
+        (!(onnames==3 || onnames==4))
+      )
+    {
+        tempbuf[0] = 0;
+        return(tempbuf);
+    }
+
+    if( onnames==5 &&
+        ( ((unsigned short)sprite[spritenum].picnum <= 9 ) ||
+        ((unsigned short)sprite[spritenum].picnum == SEENINE )
+        )
+        )
+    { tempbuf[0] = 0; return(tempbuf); }
+
+    if( onnames==6 &&
+        (unsigned short)sprite[spritenum].picnum != (unsigned short)sprite[cursprite].picnum
+      )
+    { tempbuf[0] = 0; return(tempbuf); }
+
+    tempbuf[0] = 0;
+    if ((sprite[spritenum].lotag|sprite[spritenum].hitag) == 0)
+    {
+        SpriteName(spritenum,lo);
+        if(lo[0]!=0)
+        {
+            if(sprite[spritenum].pal==1) Bsprintf(tempbuf,"%s-M",lo);
+            else Bsprintf(tempbuf,"%s",lo);
+        }
+    }
+    else
+	    /*
+        if( (unsigned short)sprite[spritenum].picnum == 175)
+        {
+            Bsprintf(lo,"%hu",(unsigned short)sprite[spritenum].lotag);
+            Bsprintf(tempbuf,"%hu,%s",(unsigned short)sprite[spritenum].hitag,lo);
+        }
+        else
+	*/
+            {
+                SpriteName(spritenum,lo);
+                Bsprintf(tempbuf,"%hu,%hu %s",
+                (unsigned short)sprite[spritenum].hitag,
+                (unsigned short)sprite[spritenum].lotag,
+                lo);
+            }
+            return(tempbuf);
+} //end
+
+//printext16 parameters:
+//printext16(int xpos, int ypos, short col, short backcol,
+//           char name[
