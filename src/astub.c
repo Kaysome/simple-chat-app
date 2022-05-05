@@ -630,4 +630,45 @@ void TotalMem()
             case LIZTROOPJETPACK :
             case LIZTROOPONTOILET :
             case LIZTROOPDUCKING :
-         
+                totactors+=ActorMem(LIZTROOP);
+                incache[LIZTROOP]=0;
+                incache[LIZTROOPRUNNING]=0;
+                incache[LIZTROOPSTAYPUT]=0;
+                incache[LIZTROOPSHOOT]=0;
+                incache[LIZTROOPJETPACK]=0;
+                incache[LIZTROOPONTOILET]=0;
+                incache[LIZTROOPDUCKING]=0;
+                break;
+        case OCTABRAIN :
+        case OCTABRAINSTAYPUT:
+        totactors+=ActorMem(OCTABRAIN);
+        incache[OCTABRAIN]=0;
+        incache[OCTABRAINSTAYPUT]=0;
+                break;
+                 case DRONE :
+                totactors+=ActorMem(DRONE);
+                incache[DRONE]=0;
+                break;
+        case COMMANDER :
+        totactors+=ActorMem(COMMANDER);
+        incache[COMMANDER]=0;
+                break;
+            case RECON :
+                totactors+=ActorMem(RECON);
+                incache[RECON]=0;
+                break;
+            case PIGCOP :
+        totactors+=ActorMem(COMMANDER);
+                incache[PIGCOP]=0;
+                break;
+            case LIZMAN :
+        case LIZMANSTAYPUT :
+            case LIZMANSPITTING :
+            case LIZMANFEEDING :
+            case LIZMANJUMP :
+                totactors+=ActorMem(LIZMAN);
+                incache[LIZMAN]=0;
+        incache[LIZMANSTAYPUT]=0;
+                incache[LIZMANSPITTING]=0;
+                incache[LIZMANFEEDING]=0;
+   
