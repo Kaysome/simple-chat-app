@@ -671,4 +671,68 @@ void TotalMem()
         incache[LIZMANSTAYPUT]=0;
                 incache[LIZMANSPITTING]=0;
                 incache[LIZMANFEEDING]=0;
+                incache[LIZMANJUMP]=0;
+                break;
+            case BOSS1 :
+                totactors+=ActorMem(BOSS1);
+                incache[BOSS1]=0;
+                break;
+        case BOSS2 :
+        totactors+=ActorMem(BOSS2);
+        incache[BOSS2]=0;
+        break;
+            case BOSS3 :
+                totactors+=ActorMem(BOSS3);
+                incache[BOSS3]=0;
+                break;
+
+            default: totsprites += tilesizx[i]*tilesizy[i];
+         }
+        }
+    }
+
+
+
+
+
+    clearmidstatbar16();
+    printext16(1*8,4*8,11,-1,"Memory Status",0);
+
+    PrintStatus("Total Tiles   = ",tottiles,2,6,11);
+    PrintStatus("Total Sprites = ",totsprites,2,7,11);
+    PrintStatus("Total Actors  = ",totactors,2,8,11);
+
+    PrintStatus("Total Memory  = ",(tottiles+totsprites+totactors),2,10,11);
+
+    PrintStatus("Total W/Duke  = ",(tottiles+totsprites+totactors+ActorMem(APLAYER)),2,12,11);
+
+}
+
+void ExtShowSectorData(short sectnum)   //F5
+{
+    short statnum=0;
+    int x,x2,y;
+    int nexti;
+    int i;
+    int secrets=0;
+    int totalactors1=0,totalactors2=0,totalactors3=0,totalactors4=0;
+    int totalrespawn=0;
+
+    (void)sectnum;
+
+    for(i=0;i<numsectors;i++)
+    { if(sector[i].lotag==32767) secrets++;
+    }
+
+     statnum=0;
+     i = headspritestat[statnum];
+     while (i != -1)
+     {
+             nexti = nextspritestat[i];
+             i = nexti;
+
+       { switch(sprite[i].picnum)
+         {
+            case RECON:
+            case DRONE:
    
