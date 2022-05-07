@@ -814,4 +814,32 @@ void ExtShowSectorData(short sectnum)   //F5
       PrintStatus("",multisprite[HEATSENSOR],x2,y+5,1);
      PrintStatus("Boots    =",numsprite[BOOTS],x,y+6,11);
       PrintStatus("",multisprite[BOOTS],x2,y+6,1);
-     PrintStatus("HoloDuke =",numsprite[HOLODUKE],x,y+7,11)
+     PrintStatus("HoloDuke =",numsprite[HOLODUKE],x,y+7,11);
+      PrintStatus("",multisprite[HOLODUKE],x2,y+7,1);
+     PrintStatus("Multi D  =",numsprite[APLAYER],x,y+8,11);
+
+     x=33; x2=46; y=4;
+     printext16(x*8,y*8,11,-1,"Weapon Count",0);
+     PrintStatus("Pistol   =",numsprite[FIRSTGUNSPRITE],x,y+2,11);
+      PrintStatus("",multisprite[FIRSTGUNSPRITE],x2,y+2,1);
+     PrintStatus("Shotgun  =",numsprite[SHOTGUNSPRITE],x,y+3,11);
+      PrintStatus("",multisprite[SHOTGUNSPRITE],x2,y+3,1);
+     PrintStatus("Chaingun =",numsprite[CHAINGUNSPRITE],x,y+4,11);
+      PrintStatus("",multisprite[CHAINGUNSPRITE],x2,y+4,1);
+     PrintStatus("RPG      =",numsprite[RPGSPRITE],x,y+5,11);
+      PrintStatus("",multisprite[RPGSPRITE],x2,y+5,1);
+     PrintStatus("Pipe Bomb=",numsprite[HEAVYHBOMB],x,y+6,11);
+      PrintStatus("",multisprite[HEAVYHBOMB],x2,y+6,1);
+     PrintStatus("Shrinker =",numsprite[SHRINKERSPRITE],x,y+7,11);
+      PrintStatus("",multisprite[SHRINKERSPRITE],x2,y+7,1);
+          PrintStatus("Disruptor=",numsprite[DEVISTATORSPRITE],x,y+8,11);
+                PrintStatus("",multisprite[DEVISTATORSPRITE],x2,y+8,1);
+     PrintStatus("Trip mine=",numsprite[TRIPBOMBSPRITE],x,y+9,11);
+      PrintStatus("",multisprite[TRIPBOMBSPRITE],x2,y+9,1);
+     PrintStatus("Freezeray=",numsprite[FREEZESPRITE],x,y+10,11);
+      PrintStatus("",multisprite[FREEZESPRITE],x2,y+10,1);
+
+      x=49; x2=62; y=4;
+     printext16(x*8,y*8,11,-1,"Ammo Count",0);
+     PrintStatus("Pistol   =",numsprite[AMMO],x,y+2,11);
+      PrintStatus("",multisprite[AMMO],
