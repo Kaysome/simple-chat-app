@@ -842,4 +842,40 @@ void ExtShowSectorData(short sectnum)   //F5
       x=49; x2=62; y=4;
      printext16(x*8,y*8,11,-1,"Ammo Count",0);
      PrintStatus("Pistol   =",numsprite[AMMO],x,y+2,11);
-      PrintStatus("",multisprite[AMMO],
+      PrintStatus("",multisprite[AMMO],x2,y+2,1);
+     PrintStatus("Shot     =",numsprite[SHOTGUNAMMO],x,y+3,11);
+      PrintStatus("",multisprite[SHOTGUNAMMO],x2,y+3,1);
+     PrintStatus("Chain    =",numsprite[BATTERYAMMO],x,y+4,11);
+      PrintStatus("",multisprite[BATTERYAMMO],x2,y+4,1);
+     PrintStatus("RPG Box  =",numsprite[RPGAMMO],x,y+5,11);
+      PrintStatus("",multisprite[RPGAMMO],x2,y+5,1);
+     PrintStatus("Pipe Bomb=",numsprite[HBOMBAMMO],x,y+6,11);
+      PrintStatus("",multisprite[HBOMBAMMO],x2,y+6,1);
+          PrintStatus("Disruptor=",numsprite[DEVISTATORAMMO],x,y+7,11);
+                PrintStatus("",multisprite[DEVISTATORAMMO],x2,y+7,1);
+     PrintStatus("Shrinker =",numsprite[CRYSTALAMMO],x,y+8,11);
+      PrintStatus("",multisprite[CRYSTALAMMO],x2,y+8,1);
+     PrintStatus("Freezeray=",numsprite[FREEZEAMMO],x,y+9,11);
+      PrintStatus("",multisprite[FREEZEAMMO],x2,y+9,1);
+
+     printext16(65*8,4*8,11,-1,"MISC",0);
+     PrintStatus("Secrets =",secrets,65,6,11);
+     printext16(65*8,7*8,11,-1,"ACTORS",0);
+     PrintStatus("Skill 1 =",totalactors1,65,8,11);
+     PrintStatus("Skill 2 =",totalactors2,65,9,11);
+     PrintStatus("Skill 3 =",totalactors3,65,10,11);
+     PrintStatus("Skill 4 =",totalactors4,65,11,11);
+     PrintStatus("Respawn =",totalrespawn,65,12,11);
+
+
+}// end ExtShowSectorData
+
+void ExtShowWallData(short wallnum)       //F6
+{
+ int i,nextfreetag=0,total=0;
+ char x,y;
+
+ (void)wallnum;
+
+ for(i=0;i<MAXSPRITES;i++)
+ {
