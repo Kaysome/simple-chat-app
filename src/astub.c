@@ -786,4 +786,32 @@ void ExtShowSectorData(short sectnum)   //F5
          }
 
         clearmidstatbar16();             //Clear middle of status bar
-       
+         Bsprintf(tempbuf,"Level %s",levelname);
+         printmessage16(tempbuf);
+
+     x=1; x2=14; y=4;
+     printext16(x*8,y*8,11,-1,"Item Count",0);
+     PrintStatus("10%health=",numsprite[COLA],x,y+2,11);
+      PrintStatus("",multisprite[COLA],x2,y+2,1);
+     PrintStatus("30%health=",numsprite[SIXPAK],x,y+3,11);
+      PrintStatus("",multisprite[SIXPAK],x2,y+3,1);
+     PrintStatus("Med-Kit  =",numsprite[FIRSTAID],x,y+4,11);
+      PrintStatus("",multisprite[FIRSTAID],x2,y+4,1);
+     PrintStatus("Atom     =",numsprite[ATOMICHEALTH],x,y+5,11);
+      PrintStatus("",multisprite[ATOMICHEALTH],x2,y+5,1);
+     PrintStatus("Shields  =",numsprite[SHIELD],x,y+6,11);
+      PrintStatus("",multisprite[SHIELD],x2,y+6,1);
+
+     x=17; x2=30; y=4;
+     printext16(x*8,y*8,11,-1,"Inventory",0);
+     PrintStatus("Steroids =",numsprite[STEROIDS],x,y+2,11);
+      PrintStatus("",multisprite[STEROIDS],x2,y+2,1);
+     PrintStatus("Airtank  =",numsprite[AIRTANK],x,y+3,11);
+      PrintStatus("",multisprite[AIRTANK],x2,y+3,1);
+     PrintStatus("Jetpack  =",numsprite[JETPACK],x,y+4,11);
+      PrintStatus("",multisprite[JETPACK],x2,y+4,1);
+     PrintStatus("Goggles  =",numsprite[HEATSENSOR],x,y+5,11);
+      PrintStatus("",multisprite[HEATSENSOR],x2,y+5,1);
+     PrintStatus("Boots    =",numsprite[BOOTS],x,y+6,11);
+      PrintStatus("",multisprite[BOOTS],x2,y+6,1);
+     PrintStatus("HoloDuke =",numsprite[HOLODUKE],x,y+7,11)
