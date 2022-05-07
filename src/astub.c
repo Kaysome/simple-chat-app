@@ -735,4 +735,55 @@ void ExtShowSectorData(short sectnum)   //F5
          {
             case RECON:
             case DRONE:
-   
+            case LIZTROOPONTOILET:
+            case LIZTROOPSTAYPUT:
+            case LIZTROOPSHOOT:
+            case LIZTROOPJETPACK:
+            case LIZTROOPDUCKING:
+            case LIZTROOPRUNNING:
+            case LIZTROOP:
+            case OCTABRAIN:
+            case OCTABRAINSTAYPUT:
+            case COMMANDER:
+            case COMMANDERSTAYPUT:
+            case EGG:
+            case PIGCOP:
+            case PIGCOPSTAYPUT:
+            case PIGCOPDIVE:
+            case LIZMAN:
+            case LIZMANSTAYPUT:
+            case LIZMANSPITTING:
+            case LIZMANFEEDING:
+            case LIZMANJUMP:
+            case ORGANTIC:
+            case BOSS1:
+            case BOSS2:
+            case BOSS3:
+            case GREENSLIME:
+            case ROTATEGUN:
+            if(sprite[i].lotag<=1) totalactors1++;
+            if(sprite[i].lotag<=2) totalactors2++;
+            if(sprite[i].lotag<=3) totalactors3++;
+            if(sprite[i].lotag<=4) totalactors4++;
+            break;
+
+            case RESPAWN:
+            totalrespawn++;
+
+            default: break;
+         }
+       }
+     }
+
+     for(i=0;i<MAXSPRITES;i++) numsprite[i]=0;
+     for(i=0;i<MAXSPRITES;i++) multisprite[i]=0;
+         for(i=0;i<MAXSPRITES;i++)
+     { if(sprite[i].statnum==0)
+       {
+         if(sprite[i].pal!=0) multisprite[sprite[i].picnum]++;
+         else numsprite[sprite[i].picnum]++;
+       }
+         }
+
+        clearmidstatbar16();             //Clear middle of status bar
+       
