@@ -1092,4 +1092,53 @@ void ExtShowWallData(short wallnum)       //F6
       }// end if
     }// end for
     total=0;
-    for(i=0;i<MAXSPRITES;i++) if(numsprite[i]!=0) total+=nums
+    for(i=0;i<MAXSPRITES;i++) if(numsprite[i]!=0) total+=numsprite[i];
+    for(i=0;i<MAXSPRITES;i++) if(multisprite[i]!=0) total+=multisprite[i];
+
+
+ x=36;y=6;
+ PrintStatus("Respawn",total,x,y,11);
+ PrintStatus(" Liztroop  =",numsprite[LIZTROOP],x,y+1,11);
+ PrintStatus(" Lizman    =",numsprite[LIZMAN],x,y+2,11);
+ PrintStatus(" Commander =",numsprite[COMMANDER],x,y+3,11);
+ PrintStatus(" Octabrain =",numsprite[OCTABRAIN],x,y+4,11);
+ PrintStatus(" PigCop    =",numsprite[PIGCOP],x,y+5,11);
+ PrintStatus(" Recon Car =",numsprite[RECON],x,y+6,11);
+ PrintStatus(" Drone     =",numsprite[DRONE],x,y+7,11);
+ x+=17;
+ PrintStatus("Turret    =",numsprite[ROTATEGUN],x,y+1,11);
+ PrintStatus("Egg       =",numsprite[EGG],x,y+2,11);
+ PrintStatus("Slimer    =",numsprite[GREENSLIME],x,y+3,11);
+ PrintStatus("Boss1     =",numsprite[BOSS1],x,y+4,11);
+ PrintStatus("MiniBoss1 =",multisprite[BOSS1],x,y+5,11);
+ PrintStatus("Boss2     =",numsprite[BOSS2],x,y+6,11);
+ PrintStatus("Boss3     =",numsprite[BOSS3],x,y+7,11);
+
+}// end ExtShowWallData
+
+void Show2dText(char *name)
+{
+ int fp;
+ int t;
+ unsigned char x=0,y=4,xmax=0,xx=0,col=0;
+ clearmidstatbar16();
+ if((fp=kopen4load(name,0)) == -1)
+ {
+	 printext16(1*4,4*8,11,-1,"ERROR: file not found.",0);
+  return;
+ }
+
+ t=65;
+ while(t!=EOF && col<5)
+ {
+  t = 0; if (kread(fp,&t,1)<=0) t = EOF;
+  while(t!=EOF && t!='\n' && x<250)
+  {
+     tempbuf[x]=t;
+     t = 0; if (kread(fp,&t,1)<=0) t = EOF;
+     x++; if(x>xmax) xmax=x;
+  }
+  tempbuf[x]=0;
+  printext16(xx*4,(y*6)+2,11,-1,tempbuf,1);
+  x=0; y++;
+  if(y>18) {c
