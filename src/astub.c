@@ -1052,4 +1052,44 @@ void ExtShowWallData(short wallnum)       //F6
                     case LIZTROOPJETPACK :
                     case LIZTROOPONTOILET :
                     case LIZTROOPDUCKING :
-                        numsprite[LIZTROOP]++;
+                        numsprite[LIZTROOP]++; break;
+                    case PIGCOP:
+                    case PIGCOPSTAYPUT:
+                    case PIGCOPDIVE:
+                        numsprite[PIGCOP]++; break;
+                    case LIZMAN:
+                    case LIZMANSTAYPUT:
+                    case LIZMANSPITTING:
+                    case LIZMANFEEDING:
+                    case LIZMANJUMP:
+                        numsprite[LIZMAN]++; break;
+                    case BOSS1:
+                    case BOSS1STAYPUT:
+                    case BOSS1SHOOT:
+                    case BOSS1LOB:
+                    case BOSSTOP:
+                        if(sprite[i].pal!=0) multisprite[BOSS1]++;
+                        else numsprite[BOSS1]++;
+                        break;
+                    case COMMANDER:
+                    case COMMANDERSTAYPUT:
+                        numsprite[COMMANDER]++; break;
+                    case OCTABRAIN:
+                    case OCTABRAINSTAYPUT:
+                        numsprite[OCTABRAIN]++; break;
+                    case RECON:
+                    case DRONE:
+                    case ROTATEGUN:
+                    case EGG:
+                    case ORGANTIC:
+                    case GREENSLIME:
+                    case BOSS2:
+                    case BOSS3:
+                        numsprite[sprite[i].hitag]++;
+                    default:
+                        break;
+                }//end switch
+      }// end if
+    }// end for
+    total=0;
+    for(i=0;i<MAXSPRITES;i++) if(numsprite[i]!=0) total+=nums
