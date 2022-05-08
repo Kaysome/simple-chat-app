@@ -1018,4 +1018,38 @@ void ExtShowWallData(short wallnum)       //F6
  Bsprintf(tempbuf,"Level %s Status",levelname);
  printext16(1*8,4*8,11,-1,tempbuf,0);
 
- PrintStatus("Next Available Tag =",nextf
+ PrintStatus("Next Available Tag =",nextfreetag,35,4,11);
+
+ x=2;y=6;
+ PrintStatus("Normal Actors =",total,x,y,11);
+ PrintStatus(" Liztroop  =",numsprite[LIZTROOP],x,y+1,11);
+ PrintStatus(" Lizman    =",numsprite[LIZMAN],x,y+2,11);
+ PrintStatus(" Commander =",numsprite[COMMANDER],x,y+3,11);
+ PrintStatus(" Octabrain =",numsprite[OCTABRAIN],x,y+4,11);
+ PrintStatus(" PigCop    =",numsprite[PIGCOP],x,y+5,11);
+ PrintStatus(" Recon Car =",numsprite[RECON],x,y+6,11);
+ PrintStatus(" Drone     =",numsprite[DRONE],x,y+7,11);
+ x+=17;
+ PrintStatus("Turret    =",numsprite[ROTATEGUN],x,y+1,11);
+ PrintStatus("Egg       =",numsprite[EGG],x,y+2,11);
+ PrintStatus("Slimer    =",numsprite[GREENSLIME],x,y+3,11);
+ PrintStatus("Boss1     =",numsprite[BOSS1],x,y+4,11);
+ PrintStatus("MiniBoss1 =",multisprite[BOSS1],x,y+5,11);
+ PrintStatus("Boss2     =",numsprite[BOSS2],x,y+6,11);
+ PrintStatus("Boss3     =",numsprite[BOSS3],x,y+7,11);
+
+ //Count Respawn Actors
+    for(i=0;i<MAXSPRITES;i++) numsprite[i]=0;
+    for(i=0;i<MAXSPRITES;i++) multisprite[i]=0;
+    for(i=0;i<MAXSPRITES;i++)
+    { if(sprite[i].statnum==0 && sprite[i].picnum==RESPAWN)
+      {  switch(sprite[i].hitag)
+                {
+                    case LIZTROOP :
+                    case LIZTROOPRUNNING :
+                    case LIZTROOPSTAYPUT :
+                    case LIZTROOPSHOOT :
+                    case LIZTROOPJETPACK :
+                    case LIZTROOPONTOILET :
+                    case LIZTROOPDUCKING :
+                        numsprite[LIZTROOP]++;
