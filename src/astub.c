@@ -879,3 +879,62 @@ void ExtShowWallData(short wallnum)       //F6
 
  for(i=0;i<MAXSPRITES;i++)
  {
+  if(sprite[i].statnum==0)
+  switch(sprite[i].picnum)
+  {
+    //LOTAG
+    case ACTIVATOR:
+    case ACTIVATORLOCKED:
+    case TOUCHPLATE:
+    case MASTERSWITCH:
+    case RESPAWN:
+    case ACCESSSWITCH:
+    case SLOTDOOR:
+    case LIGHTSWITCH:
+    case SPACEDOORSWITCH:
+    case SPACELIGHTSWITCH:
+    case FRANKENSTINESWITCH:
+    case MULTISWITCH:
+    case DIPSWITCH:
+    case DIPSWITCH2:
+    case TECHSWITCH:
+    case DIPSWITCH3:
+    case ACCESSSWITCH2:
+    case POWERSWITCH1:
+    case LOCKSWITCH1:
+    case POWERSWITCH2:
+    case PULLSWITCH:
+    case ALIENSWITCH:
+        if(sprite[i].lotag>nextfreetag) nextfreetag=1+sprite[i].lotag;
+        break;
+
+    //HITAG
+    case SEENINE:
+    case OOZFILTER:
+        case SECTOREFFECTOR:
+        if(sprite[i].lotag==10 ||
+            sprite[i].lotag==27 ||
+            sprite[i].lotag==28 ||
+            sprite[i].lotag==29
+            ) break;
+        else
+            if(sprite[i].hitag>nextfreetag) nextfreetag=1+sprite[i].hitag;
+        break;
+        default:
+        break;
+
+  }
+
+ } // end sprite loop
+
+ //Count Normal Actors
+    for(i=0;i<MAXSPRITES;i++) numsprite[i]=0;
+    for(i=0;i<MAXSPRITES;i++) multisprite[i]=0;
+    for(i=0;i<MAXSPRITES;i++)
+        { if(sprite[i].statnum==0)
+            {
+            if(sprite[i].pal!=0)
+                switch(sprite[i].picnum)
+                {
+                    case LIZTROOP :
+             
