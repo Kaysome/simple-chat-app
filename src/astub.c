@@ -937,4 +937,42 @@ void ExtShowWallData(short wallnum)       //F6
                 switch(sprite[i].picnum)
                 {
                     case LIZTROOP :
-             
+                    case LIZTROOPRUNNING :
+                    case LIZTROOPSTAYPUT :
+                    case LIZTROOPSHOOT :
+                    case LIZTROOPJETPACK :
+                    case LIZTROOPONTOILET :
+                    case LIZTROOPDUCKING :
+                        numsprite[LIZTROOP]++; break;
+                    case BOSS1:
+                    case BOSS1STAYPUT:
+                    case BOSS1SHOOT:
+                    case BOSS1LOB:
+                    case BOSSTOP:
+                        multisprite[BOSS1]++; break;
+                    case BOSS2:
+                        multisprite[BOSS2]++; break;
+                    case BOSS3:
+                        multisprite[BOSS3]++; break;
+
+                    default:
+                        break;
+                }
+            else
+                switch(sprite[i].picnum)
+                {
+                    case LIZTROOP :
+                    case LIZTROOPRUNNING :
+                    case LIZTROOPSTAYPUT :
+                    case LIZTROOPSHOOT :
+                    case LIZTROOPJETPACK :
+                    case LIZTROOPONTOILET :
+                    case LIZTROOPDUCKING :
+                        numsprite[LIZTROOP]++; break;
+                    case PIGCOP:
+                    case PIGCOPSTAYPUT:
+                    case PIGCOPDIVE:
+                        numsprite[PIGCOP]++; break;
+                    case LIZMAN:
+                    case LIZMANSTAYPUT:
+                    case LIZMAN
