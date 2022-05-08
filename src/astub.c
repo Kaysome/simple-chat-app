@@ -975,4 +975,47 @@ void ExtShowWallData(short wallnum)       //F6
                         numsprite[PIGCOP]++; break;
                     case LIZMAN:
                     case LIZMANSTAYPUT:
-                    case LIZMAN
+                    case LIZMANSPITTING:
+                    case LIZMANFEEDING:
+                    case LIZMANJUMP:
+                        numsprite[LIZMAN]++; break;
+                    case BOSS1:
+                    case BOSS1STAYPUT:
+                    case BOSS1SHOOT:
+                    case BOSS1LOB:
+                    case BOSSTOP:
+                        numsprite[BOSS1]++; break;
+                    case COMMANDER:
+                    case COMMANDERSTAYPUT:
+                        numsprite[COMMANDER]++; break;
+                    case OCTABRAIN:
+                    case OCTABRAINSTAYPUT:
+                        numsprite[OCTABRAIN]++; break;
+                    case RECON:
+                    case DRONE:
+                    case ROTATEGUN:
+                    case EGG:
+                    case ORGANTIC:
+                    case GREENSLIME:
+                    case BOSS2:
+                    case BOSS3:
+                        numsprite[sprite[i].picnum]++;
+                    default:
+                        break;
+
+                }// end switch
+            }// end if
+        }//end for
+    total=0;
+    for(i=0;i<MAXSPRITES;i++) if(numsprite[i]!=0) total+=numsprite[i];
+    for(i=0;i<MAXSPRITES;i++) if(multisprite[i]!=0) total+=multisprite[i];
+
+ clearmidstatbar16();
+
+ Bsprintf(tempbuf,"Level %s",levelname);
+ printmessage16(tempbuf);
+
+ Bsprintf(tempbuf,"Level %s Status",levelname);
+ printext16(1*8,4*8,11,-1,tempbuf,0);
+
+ PrintStatus("Next Available Tag =",nextf
