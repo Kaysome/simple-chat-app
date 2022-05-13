@@ -1220,4 +1220,51 @@ void ShowHelpText(char *name)
 void ExtShowSpriteData(short spritenum)   //F6
 {
 	(void)spritenum;
-	if (qsetmode == 200) S
+	if (qsetmode == 200) Show3dText("sehelp.hlp");
+	else Show2dText("sehelp.hlp");
+}// end ExtShowSpriteData
+
+void ExtEditSectorData(short sectnum)    //F7
+{
+	(void)sectnum;
+	if (qsetmode == 200) Show3dText("sthelp.hlp");
+	else Show2dText("sthelp.hlp");
+}// end ExtEditSectorData
+
+void ExtEditWallData(short wallnum)       //F8
+{
+    if(qsetmode==200) return;
+    wallsprite=1;
+    curwall = wallnum;
+    curwallnum = 0;
+    curspritenum = 0;
+    cursectornum = 0;
+    search_lotag=getnumber16("Enter Wall Search Lo-Tag : ", search_lotag, 65536L,0);
+    search_hitag=getnumber16("Enter Wall Search Hi-Tag : ", search_hitag, 65536L,0);
+    Bsprintf(tempbuf,"Current Wall %d lo=%d hi=%d",
+        curwall,search_lotag,search_hitag);
+    printmessage16(tempbuf);
+
+}
+
+void ExtEditSpriteData(short spritenum)   //F8
+{
+    if(qsetmode==200) return;
+    wallsprite=2;
+    cursprite = spritenum;
+    curwallnum = 0;
+    curspritenum = 0;
+    cursectornum = 0;
+    search_lotag=getnumber16("Enter Sprite Search Lo-Tag : ", search_lotag, 65536L,0);
+    search_hitag=getnumber16("Enter Sprite Search Hi-Tag : ", search_hitag, 65536L,0);
+    Bsprintf(tempbuf,"Current Sprite %d %s lo=%d hi=%d",
+        cursprite,names[sprite[cursprite].picnum],search_lotag,search_hitag);
+    printmessage16(tempbuf);
+
+}
+
+
+void PrintStatus(char *string,int num,char x,char y,char color)
+{
+     Bsprintf(tempbuf,"%s %d",string,num);
+     printext16(x*8,y*8,color,-1,tempbuf
