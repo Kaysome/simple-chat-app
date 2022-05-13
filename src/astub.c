@@ -1141,4 +1141,83 @@ void Show2dText(char *name)
   tempbuf[x]=0;
   printext16(xx*4,(y*6)+2,11,-1,tempbuf,1);
   x=0; y++;
-  if(y>18) {c
+  if(y>18) {col++; y=6; xx+=xmax; xmax=0;}
+ }
+
+ kclose(fp);
+
+}// end Show2dText
+
+void Show3dText(char *name)
+{
+ int fp;
+ unsigned char x=0,y=4,xmax=0,xx=0,col=0;
+ int t;
+ if((fp=kopen4load(name,0)) == -1)
+ {
+    printext256(1*4,4*8,11,-1,"ERROR: file not found.",0);
+    return;
+ }
+ t=65;
+ while(t!=EOF && col<5)
+ {
+  t = 0; if (kread(fp,&t,1)<=0) t = EOF;
+  while(t!=EOF && t!='\n' && x<250)
+  {
+    tempbuf[x]=t;
+    t = 0; if (kread(fp,&t,1)<=0) t = EOF;
+        x++; if(x>xmax) xmax=x;
+  }
+  tempbuf[x]=0;
+  printext256(xx*4,(y*6)+2,11,-1,tempbuf,1);
+  x=0; y++;
+  if(y>18) {col++; y=6; xx+=xmax; xmax=0;}
+ }
+
+ kclose(fp);
+}// end Show3dText
+
+
+void ShowHelpText(char *name)
+{
+    BFILE *fp;
+    unsigned char x=0,y=4;
+
+    (void)name;
+
+    if((fp=fopenfrompath("helpdoc.txt","rb")) == NULL)
+    {
+        printext256(1*4,4*8,11,-1,"ERROR: file not found.",0);
+        return;
+    }
+/*
+    Bfgets(tempbuf,80,fp);
+    while(!Bfeof(fp) && Bstrcmp(tempbuf,"SectorEffector"))
+    {
+        Bfgets(tempbuf,80,fp);
+    }
+*/
+    y=2;
+    Bfgets(tempbuf,80,fp);
+    Bstrcat(tempbuf,"\n");
+    while(!Bfeof(fp) && !(Bstrcmp(tempbuf,"SectorEffector")==0))
+    {
+        Bfgets(tempbuf,80,fp);
+        Bstrcat(tempbuf,"\n");
+        printext256(x*4,(y*6)+2,11,-1,tempbuf,1);
+        y++;
+    }
+
+    Bfclose(fp);
+}// end ShowHelpText
+
+
+
+
+
+
+
+void ExtShowSpriteData(short spritenum)   //F6
+{
+	(void)spritenum;
+	if (qsetmode == 200) S
