@@ -1399,3 +1399,60 @@ void Keys3d(void)
 	{
 		keystatus[0x13] = 0;
 		framerateon=!framerateon;
+		if(framerateon) printext256(1*4,1*8,11,-1,"Framerate ON",0);
+		else printext256(1*4,1*8,11,-1,"Framerate OFF",0);
+	}
+
+	if(keystatus[0x28]==1 && keystatus[0x11]==1) // ' w
+	{
+		keystatus[0x11] = 0;
+		nosprites++; if(nosprites>3) nosprites=0;
+		Bsprintf(tempbuf,"%s",ALPHABEASTLOADOMAGA1[nosprites]);
+		printext256(1*4,1*8,11,-1,tempbuf,0);
+	}
+
+	if(keystatus[0x28]==1 && keystatus[0x15]==1) // ' y
+	{
+		keystatus[0x15] = 0;
+		purpleon=!purpleon; if(nosprites>3) nosprites=0;
+		if(purpleon) printext256(1*4,1*8,11,-1,"Purple ON",0);
+		else printext256(1*4,1*8,11,-1,"Purple OFF",0);
+	}
+	if(keystatus[0x28]==1 && keystatus[0x2e]==1) // ' C
+	{
+		keystatus[0x2e] = 0;
+		switch (searchstat)
+		{
+			case 0: case 4:
+				for(i=0;i<MAXWALLS;i++)
+				{
+					if(wall[i].picnum==temppicnum) {wall[i].shade=tempshade;}
+				}
+				break;
+			case 1: case 2:
+				for(i=0;i<MAXSECTORS;i++)
+				{
+					if(searchstat==1)
+						if(sector[i].ceilingpicnum==temppicnum) {sector[i].ceilingshade=tempshade;}
+					if(searchstat==2)
+						if(sector[i].floorpicnum==temppicnum) {sector[i].floorshade=tempshade;}
+				}
+				break;
+			case 3:
+				for(i=0;i<MAXSPRITES;i++)
+				{
+					if(sprite[i].picnum==temppicnum) {sprite[i].shade=tempshade;}
+				}
+				break;
+		}
+	}
+
+	if(keystatus[0x28]==1 && keystatus[0x14]==1) // ' T
+	{
+		keystatus[0x14] = 0;
+		switch (searchstat)
+		{
+			case 0: case 4:
+				Bstrcpy(tempbuf,"Wall lotag: ");
+				wall[searchwall].lotag =
+					getnumber256(tempbuf,wall[s
