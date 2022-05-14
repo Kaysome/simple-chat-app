@@ -1341,4 +1341,61 @@ void Keys3d(void)
 			}
 		}
 	}
-	clockval[cl
+	clockval[clockcnt] = i;
+	clockcnt = ((clockcnt+1)&15);
+
+	if(helpon==1)
+	{
+		for(i=0;i<MAXHELP3D;i++)
+		{
+			printext256(0*8,8+(i*8),15,-1,Help3d[i],1);
+			switch(i)
+			{
+				case 3: Bsprintf(tempbuf,"%d",framerateon); break;
+				case 4: Bsprintf(tempbuf,"%s",SKILLMODE[skill]); break;
+				case 5: Bsprintf(tempbuf,"%s",ALPHABEASTLOADOMAGA1[nosprites]); break;
+				case 6: Bsprintf(tempbuf,"%d",tabgraphic); break;
+				case 7: Bsprintf(tempbuf,"%d",purpleon); break;
+				default : sprintf(tempbuf," "); break;
+			}
+			printext256(20*8,8+(i*8),15,-1,tempbuf,1);
+		}
+		Ver();
+	}
+
+	if(purpleon) { printext256(1*4,1*8,11,-1,"Purple ON",0); }
+
+	if(sector[cursectnum].lotag==2)
+	{
+		if(sector[cursectnum].floorpal==8) SetBOSS1Palette();
+		else SetWATERPalette();
+	}
+	else SetGAMEPalette();
+
+//Stick this in 3D part of ExtCheckKeys
+//Also choose your own key scan codes
+
+	if(keystatus[0x28]==1 && keystatus[0x20]==1) // ' d
+	{
+		ShowHelpText("SectorEffector");
+	}
+/*
+	{
+		keystatus[0x20] = 0;
+		skill++; if(skill>4) skill=0;
+		sprintf(tempbuf,"%s",SKILLMODE[skill]);
+		printext256(1*4,1*8,11,-1,tempbuf,0);
+	}
+*/
+	if(keystatus[0x28]==1 && keystatus[0x22]==1) // ' g
+	{
+		keystatus[0x22] = 0;
+		tabgraphic=!tabgraphic;
+		if(tabgraphic) printext256(1*4,1*8,11,-1,"Graphics ON",0);
+		else printext256(1*4,1*8,11,-1,"Graphics OFF",0);
+	}
+
+	if(keystatus[0x28]==1 && keystatus[0x13]==1) // ' r
+	{
+		keystatus[0x13] = 0;
+		framerateon=!framerateon;
