@@ -1510,4 +1510,70 @@ void Keys3d(void)
 						getnumber256(tempbuf,sector[searchsector].ceilingshade,65536L,1);
 				if(searchstat==2)
 					sector[searchsector].floorshade =
-						getnum
+						getnumber256(tempbuf,sector[searchsector].floorshade,65536L,1);
+				break;
+			case 3:
+				Bstrcpy(tempbuf,"Sprite shade: ");
+				sprite[searchwall].shade =
+					getnumber256(tempbuf,sprite[searchwall].shade,65536L,1);
+				break;
+		}
+	}
+
+	if(keystatus[0x28]==1 && keystatus[0x2f]==1) // ' V
+	{
+		keystatus[0x2f] = 0;
+		switch (searchstat)
+		{
+			case 1: case 2:
+				Bstrcpy(tempbuf,"Sector visibility: ");
+				sector[searchsector].visibility =
+					getnumber256(tempbuf,sector[searchsector].visibility,65536L,0);
+				break;
+		}
+	}
+
+	if(keystatus[0x28]==1 && keystatus[0x0e]==1) // ' del
+	{
+		keystatus[0x23] = 0;
+		switch (searchstat)
+		{
+			case 0: case 4: wall[searchwall].cstat = 0; break;
+//			case 1: case 2: sector[searchsector].cstat = 0; break;
+			case 3: sprite[searchwall].cstat = 0; break;
+		}
+	}
+
+	if(keystatus[0x0f]>0) // TAB : USED
+	{
+		usedcount=!usedcount;
+
+		count=0;
+		for(i=0;i<numwalls;i++)
+		{
+			if(wall[i].picnum == temppicnum) count++;
+			if(wall[i].overpicnum == temppicnum) count++;
+		}
+		for(i=0;i<numsectors;i++)	// JBF 20040307: was numwalls, thanks Semicharm
+		{
+			if(sector[i].ceilingpicnum == temppicnum) count++;
+			if(sector[i].floorpicnum == temppicnum) count++;
+		}
+		statnum = 0;        //status 1
+		i = headspritestat[statnum];
+		while (i != -1)
+		{
+			nexti = nextspritestat[i];
+
+			//your code goes here
+			//ex: printf("Sprite %d has a status of 1 (active)\n",i,statnum);
+
+			if(sprite[i].picnum == temppicnum) count++;
+			i = nexti;
+		}
+
+	}
+
+	if(keystatus[0x3b]==1) // F1
+	{
+		help
