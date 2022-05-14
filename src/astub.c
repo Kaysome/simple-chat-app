@@ -1455,4 +1455,59 @@ void Keys3d(void)
 			case 0: case 4:
 				Bstrcpy(tempbuf,"Wall lotag: ");
 				wall[searchwall].lotag =
-					getnumber256(tempbuf,wall[s
+					getnumber256(tempbuf,wall[searchwall].lotag,65536L,0);
+				break;
+			case 1: case 2:
+				Bstrcpy(tempbuf,"Sector lotag: ");
+				sector[searchsector].lotag =
+					getnumber256(tempbuf,sector[searchsector].lotag,65536L,0);
+				break;
+			case 3:
+				Bstrcpy(tempbuf,"Sprite lotag: ");
+				sprite[searchwall].lotag =
+					getnumber256(tempbuf,sprite[searchwall].lotag,65536L,0);
+				break;
+		}
+	}
+
+	if(keystatus[0x28]==1 && keystatus[0x23]==1) // ' H
+	{
+		keystatus[0x23] = 0;
+		switch (searchstat)
+		{
+			case 0: case 4:
+				Bstrcpy(tempbuf,"Wall hitag: ");
+				wall[searchwall].hitag =
+					getnumber256(tempbuf,wall[searchwall].hitag,65536L,0);
+				break;
+			case 1: case 2:
+				Bstrcpy(tempbuf,"Sector hitag: ");
+				sector[searchsector].hitag =
+					getnumber256(tempbuf,sector[searchsector].hitag,65536L,0);
+				break;
+			case 3:
+				Bstrcpy(tempbuf,"Sprite hitag: ");
+				sprite[searchwall].hitag =
+					getnumber256(tempbuf,sprite[searchwall].hitag,65536L,0);
+				break;
+		}
+	}
+
+	if(keystatus[0x28]==1 && keystatus[0x1f]==1) // ' S
+	{
+		keystatus[0x1f] = 0;
+		switch (searchstat)
+		{
+			case 0: case 4:
+				Bstrcpy(tempbuf,"Wall shade: ");
+				wall[searchwall].shade =
+					getnumber256(tempbuf,wall[searchwall].shade,65536L,1);
+				break;
+			case 1: case 2:
+				Bstrcpy(tempbuf,"Sector shade: ");
+				if(searchstat==1)
+					sector[searchsector].ceilingshade =
+						getnumber256(tempbuf,sector[searchsector].ceilingshade,65536L,1);
+				if(searchstat==2)
+					sector[searchsector].floorshade =
+						getnum
