@@ -1576,4 +1576,49 @@ void Keys3d(void)
 
 	if(keystatus[0x3b]==1) // F1
 	{
-		help
+		helpon=!helpon; keystatus[0x23]=0;
+		keystatus[0x3b]=0;
+	}
+
+	if(keystatus[0x28]==1 && keystatus[0x1c]==1) // ' ENTER
+	{
+		printext256(0,0,15,0,"Put Graphic ONLY",0);
+		keystatus[0x1c]=0;
+		switch(searchstat)
+		{
+			case 0 : wall[searchwall].picnum = temppicnum; break;
+			case 1 : sector[searchsector].ceilingpicnum = temppicnum; break;
+			case 2 : sector[searchsector].floorpicnum = temppicnum; break;
+			case 3 : sprite[searchwall].picnum = temppicnum; break;
+			case 4 : wall[searchwall].overpicnum = temppicnum; break;
+		}
+	}
+
+#if 0	// JBF 20050318: Build already does this... why do it again?
+	if(keystatus[0x0f]==1) //TAB
+	{
+		switch(searchstat)
+		{
+			case 0 :
+				temppicnum = wall[searchwall].picnum;
+				tempshade = wall[searchwall].shade;
+				tempxrepeat = wall[searchwall].xrepeat;
+				tempyrepeat = wall[searchwall].yrepeat;
+				tempcstat = wall[searchwall].cstat;
+				temphitag = wall[searchwall].hitag;
+				templotag = wall[searchwall].lotag;
+				break;
+			case 1 :
+				temppicnum = sector[searchsector].ceilingpicnum;
+				tempshade = sector[searchsector].ceilingshade;
+				tempxrepeat = sector[searchsector].ceilingxpanning;
+				tempyrepeat = sector[searchsector].ceilingypanning;
+				tempcstat = sector[searchsector].ceilingstat;
+				temphitag = sector[searchsector].hitag; //wall
+				templotag = sector[searchsector].lotag; //wall
+				break;
+			case 2 :
+				temppicnum = sector[searchsector].floorpicnum;
+				tempshade = sector[searchsector].floorshade;
+				tempxrepeat = sector[searchsector].floorxpanning;
+				tempyrepeat =
