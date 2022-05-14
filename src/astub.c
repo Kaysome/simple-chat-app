@@ -1267,4 +1267,78 @@ void ExtEditSpriteData(short spritenum)   //F8
 void PrintStatus(char *string,int num,char x,char y,char color)
 {
      Bsprintf(tempbuf,"%s %d",string,num);
-     printext16(x*8,y*8,color,-1,tempbuf
+     printext16(x*8,y*8,color,-1,tempbuf,0);
+}
+
+void SpriteName(short spritenum, char *lo2)
+{
+    Bsprintf(lo2,"%s",names[sprite[spritenum].picnum]);
+}// end SpriteName
+
+unsigned char GAMEpalette[768];
+unsigned char WATERpalette[768];
+unsigned char SLIMEpalette[768];
+unsigned char TITLEpalette[768];
+unsigned char REALMSpalette[768];
+unsigned char BOSS1palette[768];
+
+void ReadGamePalette()
+{
+ int i,fp;
+ if((fp=kopen4load("palette.dat",0)) == -1) return;
+ kread(fp,GAMEpalette,768);
+ for(i=0;i<768;++i) GAMEpalette[i]=GAMEpalette[i];
+ kclose(fp);
+}
+
+
+void ReadPaletteTable()
+{
+ int j,fp;
+ unsigned char num_tables,lookup_num;
+ if((fp=kopen4load("lookup.dat",0)) == -1) return;
+ kread(fp,&num_tables,1);
+ for(j=0;j<num_tables;j++)
+ {
+  kread(fp,&lookup_num,1);
+  kread(fp,tempbuf,256);
+  makepalookup(lookup_num,(unsigned char *)tempbuf,0,0,0,1);
+ }
+ kread(fp,WATERpalette,768);
+ kread(fp,SLIMEpalette,768);
+ kread(fp,TITLEpalette,768);
+ kread(fp,REALMSpalette,768);
+ kread(fp,BOSS1palette,768);
+ kclose(fp);
+ ReadGamePalette();
+}// end ReadPaletteTable
+
+void Keys3d(void)
+{
+	int i,count,rate,nexti;
+	short statnum=0;
+
+//	DoWater(horiz);
+
+	i = totalclock;
+	if (i != clockval[clockcnt])
+	{
+		rate=(120<<4)/(i-clockval[clockcnt]);
+		if(framerateon)
+		{
+			Bsprintf(tempbuf,"%d",rate);
+#ifdef VULGARITY
+			if(rate<MinRate)
+			{
+				Bsprintf(tempbuf,"%d WARNING : %s",rate,Slow[rate/MinD]);
+				printext256(0*8,0*8,255,-1,tempbuf,1);
+			}
+			else
+#endif
+			{
+				Bsprintf(tempbuf,"%d",rate);
+				printext256(0*8,0*8,15,-1,tempbuf,1);
+			}
+		}
+	}
+	clockval[cl
