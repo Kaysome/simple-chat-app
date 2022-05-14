@@ -1621,4 +1621,53 @@ void Keys3d(void)
 				temppicnum = sector[searchsector].floorpicnum;
 				tempshade = sector[searchsector].floorshade;
 				tempxrepeat = sector[searchsector].floorxpanning;
-				tempyrepeat =
+				tempyrepeat = sector[searchsector].floorypanning;
+				tempcstat = sector[searchsector].floorstat;
+				temphitag = sector[searchsector].hitag; //wall
+				templotag = sector[searchsector].lotag; //wall
+				break;
+			case 3 :
+				temppicnum = sprite[searchwall].picnum;
+				tempshade = sprite[searchwall].shade;
+				tempxrepeat = sprite[searchwall].xrepeat;
+				tempyrepeat = sprite[searchwall].yrepeat;
+				tempcstat = sprite[searchwall].cstat;
+				temphitag = sprite[searchwall].hitag;
+				templotag = sprite[searchwall].lotag;
+				break;
+			case 4 :
+				temppicnum = wall[searchwall].overpicnum;
+				tempshade = wall[searchwall].shade;
+				tempxrepeat = wall[searchwall].xrepeat;
+				tempyrepeat = wall[searchwall].yrepeat;
+				tempcstat = wall[searchwall].cstat;
+				temphitag = wall[searchwall].hitag;
+				templotag = wall[searchwall].lotag;
+				break;
+		}// end switch
+	}// end TAB
+#endif
+}// end 3d
+
+
+void Keys2d(void)
+{
+    short temp=0;
+    int i=0;
+/*
+   for(i=0;i<0x50;i++)
+   {if(keystatus[i]==1) {Bsprintf(tempbuf,"key %ld",i); printmessage16(tempbuf);}}
+*/
+
+    if(keystatus[0x3b]==1 || (keystatus[0x28]==1 && keystatus[0x29]==1)) //F1 or ' ~
+    {
+        keystatus[0x23]=0;
+        clearmidstatbar16();
+        for(i=0;i<MAXHELP2D;i++) {printext16(0*8,32+(i*8),15,-1,Help2d[i],0);}
+        Ver();
+    }
+
+ getpoint(searchx,searchy,&mousxplc,&mousyplc);
+ ppointhighlight = getpointhighlight(mousxplc,mousyplc);
+
+ if ((
