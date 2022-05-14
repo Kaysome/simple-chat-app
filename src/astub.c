@@ -1670,4 +1670,59 @@ void Keys2d(void)
  getpoint(searchx,searchy,&mousxplc,&mousyplc);
  ppointhighlight = getpointhighlight(mousxplc,mousyplc);
 
- if ((
+ if ((ppointhighlight&0xc000) == 16384)
+ {
+  // sprite[ppointhighlight&16383].cstat ^= 1;
+//  cursprite=(ppointhighlight&16383);
+ }
+
+ if(keystatus[67]==1) // F9 f1=3b
+ {
+    keystatus[67] = 0;
+    wallsprite=0;
+    curwall = 0;
+    curwallnum = 0;
+    curspritenum = 0;
+    cursectornum=0;
+    cursector_lotag=getnumber16("Enter Sector Lo-Tag : ", cursector_lotag, 65536L,0);
+    Bsprintf(tempbuf,"Current Sector Lo-Tag %d",cursector_lotag);
+    printmessage16(tempbuf);
+ }
+
+
+ if(keystatus[0x28]==1 && keystatus[0x2c]==1) // ' z
+ { keystatus[0x2c]=0;
+    sprite[cursprite].z=getnumber16("Sprite Zpos :    ",sprite[cursprite].z, 0x7fffffff,0);
+ }
+
+
+ if(keystatus[0x28]==1 && keystatus[0x0b]==1) // ' 0
+ {
+        keystatus[0x0b]=0;
+        for(i=0;i<numsectors;i++)
+        {
+                sector[i].ceilingz >>= 1;
+                sector[i].floorz >>= 1;
+        }
+        for(i=0;i<numwalls;i++)
+        {
+                wall[i].x >>= 1;
+                wall[i].y >>= 1;
+                wall[i].yrepeat = min(wall[i].yrepeat<<1,255);
+        }
+        for(i=0;i<MAXSPRITES;i++)
+        {
+                sprite[i].x >>= 1;
+                sprite[i].y >>= 1;
+                sprite[i].z >>= 1;
+                sprite[i].xrepeat = max(sprite[i].xrepeat>>1,1);
+                sprite[i].yrepeat = max(sprite[i].yrepeat>>1,1);
+        }
+ }
+
+
+/* shrink
+  if(keystatus[0x28]==1 && keystatus[0x0b]==1) // ' 0
+ {
+        keystatus[0x0b]=0;
+        for(i=0;i<numsectors;i++
