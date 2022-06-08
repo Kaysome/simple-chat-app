@@ -1782,4 +1782,67 @@ void Keys2d(void)
 /*
  if(keystatus[0x28]==1 && keystatus[0x06]==1) // ' 5
  {
-    keystatus[0x06]
+    keystatus[0x06]=0;
+   sprintf(tempbuf,"Power-Up Ammo now equals Normal");
+   printmessage16(tempbuf);
+    for(i=0;i<MAXSPRITES;i++)
+        {
+     if(sprite[i].picnum>=20 && sprite[i].picnum<=59)
+     {
+        sprite[i].xrepeat = 32;
+        sprite[i].yrepeat = 32;
+     }
+    }
+
+ }
+*/
+
+
+ /* Motorcycle ha ha ha
+ if(keystatus[0x28]==1 && keystatus[0x06]==1) // ' 5
+ {
+     keystatus[0x06]=0;
+         sidemode++; if (sidemode > 2) sidemode = 0;
+         if (sidemode == 1)
+         {
+                 editstatus = 0;
+                 zmode = 2;
+                 posz = ((sector[cursectnum].ceilingz+sector[cursectnum].floorz)>>1);
+         }
+         else
+         {
+                 editstatus = 1;
+                 zmode = 1;
+         }
+ }
+ */
+
+ if(keystatus[0x28]==1 && keystatus[0x0a]==1) // ' 9 : swap hilo
+ { keystatus[0x0b]=0;
+        temp=sprite[cursprite].lotag;
+        sprite[cursprite].lotag=sprite[cursprite].hitag;
+        sprite[cursprite].hitag=temp;
+ }
+
+ if(keystatus[0x28]==1 && keystatus[0x32]==1) // ' m : Memory Usage
+ { keystatus[0x32]=0;
+        TotalMem();
+ }
+
+
+}// end key2d
+
+
+#define TRUE (1)
+#define FALSE (0)
+
+int ExtInit(void)
+{
+    int rv = 0;
+    char *duke3dgrp = "duke3d.grp";
+
+    /*
+    char *msg =
+    	//"------------------------------------------------------------------------------\n"
+    	"BUILD.EXE Copyright (c) 1993 - 1996 Ken Silverman, 3D Realms Entertainment.\n"
+    	"This version of BUILD was created for Duke Nukem 3
