@@ -1725,4 +1725,61 @@ void Keys2d(void)
   if(keystatus[0x28]==1 && keystatus[0x0b]==1) // ' 0
  {
         keystatus[0x0b]=0;
-        for(i=0;i<numsectors;i++
+        for(i=0;i<numsectors;i++)
+        {
+                sector[i].ceilingz >>= 1;
+                sector[i].floorz >>= 1;
+        }
+        for(i=0;i<numwalls;i++)
+        {
+                wall[i].x >>= 1;
+                wall[i].y >>= 1;
+                wall[i].yrepeat = min(wall[i].yrepeat<<1,255);
+        }
+        for(i=0;i<MAXSPRITES;i++)
+        {
+                sprite[i].x >>= 1;
+                sprite[i].y >>= 1;
+                sprite[i].z >>= 1;
+                sprite[i].xrepeat = max(sprite[i].xrepeat>>1,1);
+                sprite[i].yrepeat = max(sprite[i].yrepeat>>1,1);
+        }
+ }
+*/
+
+
+ if(keystatus[0x28]==1 && keystatus[0x02]==1) // ' 1
+ { on2d3d=!on2d3d; keystatus[0x02]=0;
+ }
+
+ if(keystatus[0x28]==1 && keystatus[0x04]==1) // ' 3
+ { onnames++; if(onnames>6) onnames=0;
+   keystatus[0x04]=0;
+   Bsprintf(tempbuf,"Mode %d %s",onnames,Mode32d[onnames]);
+   printmessage16(tempbuf);
+//   clearmidstatbar16();
+//   for(i=0;i<MAXMODE32D;i++) {printext16(0*8,32+(i*8),15,-1,Mode32d[i],0);}
+//   Ver();
+ }
+
+#ifdef VULGARITY
+ if(keystatus[0x28]==1 && keystatus[0x05]==1) // ' 4
+ {
+        keystatus[0x05]=0;
+    MinRate=getnumber16("Enter Min Frame Rate : ", MinRate, 65536L,0);
+    printmessage16("");
+    /*
+        if(MinRate==40)
+        {MinRate=24; MinD=3;}
+        else
+        {MinRate=40; MinD=5;}
+    */
+    MinRate &= ~7;
+    MinD = MinRate/8;
+ }
+#endif
+
+/*
+ if(keystatus[0x28]==1 && keystatus[0x06]==1) // ' 5
+ {
+    keystatus[0x06]
