@@ -1889,4 +1889,44 @@ int ExtInit(void)
             free(appdir);
         }
 
-        // the global 
+        // the global support files directory
+        if (supportdir) {
+            Bsnprintf(dirpath, sizeof(dirpath), "%s/JFDuke3D", supportdir);
+            addsearchpath(dirpath);
+            free(supportdir);
+        }
+    }
+
+    // creating a 'user_profiles_disabled' file in the current working
+    // directory where the game was launched makes the installation
+    // "portable" by writing into the working directory
+    if (access("user_profiles_disabled", F_OK) == 0) {
+        char cwd[BMAX_PATH+1];
+        if (getcwd(cwd, sizeof(cwd))) {
+            addsearchpath(cwd);
+        }
+    } else {
+        char *supportdir;
+        char dirpath[BMAX_PATH+1];
+        int asperr;
+
+        if ((supportdir = Bgetsupportdir(FALSE))) {
+#if defined(_WIN32) || defined(__APPLE__)
+            const char *dirname = "JFDuke3D";
+#else
+            const char *dirname = ".jfduke3d";
+#endif
+            Bsnprintf(dirpath, sizeof(dirpath), "%s/%s", supportdir, dirname);
+            asperr = addsearchpath(dirpath);
+            if (asperr == -2) {
+                if (Bmkdir(dirpath, S_IRWXU) == 0) {
+                    asperr = addsearchpath(dirpath);
+                } else {
+                    buildprintf("warning: could not create directory %s\n", dirpath);
+                    asperr = -1;
+                }
+            }
+            if (asperr == 0 && chdir(dirpath) < 0) {
+                buildprintf("warning: could not change directory to %s\n", dirpath);
+            }
+        
