@@ -1845,4 +1845,48 @@ int ExtInit(void)
     char *msg =
     	//"------------------------------------------------------------------------------\n"
     	"BUILD.EXE Copyright (c) 1993 - 1996 Ken Silverman, 3D Realms Entertainment.\n"
-    	"This version of BUILD was created for Duke Nukem 3
+    	"This version of BUILD was created for Duke Nukem 3D and parts were modified\n"
+    	"by Allen H. Blum III.\n"
+    	"\n"
+    	"IMPORTANT:  The Build Editor and associated tools and utilities are NOT\n"
+    	"shareware and may NOT be freely distributed to any BBS, CD, floppy, or\n"
+    	"any other media.  These tools may NOT be sold or repackaged for sale in\n"
+    	"a commercial product.\n"
+    	"\n"
+    	"Any levels created with these editors and tools may only be used with the\n"
+    	"full (registered) copy of Duke Nukem 3D, and not the shareware version.\n"
+    	"Please refer to LICENSE.DOC for further information on levels created with\n"
+    	"BUILD.EXE.\n"
+    	"\n"
+    	"Please help us protect against software piracy (which drives up software\n"
+    	"prices) by following these simple rules.\n"
+    	"\n"
+    	"Thank You!\n"
+    	//"------------------------------------------------------------------------------\n"
+	;
+    wm_msgbox("Build Editor for Duke Nukem 3D", msg);
+    */
+
+	wm_setapptitle("BUILD Editor for JFDuke3D");
+
+#if defined(DATADIR)
+    {
+        const char *datadir = DATADIR;
+        if (datadir && datadir[0]) {
+            addsearchpath(datadir);
+        }
+    }
+#endif
+
+    {
+        char *supportdir = Bgetsupportdir(TRUE);
+        char *appdir = Bgetappdir();
+        char dirpath[BMAX_PATH+1];
+
+        // the OSX app bundle, or on Windows the directory where the EXE was launched
+        if (appdir) {
+            addsearchpath(appdir);
+            free(appdir);
+        }
+
+        // the global 
