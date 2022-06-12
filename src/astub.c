@@ -1929,4 +1929,56 @@ int ExtInit(void)
             if (asperr == 0 && chdir(dirpath) < 0) {
                 buildprintf("warning: could not change directory to %s\n", dirpath);
             }
-        
+            free(supportdir);
+        }
+    }
+
+    // JBF 20031220: Because it's annoying renaming GRP files whenever I want to test different game data
+    if (getenv("DUKE3DGRP")) {
+	    duke3dgrp = getenv("DUKE3DGRP");
+	    buildprintf("Using %s as main GRP file\n", duke3dgrp);
+    }
+    initgroupfile(duke3dgrp);
+
+    bpp = 8;
+	if (loadsetup("build.cfg") < 0) buildputs("Configuration file not found, using defaults.\n"), rv = 1;
+	memcpy((void *)buildkeys,(void *)keys,sizeof(buildkeys));   //Trick to make build use setup.dat keys
+
+	if (initengine()) {
+		wm_msgbox("Build Engine Initialisation Error",
+				"There was a problem initialising the Build engine: %s", engineerrstr);
+		return -1;
+	}
+
+    kensplayerheight = 40; //32
+    zmode = 1;
+    zlock = kensplayerheight<<8;
+    defaultspritecstat = 0;
+
+#if USE_POLYMOST && USE_OPENGL
+    polymosttexfullbright = 240;
+#endif
+
+    ReadPaletteTable();
+//  InitWater();
+	return rv;
+}
+
+void ExtUnInit(void)
+{
+// setvmode(0x03);
+   uninitgroupfile();
+	writesetup("build.cfg");
+}
+
+static unsigned char lockbyte4094;
+void ExtPreCheckKeys(void) // just before drawrooms
+{
+        if (qsetmode == 200)    //In 3D mode
+        {
+        if(purpleon) clearview(255);
+                if (sidemode != 0)
+                {
+                        lockbyte4094 = 1;
+                        if (waloff[4094] == 0)
+                                allocache((
