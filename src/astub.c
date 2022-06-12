@@ -1981,4 +1981,60 @@ void ExtPreCheckKeys(void) // just before drawrooms
                 {
                         lockbyte4094 = 1;
                         if (waloff[4094] == 0)
-                                allocache((
+                                allocache((void **)&waloff[4094],320L*200L,&lockbyte4094);
+                        setviewtotile(4094,320L,200L);
+                        searchx ^= searchy; searchy ^= searchx; searchx ^= searchy;
+                        searchx = ydim-1-searchx;
+                }
+        }
+}
+
+void ExtAnalyzeSprites(void)
+{
+        int i, k;
+        spritetype *tspr;
+    char frames=0;
+
+        for(i=0,tspr=&tsprite[0];i<spritesortcnt;i++,tspr++)
+        {
+        frames=0;
+
+        if((nosprites==1||nosprites==3)&&tspr->picnum<11) tspr->xrepeat=0;
+
+        if(nosprites==1||nosprites==3)
+         switch(tspr->picnum)
+         {
+             case SEENINE :
+                 tspr->xrepeat=0;
+         }
+
+        switch(tspr->picnum)
+                {
+// 5-frame walk
+        case 1550 :             // Shark
+        frames=5;
+        // fall through
+
+
+// 2-frame walk
+            case 1445 :             // duke kick
+            case LIZTROOPSHOOT :
+            case LIZTROOPDUCKING :
+            case 2030 :            // pig shot
+            case PIGCOPDIVE :
+            case 2190 :            // liz capt shot
+            case BOSS1SHOOT :
+            case BOSS1LOB :
+        if(frames==0) frames=2;
+        // fall through
+
+// 4-frame walk
+                 case 1491 :             // duke crawl
+            case LIZTROOP :
+        case LIZTROOPRUNNING :
+            case PIGCOP :
+            case LIZMAN :
+            case BOSS1 :
+        case BOSS2 :
+            case BOSS3 :
+                if(frames==0)
