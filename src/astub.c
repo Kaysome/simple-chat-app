@@ -2198,4 +2198,48 @@ void faketimerhandler(void)
         int hiz, hihit, loz, lohit, oposx, oposy;
         short hitwall, daang;
 
-    counter++; if(counter>=
+    counter++; if(counter>=5) counter=0;
+
+	sampletimer();
+        if (totalclock < ototalclock+TICSPERFRAME) return;
+        if (qsetmode != 200) return;
+        if (sidemode != 1) return;
+        ototalclock = totalclock;
+
+        oposx = posx; oposy = posy;
+        hitwall = clipmove(&posx,&posy,&posz,&cursectnum,xvel,yvel,128L,4L<<8,4L<<8,0);
+        xvel = ((posx-oposx)<<14); yvel = ((posy-oposy)<<14);
+
+        yvel += 80000;
+        if ((hitwall&0xc000) == 32768)
+        {
+                hitwall &= (MAXWALLS-1);
+                i = wall[hitwall].point2;
+                daang = getangle(wall[i].x-wall[hitwall].x,wall[i].y-wall[hitwall].y);
+
+                xvel -= (xvel>>4);
+                if (xvel < 0) xvel++;
+                if (xvel > 0) xvel--;
+
+                yvel -= (yvel>>4);
+                if (yvel < 0) yvel++;
+                if (yvel > 0) yvel--;
+
+                i = 4-keystatus[buildkeys[4]];
+                xvel += mulscale(vel,(int)sintable[(ang+512)&2047],i);
+                yvel += mulscale(vel,(int)sintable[ang&2047],i);
+
+                if (((daang-ang)&2047) < 1024)
+                        ang = ((ang+((((daang-ang)&2047)+24)>>4))&2047);
+                else
+                        ang = ((ang-((((ang-daang)&2047)+24)>>4))&2047);
+
+                timoff = ototalclock;
+        }
+        else
+        {
+                if (ototalclock > timoff+32)
+                        ang = ((ang+((timoff+32-ototalclock)>>4))&2047);
+        }
+
+      
