@@ -2139,4 +2139,63 @@ void ExtCheckKeys(void)
 		if(usedcount)
 		{
 			if(tabgraphic)
-				rotatesprite((320-32)<<16,(64)<<16,64<<9,0,temppicnum,0
+				rotatesprite((320-32)<<16,(64)<<16,64<<9,0,temppicnum,0,0,0,0,0,xdim-1,ydim-1);
+			if(searchstat!=3)
+			{
+				count=0;
+				for(i=0;i<numwalls;i++)
+				{
+					if(wall[i].picnum == temppicnum) count++;
+					if(wall[i].overpicnum == temppicnum) count++;
+					if(sector[i].ceilingpicnum == temppicnum) count++;
+					if(sector[i].floorpicnum == temppicnum) count++;
+				}
+			}
+
+			if(searchstat==3)
+			{
+				count=0;
+				statnum=0;
+				i = headspritestat[statnum];
+				while (i != -1)
+				{
+					nexti = nextspritestat[i];
+					if(sprite[i].picnum == temppicnum) count++;
+					i = nexti;
+				}
+			}
+
+			printext256(70*8+1,0*8+1,0,-1,names[temppicnum],1);
+			printext256(70*8+1,0*8,15,-1,names[temppicnum],1);
+
+			Bsprintf(tempbuf,"lo = %d",templotag);
+			printext256(70*8+1,1*8+1,0,-1,tempbuf,1);
+			printext256(70*8,1*8,15,-1,tempbuf,1);
+
+			Bsprintf(tempbuf,"hi = %d",temphitag);
+			printext256(70*8+1,2*8+1,0,-1,tempbuf,1);
+			printext256(70*8,2*8,15,-1,tempbuf,1);
+
+			Bsprintf(tempbuf,"USED = %d",count);
+			printext256(70*8+1,3*8+1,0,-1,tempbuf,1);
+			printext256(70*8,3*8,15,-1,tempbuf,1);
+
+			count=ActorMem(temppicnum);
+			Bsprintf(tempbuf,"MEM  = %d",count);
+			printext256(70*8+1,4*8+1,0,-1,tempbuf,1);
+			printext256(70*8,4*8,15,-1,tempbuf,1);
+		}// end if usedcount
+	}
+	else
+	{
+		Keys2d();
+	}
+}
+
+void faketimerhandler(void)
+{
+  int i, dist;
+        int hiz, hihit, loz, lohit, oposx, oposy;
+        short hitwall, daang;
+
+    counter++; if(counter>=
