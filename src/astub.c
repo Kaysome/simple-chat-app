@@ -2037,4 +2037,49 @@ void ExtAnalyzeSprites(void)
             case BOSS1 :
         case BOSS2 :
             case BOSS3 :
-                if(frames==0)
+                if(frames==0) frames=4;
+                // fall through
+
+        case LIZTROOPJETPACK :
+        case OCTABRAIN :
+         case DRONE :
+        case COMMANDER :
+        case RECON :
+        if(frames==0) frames=10;
+        // fall through
+
+        case GREENSLIME :
+        case EGG :
+        case PIGCOPSTAYPUT :
+        case LIZMANSTAYPUT:
+            case LIZTROOPSTAYPUT :
+            case LIZMANSPITTING :
+            case LIZMANFEEDING :
+            case LIZMANJUMP :
+                if(skill!=4)
+                {
+                    if(tspr->lotag>skill)
+                    { tspr->xrepeat=0; break; }
+                }
+                // fall through
+            case APLAYER :
+
+                if(nosprites==2||nosprites==3)
+                { tspr->xrepeat=0;
+//                  tspr->cstat|=32768;
+                }
+//                else tspr->cstat&=32767;
+
+        if(frames!=0)
+        {
+        if(frames==10) frames=0;
+                k = getangle(tspr->x-posx,tspr->y-posy);
+                                k = (((tspr->ang+3072+128-k)&2047)>>8)&7;
+                                        //This guy has only 5 pictures for 8 angles (3 are x-flipped)
+                                if (k <= 4)
+                                {
+                    tspr->picnum += k;
+                    tspr->cstat &= ~4;   //clear x-flipping bit
+                                }
+                                else
+        
