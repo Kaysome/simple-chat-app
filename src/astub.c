@@ -2082,4 +2082,61 @@ void ExtAnalyzeSprites(void)
                     tspr->cstat &= ~4;   //clear x-flipping bit
                                 }
                                 else
-        
+                                {
+                    tspr->picnum += 8-k;
+                                        tspr->cstat |= 4;    //set x-flipping bit
+                                }
+        }
+
+        if(frames==2) tspr->picnum+=((((4-(totalclock>>6)))&1)*5);
+                if(frames==4) tspr->picnum+=((((4-(totalclock>>6)))&3)*5);
+        if(frames==5) tspr->picnum+=(((totalclock>>6)%5))*5;
+
+                if(tilesizx[tspr->picnum] == 0)
+                    tspr->picnum -= 5;       //Hack, for actors
+
+                                break;
+              default:
+                break;
+
+
+                }
+        }
+}
+
+
+
+
+int intro=0;
+
+void ExtCheckKeys(void)
+{
+	int i,count,nexti;
+	short statnum=0;
+	if (qsetmode == 200)    //In 3D mode
+	{
+		if (sidemode != 0)
+		{
+			setviewback();
+			rotatesprite(320<<15,200<<15,65536,(horiz-100)<<2,4094,0,0,2+4,0,0,0,0);
+			lockbyte4094 = 0;
+			searchx = ydim-1-searchx;
+			searchx ^= searchy; searchy ^= searchx; searchx ^= searchy;
+
+//			overwritesprite(160L,170L,1153,0,1+2,0);
+			rotatesprite(160<<16,170<<16,65536,(100-horiz+1024)<<3,1153,0,0,2,0,0,0,0);
+		}
+
+		if(intro<100)
+		{
+			intro++;
+//			rotatesprite((160-8)<<16,(100-8)<<16,(200-intro)<<9,0,SPINNINGNUKEICON+(((4-totalclock>>3))&7),0,0,0,0,0,xdim-1,ydim-1);
+			Ver();
+		}
+
+		Keys3d();
+		if (sidemode != 1) editinput();
+		if(usedcount)
+		{
+			if(tabgraphic)
+				rotatesprite((320-32)<<16,(64)<<16,64<<9,0,temppicnum,0
