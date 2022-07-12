@@ -2293,4 +2293,40 @@ int ActorMem(int i)
             case LIZTROOPSTAYPUT :
             case LIZTROOPSHOOT :
             case LIZTROOPJETPACK :
-            case LIZTROOP
+            case LIZTROOPONTOILET :
+            case LIZTROOPDUCKING :
+                for(j=LIZTROOP;j<(LIZTROOP+100);j++) total +=tilesizx[j]*tilesizy[j];
+                break;
+        case OCTABRAIN :
+        for(j=OCTABRAIN;j<(OCTABRAIN+40);j++) total +=tilesizx[j]*tilesizy[j];
+                break;
+                 case DRONE :
+                for(j=DRONE;j<(DRONE+10);j++) total +=tilesizx[j]*tilesizy[j];
+                break;
+        case COMMANDER :
+        for(j=COMMANDER;j<(COMMANDER+40);j++) total +=tilesizx[j]*tilesizy[j];
+                break;
+            case RECON :
+                for(j=RECON;j<(RECON+10);j++) total +=tilesizx[j]*tilesizy[j];
+                break;
+            case PIGCOP :
+                for(j=PIGCOP;j<(PIGCOP+61);j++) total +=tilesizx[j]*tilesizy[j];
+                break;
+            case LIZMAN :
+        case LIZMANSTAYPUT:
+            case LIZMANSPITTING :
+            case LIZMANFEEDING :
+            case LIZMANJUMP :
+                for(j=LIZMAN;j<(LIZMAN+80);j++) total +=tilesizx[j]*tilesizy[j];
+                break;
+            case BOSS1 :
+                for(j=BOSS1;j<(BOSS1+60);j++) total +=tilesizx[j]*tilesizy[j];
+                break;
+        case BOSS2 :
+        for(j=BOSS2;j<(BOSS2+50);j++) total +=tilesizx[j]*tilesizy[j];
+        break;
+        case BOSS3 :
+        for(j=BOSS3;j<(BOSS3+50);j++) total +=tilesizx[j]*tilesizy[j];
+        break;
+
+            default
