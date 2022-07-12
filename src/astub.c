@@ -2407,4 +2407,25 @@ void SearchSectorsForward()
 void SearchSectorsBackward()
 {
  int ii=0;
- if(cursector_
+ if(cursector_lotag!=0)
+ {
+     if(cursectornum>0) cursectornum--;
+     for(ii=cursectornum;ii>=0;ii--)
+     {
+        if(sector[ii].lotag==cursector_lotag)
+        {
+            posx=wall[sector[ii].wallptr].x;
+            posy=wall[sector[ii].wallptr].y;
+            printmessage16("< Sector Search : Found");
+//            cursectornum--;
+            keystatus[0x1a]=0; // [
+            return;
+        }
+        cursectornum--;
+     }
+ }
+ printmessage16("< Sector Search : none");
+}
+
+
+
