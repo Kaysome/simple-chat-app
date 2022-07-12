@@ -2242,4 +2242,55 @@ void faketimerhandler(void)
                         ang = ((ang+((timoff+32-ototalclock)>>4))&2047);
         }
 
-      
+        getzrange(posx,posy,posz,cursectnum,&hiz,&hihit,&loz,&lohit,128L,0);
+
+        oposx -= posx; oposy -= posy;
+
+  dist = ksqrt(oposx*oposx+oposy*oposy);
+  if (ototalclock > timoff+32) dist = 0;
+
+  daang = mulscale9(dist,angvel);
+        posz += (daang<<6);
+        if (posz > loz-(4<<8)) posz = loz-(4<<8), hvel = 0;
+        if (posz < hiz+(4<<8)) posz = hiz+(4<<8), hvel = 0;
+
+        horiz = ((horiz*7+(100-(daang>>1)))>>3);
+        if (horiz < 100) horiz++;
+        if (horiz > 100) horiz--;
+
+        if(keystatus[0x28]==1 && keystatus[0x06]==1) // ' 5
+        {
+                keystatus[0x06]=0;
+                editstatus = 1;
+                sidemode = 2;
+        }
+}
+
+void Ver()
+{
+	Bsprintf(tempbuf,"DUKE NUKEM BUILD: V032696");
+	if (qsetmode == 200)    //In 3D mode
+	{
+		printext256(60*8,24*8,11,-1,tempbuf,1);
+		rotatesprite((320-8)<<16,(200-8)<<16,64<<9,0,SPINNINGNUKEICON+(((4-(totalclock>>3)))&7),0,0,0,0,0,xdim-1,ydim-1);
+	}
+	else
+	{
+		printext16(0,0,15,-1,tempbuf,0);
+	}
+}
+
+int ActorMem(int i)
+{int total=0,j;
+    switch(i)
+    {
+           case APLAYER :
+                for(j=APLAYER;j<(APLAYER+131);j++) total +=tilesizx[j]*tilesizy[j];
+                for(j=1780;j<(1780+32);j++) total +=tilesizx[j]*tilesizy[j];
+                break;
+            case LIZTROOP :
+            case LIZTROOPRUNNING :
+            case LIZTROOPSTAYPUT :
+            case LIZTROOPSHOOT :
+            case LIZTROOPJETPACK :
+            case LIZTROOP
