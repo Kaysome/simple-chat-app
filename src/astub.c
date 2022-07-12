@@ -2329,4 +2329,82 @@ int ActorMem(int i)
         for(j=BOSS3;j<(BOSS3+50);j++) total +=tilesizx[j]*tilesizy[j];
         break;
 
-            default
+            default: total += tilesizx[i]*tilesizy[i];
+    }
+    return(total);
+}
+
+static int acurpalette=0;
+
+void SetBOSS1Palette()
+{
+ if(acurpalette==3) return;
+ acurpalette=3;
+ kensetpalette(BOSS1palette);
+}
+
+
+void SetSLIMEPalette()
+{
+ if(acurpalette==2) return;
+ acurpalette=2;
+ kensetpalette(SLIMEpalette);
+}
+
+void SetWATERPalette()
+{
+ if(acurpalette==1) return;
+ acurpalette=1;
+ kensetpalette(WATERpalette);
+}
+
+
+void SetGAMEPalette()
+{
+ if(acurpalette==0) return;
+ acurpalette=0;
+ kensetpalette(GAMEpalette);
+}
+
+void kensetpalette(unsigned char *vgapal)
+{
+        int i;
+        unsigned char vesapal[1024];
+
+        for(i=0;i<256;i++)
+        {
+                vesapal[i*4+0] = vgapal[i*3+2];
+                vesapal[i*4+1] = vgapal[i*3+1];
+                vesapal[i*4+2] = vgapal[i*3+0];
+                vesapal[i*4+3] = 0;
+        }
+        setpalette(0L,256L,vesapal);
+}
+
+void SearchSectorsForward()
+{
+ int ii=0;
+ if(cursector_lotag!=0)
+ {
+     if(cursectornum<MAXSECTORS) cursectornum++;
+     for(ii=cursectornum;ii<=MAXSECTORS;ii++)
+     {
+        if(sector[ii].lotag==cursector_lotag)
+        {
+            posx=wall[sector[ii].wallptr].x;
+            posy=wall[sector[ii].wallptr].y;
+            printmessage16("> Sector Search : Found");
+//            cursectornum++;
+            keystatus[0x1b]=0; // ]
+            return;
+        }
+        cursectornum++;
+     }
+ }
+ printmessage16("> Sector Search : none");
+}
+
+void SearchSectorsBackward()
+{
+ int ii=0;
+ if(cursector_
