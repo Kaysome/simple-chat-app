@@ -77,4 +77,93 @@ int32 JoystickAnalogueSaturate[MAXJOYAXES];
 //
 
 int32 ScreenMode = 1;
-int32 ScreenW
+int32 ScreenWidth = 640;
+int32 ScreenHeight = 480;
+int32 ScreenBPP = 8;
+int32 ForceSetup = 1;
+
+static char setupfilename[256]={SETUPFILENAME};
+static int32 scripthandle = -1;
+static int32 setupread = 0;
+
+
+/*
+===================
+=
+= CONFIG_FunctionNameToNum
+=
+===================
+*/
+
+int32 CONFIG_FunctionNameToNum( const char * func )
+   {
+   int32 i;
+
+   for (i=0;i<NUMGAMEFUNCTIONS;i++)
+      {
+      if (!Bstrcasecmp(func,gamefunctions[i]))
+         {
+         return i;
+         }
+      }
+   return -1;
+   }
+
+/*
+===================
+=
+= CONFIG_FunctionNumToName
+=
+===================
+*/
+
+const char * CONFIG_FunctionNumToName( int32 func )
+   {
+   if ((unsigned)func >= (unsigned)NUMGAMEFUNCTIONS)
+      {
+      return NULL;
+      }
+   else
+      {
+      return gamefunctions[func];
+      }
+   }
+
+/*
+===================
+=
+= CONFIG_AnalogNameToNum
+=
+===================
+*/
+
+
+int32 CONFIG_AnalogNameToNum( const char * func )
+   {
+
+   if (!Bstrcasecmp(func,"analog_turning"))
+      {
+      return analog_turning;
+      }
+   if (!Bstrcasecmp(func,"analog_strafing"))
+      {
+      return analog_strafing;
+      }
+   if (!Bstrcasecmp(func,"analog_moving"))
+      {
+      return analog_moving;
+      }
+   if (!Bstrcasecmp(func,"analog_lookingupanddown"))
+      {
+      return analog_lookingupanddown;
+      }
+
+   return -1;
+   }
+
+
+const char * CONFIG_AnalogNumToName( int32 func )
+   {
+   switch (func) {
+    case analog_turning:
+        return "analog
