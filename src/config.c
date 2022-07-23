@@ -231,4 +231,34 @@ void CONFIG_SetDefaults( void )
     Bstrcpy(ud.ridecule[0], "An inspiration for birth control.");
     Bstrcpy(ud.ridecule[1], "You're gonna die for that!");
     Bstrcpy(ud.ridecule[2], "It hurts to be you.");
-    Bstrcpy(ud.ridecule[3], "Lucky Son of a Bitch.
+    Bstrcpy(ud.ridecule[3], "Lucky Son of a Bitch.");
+    Bstrcpy(ud.ridecule[4], "Hmmm....Payback time.");
+    Bstrcpy(ud.ridecule[5], "You bottom dwelling scum sucker.");
+    Bstrcpy(ud.ridecule[6], "Damn, you're ugly.");
+    Bstrcpy(ud.ridecule[7], "Ha ha ha...Wasted!");
+    Bstrcpy(ud.ridecule[8], "You suck!");
+    Bstrcpy(ud.ridecule[9], "AARRRGHHHHH!!!");
+ 
+    CONFIG_SetDefaultKeyDefinitions(CONFIG_DEFAULTS_CLASSIC);
+    CONFIG_SetMouseDefaults(CONFIG_DEFAULTS_CLASSIC);
+    CONFIG_SetJoystickDefaults(CONFIG_DEFAULTS_CLASSIC);
+
+    memset(MouseDigitalFunctions, -1, sizeof(MouseDigitalFunctions));
+    for (i=0; i<MAXMOUSEAXES; i++) {
+        MouseAnalogueScale[i] = 65536;
+        CONTROL_SetAnalogAxisScale( i, MouseAnalogueScale[i], controldevice_mouse );
+
+        MouseDigitalFunctions[i][0] = CONFIG_FunctionNameToNum( mousedigitaldefaults[i*2] );
+        MouseDigitalFunctions[i][1] = CONFIG_FunctionNameToNum( mousedigitaldefaults[i*2+1] );
+        CONTROL_MapDigitalAxis( i, MouseDigitalFunctions[i][0], 0, controldevice_mouse );
+        CONTROL_MapDigitalAxis( i, MouseDigitalFunctions[i][1], 1, controldevice_mouse );
+
+        MouseAnalogueAxes[i] = CONFIG_AnalogNameToNum( mouseanalogdefaults[i] );
+        CONTROL_MapAnalogAxis( i, MouseAnalogueAxes[i], controldevice_mouse);
+    }
+    CONTROL_SetMouseSensitivity(32768);
+
+    for (i=0; i<MAXJOYAXES; i++) {
+        JoystickAnalogueScale[i] = 65536;
+        JoystickAnalogueDead[i] = 1024;
+      
