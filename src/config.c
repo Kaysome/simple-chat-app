@@ -166,4 +166,69 @@ const char * CONFIG_AnalogNumToName( int32 func )
    {
    switch (func) {
     case analog_turning:
-        return "analog
+        return "analog_turning";
+    case analog_strafing:
+        return "analog_strafing";
+    case analog_moving:
+        return "analog_moving";
+    case analog_lookingupanddown:
+        return "analog_lookingupanddown";
+   }
+
+   return NULL;
+   }
+
+
+/*
+===================
+=
+= CONFIG_SetDefaults
+=
+===================
+*/
+
+void CONFIG_SetDefaults( void )
+{
+    int32 i;
+
+    FXDevice = 0;
+    MusicDevice = 0;
+    NumVoices = 16;
+    NumChannels = 2;
+    NumBits = 16;
+    MixRate = 44100;
+    SoundToggle = 1;
+    MusicToggle = 1;
+    VoiceToggle = 1;
+    AmbienceToggle = 1;
+    FXVolume = 220;
+    MusicVolume = 200;
+    ReverseStereo = 0;
+    MusicParams[0] = 0;
+    myaimmode = ps[0].aim_mode = 0;
+    ud.mouseaiming = 0;
+    ud.weaponswitch = 3;    // new+empty
+    AutoAim = 1;
+    UseJoystick = 1;
+    UseMouse = 1;
+    ud.mouseflip = 0;
+    ud.runkey_mode = 0;
+    ud.statusbarscale = 8;
+    ud.screen_size = 8;
+    ud.screen_tilting = 1;
+    ud.shadows = 1;
+    ud.detail = 1;
+    ud.lockout = 0;
+    ud.pwlockout[0] = '\0';
+    ud.crosshair = 0;
+    ud.m_marker = 1;
+    ud.m_ffire = 1;
+    ud.levelstats = 0;
+    ShowOpponentWeapons = 0;
+    Bstrcpy(ud.rtsname, "DUKE.RTS");
+    Bstrcpy(myname, "Duke");
+
+    Bstrcpy(ud.ridecule[0], "An inspiration for birth control.");
+    Bstrcpy(ud.ridecule[1], "You're gonna die for that!");
+    Bstrcpy(ud.ridecule[2], "It hurts to be you.");
+    Bstrcpy(ud.ridecule[3], "Lucky Son of a Bitch.
