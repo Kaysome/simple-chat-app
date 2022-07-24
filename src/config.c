@@ -261,4 +261,46 @@ void CONFIG_SetDefaults( void )
     for (i=0; i<MAXJOYAXES; i++) {
         JoystickAnalogueScale[i] = 65536;
         JoystickAnalogueDead[i] = 1024;
-      
+        JoystickAnalogueSaturate[i] = 32767-1024;
+        CONTROL_SetAnalogAxisScale( i, JoystickAnalogueScale[i], controldevice_joystick );
+        CONTROL_SetJoyAxisDead(i, JoystickAnalogueDead[i]);
+        CONTROL_SetJoyAxisSaturate(i, JoystickAnalogueSaturate[i]);
+    }
+}
+
+void CONFIG_SetDefaultKeyDefinitions(int style)
+{
+    int numkeydefaults;
+    char **keydefaultset;
+    int i, f;
+
+    if (style) {
+        numkeydefaults = sizeof(keydefaults_modern) / sizeof(char *) / 3;
+        keydefaultset = keydefaults_modern;
+    } else {
+        numkeydefaults = sizeof(keydefaults) / sizeof(char *) / 3;
+        keydefaultset = keydefaults;
+    }
+
+    memset(KeyboardKeys, 0xff, sizeof(KeyboardKeys));
+    for (i=0; i < numkeydefaults; i++) {
+        f = CONFIG_FunctionNameToNum( keydefaultset[3*i+0] );
+        if (f == -1) continue;
+        KeyboardKeys[f][0] = KB_StringToScanCode( keydefaultset[3*i+1] );
+        KeyboardKeys[f][1] = KB_StringToScanCode( keydefaultset[3*i+2] );
+
+        if (f == gamefunc_Show_Console) OSD_CaptureKey(KeyboardKeys[f][0]);
+        else CONTROL_MapKey( i, KeyboardKeys[f][0], KeyboardKeys[f][1] );
+    }
+}
+
+void CONFIG_SetMouseDefaults(int style)
+{
+    char **mousedefaultset, **mouseclickeddefaultset;
+    int i;
+
+    if (style) {
+        mousedefaultset = mousedefaults_modern;
+        mouseclickeddefaultset = mouseclickeddefaults_modern;
+        ud.mouseflip = 1;
+        if (!ud.mouseaiming) myaimmode = 1; // Enable mouse aiming if a
