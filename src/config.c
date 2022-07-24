@@ -303,4 +303,42 @@ void CONFIG_SetMouseDefaults(int style)
         mousedefaultset = mousedefaults_modern;
         mouseclickeddefaultset = mouseclickeddefaults_modern;
         ud.mouseflip = 1;
-        if (!ud.mouseaiming) myaimmode = 1; // Enable mouse aiming if a
+        if (!ud.mouseaiming) myaimmode = 1; // Enable mouse aiming if aiming type is toggle.
+    } else {
+        mousedefaultset = mousedefaults;
+        mouseclickeddefaultset = mouseclickeddefaults;
+        ud.mouseflip = 0;
+        if (!ud.mouseaiming) myaimmode = 0; // Disable mouse aiming if aiming type is toggle.
+    }
+
+    memset(MouseFunctions, -1, sizeof(MouseFunctions));
+    for (i=0; i < MAXMOUSEBUTTONS; i++) {
+        MouseFunctions[i][0] = CONFIG_FunctionNameToNum( mousedefaultset[i] );
+        CONTROL_MapButton( MouseFunctions[i][0], i, FALSE, controldevice_mouse );
+        if (i>=4) continue;
+
+        MouseFunctions[i][1] = CONFIG_FunctionNameToNum( mouseclickeddefaultset[i] );
+        CONTROL_MapButton( MouseFunctions[i][1], i, TRUE,  controldevice_mouse );
+   }
+}
+
+void CONFIG_SetJoystickDefaults(int style)
+{
+    char **joydefaultset, **joyclickeddefaultset;
+    char **joydigitaldefaultset, **joyanalogdefaultset;
+    int i;
+
+    if (style) {
+        joydefaultset = joystickdefaults_modern;
+        joyclickeddefaultset = joystickclickeddefaults_modern;
+        joydigitaldefaultset = joystickdigitaldefaults_modern;
+        joyanalogdefaultset = joystickanalogdefaults_modern;
+    } else {
+        joydefaultset = joystickdefaults;
+        joyclickeddefaultset = joystickclickeddefaults;
+        joydigitaldefaultset = joystickdigitaldefaults;
+        joyanalogdefaultset = joystickanalogdefaults;
+    }
+
+    memset(JoystickFunctions, -1, sizeof(JoystickFunctions));
+    for (i=0; i < MAXJ
