@@ -341,4 +341,46 @@ void CONFIG_SetJoystickDefaults(int style)
     }
 
     memset(JoystickFunctions, -1, sizeof(JoystickFunctions));
-    for (i=0; i < MAXJ
+    for (i=0; i < MAXJOYBUTTONS; i++) {
+        JoystickFunctions[i][0] = CONFIG_FunctionNameToNum( joydefaultset[i] );
+        JoystickFunctions[i][1] = CONFIG_FunctionNameToNum( joyclickeddefaultset[i] );
+        CONTROL_MapButton( JoystickFunctions[i][0], i, FALSE, controldevice_joystick );
+        CONTROL_MapButton( JoystickFunctions[i][1], i, TRUE,  controldevice_joystick );
+    }
+
+    memset(JoystickDigitalFunctions, -1, sizeof(JoystickDigitalFunctions));
+    for (i=0; i < MAXJOYAXES; i++) {
+        JoystickDigitalFunctions[i][0] = CONFIG_FunctionNameToNum( joydigitaldefaultset[i*2] );
+        JoystickDigitalFunctions[i][1] = CONFIG_FunctionNameToNum( joydigitaldefaultset[i*2+1] );
+        CONTROL_MapDigitalAxis( i, JoystickDigitalFunctions[i][0], 0, controldevice_joystick );
+        CONTROL_MapDigitalAxis( i, JoystickDigitalFunctions[i][1], 1, controldevice_joystick );
+
+        JoystickAnalogueAxes[i] = CONFIG_AnalogNameToNum( joyanalogdefaultset[i] );
+        CONTROL_MapAnalogAxis(i, JoystickAnalogueAxes[i], controldevice_joystick);
+    }
+}
+
+/*
+===================
+=
+= CONFIG_ReadKeys
+=
+===================
+*/
+
+void CONFIG_ReadKeys( void )
+   {
+   int32 i;
+   int32 numkeyentries;
+   int32 function;
+   char keyname1[80];
+   char keyname2[80];
+   kb_scancode key1,key2;
+
+   if (scripthandle < 0) return;
+
+   numkeyentries = SCRIPT_NumberEntries( scripthandle,"KeyDefinitions" );
+
+   for (i=0;i<numkeyentries;i++)
+      {
+      function 
