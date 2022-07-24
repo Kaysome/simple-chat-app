@@ -383,4 +383,66 @@ void CONFIG_ReadKeys( void )
 
    for (i=0;i<numkeyentries;i++)
       {
-      function 
+      function = CONFIG_FunctionNameToNum(SCRIPT_Entry(scripthandle,"KeyDefinitions", i ));
+      if (function != -1)
+         {
+         SCRIPT_GetDoubleString
+            (
+            scripthandle,
+            "KeyDefinitions",
+            SCRIPT_Entry( scripthandle, "KeyDefinitions", i ),
+            keyname1,
+            keyname2,
+            sizeof(keyname1),
+            sizeof(keyname2)
+            );
+         key1 = 0xff;
+         key2 = 0xff;
+         if (keyname1[0])
+            {
+            key1 = (byte) KB_StringToScanCode( keyname1 );
+            }
+         if (keyname2[0])
+            {
+            key2 = (byte) KB_StringToScanCode( keyname2 );
+            }
+         KeyboardKeys[function][0] = key1;
+         KeyboardKeys[function][1] = key2;
+         }
+      }
+
+   for (i=0; i<NUMGAMEFUNCTIONS; i++)
+      {
+         if (i == gamefunc_Show_Console)
+            OSD_CaptureKey(KeyboardKeys[i][0]);
+         else
+            CONTROL_MapKey( i, KeyboardKeys[i][0], KeyboardKeys[i][1] );
+      }
+   }
+
+
+/*
+===================
+=
+= CONFIG_SetupMouse
+=
+===================
+*/
+
+void CONFIG_SetupMouse( void )
+   {
+   int32 i;
+   char str[80];
+   char temp[80];
+   int32 function, scale;
+
+   if (scripthandle < 0) return;
+   
+   for (i=0;i<MAXMOUSEBUTTONS;i++)
+      {
+      Bsprintf(str,"MouseButton%d",i);
+      if (!SCRIPT_GetString( scripthandle,"Controls", str,temp, sizeof(temp)))
+         MouseFunctions[i][0] = CONFIG_FunctionNameToNum(temp);
+      
+      Bsprintf(str,"MouseButtonClicked%d",i);
+      if (!SCR
