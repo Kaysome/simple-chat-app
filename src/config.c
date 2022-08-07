@@ -602,4 +602,29 @@ int32 CONFIG_ReadSetup( void )
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "Messages",&ud.fta_on);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenWidth",&ScreenWidth);
     SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenHeight",&ScreenHeight);
-    SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenMode",&
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenMode",&ScreenMode);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenGamma",&ud.brightness);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenSize",&ud.screen_size);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "Out",&ud.lockout);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenBPP", &ScreenBPP);
+    if (ScreenBPP < 8) ScreenBPP = 8;
+#ifdef RENDERTYPEWIN
+    int32 tmpmaxrefreshfreq;
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "MaxRefreshFreq", &tmpmaxrefreshfreq);
+    win_setmaxrefreshfreq(tmpmaxrefreshfreq);
+#endif
+#if USE_POLYMOST && USE_OPENGL
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLTextureMode", &gltexfiltermode);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLAnisotropy", &glanisotropy);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLMultisample", &glmultisample);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLMultisampleNvidia", &glnvmultisamplehint);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLSupersample", &glsampleshading);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseTextureCompr", &glusetexcompr);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLUseCompressedTextureCache", &glusetexcache);
+#endif
+#if USE_OPENGL
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "GLVsync", &glswapinterval);
+#endif
+
+    SCRIPT_GetNumber( scripthandle, "Setup", "ForceSetup",&ForceSetup);
+   
