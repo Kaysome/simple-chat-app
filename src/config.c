@@ -481,4 +481,51 @@ void CONFIG_SetupMouse( void )
       }
    for (i=0; i<MAXMOUSEAXES; i++)
       {
-      CONTROL_MapAnalogAxis( i, MouseAnalogueAxes[i], controldevice_mouse)
+      CONTROL_MapAnalogAxis( i, MouseAnalogueAxes[i], controldevice_mouse);
+      CONTROL_MapDigitalAxis( i, MouseDigitalFunctions[i][0], 0,controldevice_mouse );
+      CONTROL_MapDigitalAxis( i, MouseDigitalFunctions[i][1], 1,controldevice_mouse );
+      CONTROL_SetAnalogAxisScale( i, MouseAnalogueScale[i], controldevice_mouse );
+      }
+   }
+
+/*
+===================
+=
+= CONFIG_SetupJoystick
+=
+===================
+*/
+
+void CONFIG_SetupJoystick( void )
+   {
+   int32 i;
+   char str[80];
+   char temp[80];
+   int32 scale;
+
+   if (scripthandle < 0) return;
+
+   for (i=0;i<MAXJOYBUTTONS;i++)
+      {
+      Bsprintf(str,"JoystickButton%d",i);
+      if (!SCRIPT_GetString( scripthandle,"Controls", str,temp, sizeof(temp)))
+         JoystickFunctions[i][0] = CONFIG_FunctionNameToNum(temp);
+      
+      Bsprintf(str,"JoystickButtonClicked%d",i);
+      if (!SCRIPT_GetString( scripthandle,"Controls", str,temp, sizeof(temp)))
+         JoystickFunctions[i][1] = CONFIG_FunctionNameToNum(temp);
+      }
+
+   // map over the axes
+   for (i=0;i<MAXJOYAXES;i++)
+      {
+      Bsprintf(str,"JoystickAnalogAxes%d",i);
+      if (!SCRIPT_GetString(scripthandle, "Controls", str,temp, sizeof(temp)))
+         JoystickAnalogueAxes[i] = CONFIG_AnalogNameToNum(temp);
+      
+      Bsprintf(str,"JoystickDigitalAxes%d_0",i);
+      if (!SCRIPT_GetString(scripthandle, "Controls", str,temp, sizeof(temp)))
+         JoystickDigitalFunctions[i][0] = CONFIG_FunctionNameToNum(temp);
+      
+      Bsprintf(str,"JoystickDigitalAxes%d_1",i);
+      if (!SCRIPT_GetString(scripthandle, "Controls", str,temp, sizeof(temp)))
