@@ -561,4 +561,45 @@ void CONFIG_SetupJoystick( void )
          CONTROL_SetJoyAxisDead( i, JoystickAnalogueDead[i] );
          CONTROL_SetJoyAxisSaturate( i, JoystickAnalogueSaturate[i] );
       }
-  
+   }
+
+/*
+===================
+=
+= CONFIG_ReadSetup
+=
+===================
+*/
+
+int32 CONFIG_ReadSetup( void )
+{
+    int32 dummy,i;
+    char commmacro[] = "CommbatMacro# ";
+    extern int32 CommandWeaponChoice;
+
+    CONTROL_ClearAssignments();
+    CONFIG_SetDefaults();
+
+    setupread = 1;
+    
+    if (SafeFileExists(setupfilename))  // JBF 20031211
+       scripthandle = SCRIPT_Load( setupfilename );
+
+    if (scripthandle < 0) return -1;
+
+    for(dummy = 0;dummy < 10;dummy++)
+    {
+        commmacro[13] = dummy+'0';
+        SCRIPT_GetString( scripthandle, "Comm Setup",commmacro,ud.ridecule[dummy], sizeof(ud.ridecule[0]));
+    }
+    SCRIPT_GetString( scripthandle, "Comm Setup","PlayerName",myname, sizeof(myname));
+    SCRIPT_GetString( scripthandle, "Comm Setup","RTSName",ud.rtsname, sizeof(ud.rtsname));
+
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "Shadows",&ud.shadows);
+    SCRIPT_GetString( scripthandle, "Screen Setup", "Password",ud.pwlockout, sizeof(ud.pwlockout));
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "Detail",&ud.detail);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "Tilt",&ud.screen_tilting);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "Messages",&ud.fta_on);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenWidth",&ScreenWidth);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenHeight",&ScreenHeight);
+    SCRIPT_GetNumber( scripthandle, "Screen Setup", "ScreenMode",&
