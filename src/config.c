@@ -529,3 +529,36 @@ void CONFIG_SetupJoystick( void )
       
       Bsprintf(str,"JoystickDigitalAxes%d_1",i);
       if (!SCRIPT_GetString(scripthandle, "Controls", str,temp, sizeof(temp)))
+      JoystickDigitalFunctions[i][1] = CONFIG_FunctionNameToNum(temp);
+      
+      Bsprintf(str,"JoystickAnalogScale%d",i);
+      scale = JoystickAnalogueScale[i];
+      SCRIPT_GetNumber(scripthandle, "Controls", str,&scale);
+      JoystickAnalogueScale[i] = scale;
+
+      Bsprintf(str,"JoystickAnalogDead%d",i);
+      scale = JoystickAnalogueDead[i];
+      SCRIPT_GetNumber(scripthandle, "Controls", str,&scale);
+      JoystickAnalogueDead[i] = scale;
+
+      Bsprintf(str,"JoystickAnalogSaturate%d",i);
+      scale = JoystickAnalogueSaturate[i];
+      SCRIPT_GetNumber(scripthandle, "Controls", str,&scale);
+      JoystickAnalogueSaturate[i] = scale;
+      }
+
+   for (i=0;i<MAXJOYBUTTONS;i++)
+      {
+         CONTROL_MapButton( JoystickFunctions[i][0], i, 0, controldevice_joystick );
+         CONTROL_MapButton( JoystickFunctions[i][1], i, 1,  controldevice_joystick );
+      }
+   for (i=0;i<MAXJOYAXES;i++)
+      {
+         CONTROL_MapAnalogAxis(i, JoystickAnalogueAxes[i], controldevice_joystick);
+         CONTROL_MapDigitalAxis( i, JoystickDigitalFunctions[i][0], 0, controldevice_joystick );
+         CONTROL_MapDigitalAxis( i, JoystickDigitalFunctions[i][1], 1, controldevice_joystick );
+         CONTROL_SetAnalogAxisScale( i, JoystickAnalogueScale[i], controldevice_joystick );
+         CONTROL_SetJoyAxisDead( i, JoystickAnalogueDead[i] );
+         CONTROL_SetJoyAxisSaturate( i, JoystickAnalogueSaturate[i] );
+      }
+  
