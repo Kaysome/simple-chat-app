@@ -445,4 +445,40 @@ void CONFIG_SetupMouse( void )
          MouseFunctions[i][0] = CONFIG_FunctionNameToNum(temp);
       
       Bsprintf(str,"MouseButtonClicked%d",i);
-      if (!SCR
+      if (!SCRIPT_GetString( scripthandle,"Controls", str,temp, sizeof(temp)))
+         MouseFunctions[i][1] = CONFIG_FunctionNameToNum(temp);
+      }
+
+   // map over the axes
+   for (i=0;i<MAXMOUSEAXES;i++)
+      {
+      Bsprintf(str,"MouseAnalogAxes%d",i);
+      if (!SCRIPT_GetString(scripthandle, "Controls", str,temp, sizeof(temp)))
+         MouseAnalogueAxes[i] = CONFIG_AnalogNameToNum(temp);
+
+      Bsprintf(str,"MouseDigitalAxes%d_0",i);
+      if (!SCRIPT_GetString(scripthandle, "Controls", str,temp, sizeof(temp)))
+         MouseDigitalFunctions[i][0] = CONFIG_FunctionNameToNum(temp);
+
+      Bsprintf(str,"MouseDigitalAxes%d_1",i);
+      if (!SCRIPT_GetString(scripthandle, "Controls", str,temp, sizeof(temp)))
+         MouseDigitalFunctions[i][1] = CONFIG_FunctionNameToNum(temp);
+
+      Bsprintf(str,"MouseAnalogScale%d",i);
+      scale = MouseAnalogueScale[i];
+      SCRIPT_GetNumber(scripthandle, "Controls", str,&scale);
+      MouseAnalogueScale[i] = scale;
+      }
+
+   function = 32768;
+   SCRIPT_GetNumber( scripthandle, "Controls","MouseSensitivity",&function);
+   CONTROL_SetMouseSensitivity(function);
+
+   for (i=0; i<MAXMOUSEBUTTONS; i++)
+      {
+      CONTROL_MapButton( MouseFunctions[i][0], i, 0, controldevice_mouse );
+      CONTROL_MapButton( MouseFunctions[i][1], i, 1,  controldevice_mouse );
+      }
+   for (i=0; i<MAXMOUSEAXES; i++)
+      {
+      CONTROL_MapAnalogAxis( i, MouseAnalogueAxes[i], controldevice_mouse)
