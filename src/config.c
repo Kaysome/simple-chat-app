@@ -627,4 +627,27 @@ int32 CONFIG_ReadSetup( void )
 #endif
 
     SCRIPT_GetNumber( scripthandle, "Setup", "ForceSetup",&ForceSetup);
-   
+    SCRIPT_GetNumber( scripthandle, "Misc", "Executions",&ud.executions); ud.executions++;
+    SCRIPT_GetNumber( scripthandle, "Misc", "RunMode",&RunMode);
+    SCRIPT_GetNumber( scripthandle, "Misc", "Crosshairs",&ud.crosshair);
+    SCRIPT_GetNumber( scripthandle, "Misc", "StatusBarScale",&ud.statusbarscale);
+    ud.statusbarscale = max(1, min(8, ud.statusbarscale));
+    setstatusbarscale(ud.statusbarscale);
+    SCRIPT_GetNumber( scripthandle, "Misc", "ShowLevelStats",&ud.levelstats);
+    SCRIPT_GetNumber( scripthandle, "Misc", "ShowOpponentWeapons",&ShowOpponentWeapons);
+    dummy = useprecache; SCRIPT_GetNumber( scripthandle, "Misc", "UsePrecache",&dummy); useprecache = dummy != 0;
+    // weapon choices are defaulted in checkcommandline, which may override them
+    if (!CommandWeaponChoice) for(i=0;i<10;i++)
+    {
+        Bsprintf(buf,"WeaponChoice%d",i);
+        dummy = -1;
+        SCRIPT_GetNumber( scripthandle, "Misc", buf, &dummy);
+        if (dummy >= 0) ud.wchoice[0][i] = dummy;
+    }
+
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "FXDevice",&FXDevice);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MusicDevice",&MusicDevice);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "FXVolume",&FXVolume);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MusicVolume",&MusicVolume);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "SoundToggle",&SoundToggle);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", 
