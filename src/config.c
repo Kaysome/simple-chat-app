@@ -668,3 +668,42 @@ int32 CONFIG_ReadSetup( void )
     ps[0].aim_mode = ud.mouseaiming;
     SCRIPT_GetNumber( scripthandle, "Controls","AimingFlag",(int32 *)&myaimmode);   // (if toggle mode) gives state
     SCRIPT_GetNumber( scripthandle, "Controls","RunKeyBehaviour",&ud.runkey_mode);  // JBF 20031125
+    SCRIPT_GetNumber( scripthandle, "Controls","AutoAim",&AutoAim);         // JBF 20031125
+    ps[0].auto_aim = AutoAim;
+    SCRIPT_GetNumber( scripthandle, "Controls","WeaponSwitchMode",&ud.weaponswitch);
+
+    CONFIG_ReadKeys();
+
+    //CONFIG_SetupMouse(scripthandle);
+    //CONFIG_SetupJoystick(scripthandle);
+    return 0;
+}
+
+/*
+===================
+=
+= CONFIG_WriteSetup
+=
+===================
+*/
+
+void CONFIG_WriteSetup( void )
+{
+    int32 dummy;
+    char buf[64];
+
+    if (!setupread) return;
+    if (scripthandle < 0)
+        scripthandle = SCRIPT_Init(setupfilename);
+
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "Shadows",ud.shadows,false,false);
+    SCRIPT_PutString( scripthandle, "Screen Setup", "Password",ud.pwlockout);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "Detail",ud.detail,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "Tilt",ud.screen_tilting,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "Messages",ud.fta_on,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "Out",ud.lockout,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenWidth",ScreenWidth,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenHeight",ScreenHeight,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenMode",ScreenMode,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenBPP",ScreenBPP,false,false);
+#ifdef RENDERTYPEWIN
