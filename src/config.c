@@ -650,4 +650,21 @@ int32 CONFIG_ReadSetup( void )
     SCRIPT_GetNumber( scripthandle, "Sound Setup", "FXVolume",&FXVolume);
     SCRIPT_GetNumber( scripthandle, "Sound Setup", "MusicVolume",&MusicVolume);
     SCRIPT_GetNumber( scripthandle, "Sound Setup", "SoundToggle",&SoundToggle);
-    SCRIPT_GetNumber( scripthandle, "Sound Setup", 
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MusicToggle",&MusicToggle);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "VoiceToggle",&VoiceToggle);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "AmbienceToggle",&AmbienceToggle);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "NumVoices",&NumVoices);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "NumChannels",&NumChannels);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "NumBits",&NumBits);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MixRate",&MixRate);
+    SCRIPT_GetNumber( scripthandle, "Sound Setup", "ReverseStereo",&ReverseStereo);
+    SCRIPT_GetString( scripthandle, "Sound Setup", "MusicParams", MusicParams, sizeof(MusicParams));
+
+    SCRIPT_GetNumber( scripthandle, "Controls","UseJoystick",&UseJoystick);
+    SCRIPT_GetNumber( scripthandle, "Controls","UseMouse",&UseMouse);
+    SCRIPT_GetNumber( scripthandle, "Controls","MouseAimingFlipped",&ud.mouseflip); // mouse aiming inverted
+    SCRIPT_GetNumber( scripthandle, "Controls","MouseAiming",&ud.mouseaiming);      // 1=momentary/0=toggle
+    //SCRIPT_GetNumber( scripthandle, "Controls","GameMouseAiming",(int32 *)&ps[0].aim_mode);   // dupe of below (?)
+    ps[0].aim_mode = ud.mouseaiming;
+    SCRIPT_GetNumber( scripthandle, "Controls","AimingFlag",(int32 *)&myaimmode);   // (if toggle mode) gives state
+    SCRIPT_GetNumber( scripthandle, "Controls","RunKeyBehaviour",&ud.runkey_mode);  // JBF 20031125
