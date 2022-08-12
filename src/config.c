@@ -707,3 +707,24 @@ void CONFIG_WriteSetup( void )
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenMode",ScreenMode,false,false);
     SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenBPP",ScreenBPP,false,false);
 #ifdef RENDERTYPEWIN
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "MaxRefreshFreq",win_getmaxrefreshfreq(),false,false);
+#endif
+#if USE_POLYMOST && USE_OPENGL
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLTextureMode",gltexfiltermode,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLAnisotropy",glanisotropy,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLMultisample",glmultisample,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLMultisampleNvidia",glnvmultisamplehint,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLSupersample",glsampleshading,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseTextureCompr",glusetexcompr,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLUseCompressedTextureCache", glusetexcache,false,false);
+#endif
+#if USE_OPENGL
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "GLVsync",glswapinterval,false,false);
+#endif
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenSize",ud.screen_size,false,false);
+    SCRIPT_PutNumber( scripthandle, "Screen Setup", "ScreenGamma",ud.brightness,false,false);
+
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "FXDevice", FXDevice, false, false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "MusicDevice", MusicDevice, false, false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "FXVolume",FXVolume,false,false);
+    SCRIPT_PutNumber( scriptha
