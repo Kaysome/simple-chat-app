@@ -727,4 +727,21 @@ void CONFIG_WriteSetup( void )
     SCRIPT_PutNumber( scripthandle, "Sound Setup", "FXDevice", FXDevice, false, false);
     SCRIPT_PutNumber( scripthandle, "Sound Setup", "MusicDevice", MusicDevice, false, false);
     SCRIPT_PutNumber( scripthandle, "Sound Setup", "FXVolume",FXVolume,false,false);
-    SCRIPT_PutNumber( scriptha
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "MusicVolume",MusicVolume,false,false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "SoundToggle",SoundToggle,false,false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "VoiceToggle",VoiceToggle,false,false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "AmbienceToggle",AmbienceToggle,false,false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "MusicToggle",MusicToggle,false,false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "NumVoices", NumVoices, false, false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "NumChannels", NumChannels, false, false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "NumBits", NumBits, false, false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "MixRate", MixRate, false, false);
+    SCRIPT_PutNumber( scripthandle, "Sound Setup", "ReverseStereo",ReverseStereo,false,false);
+    SCRIPT_PutString( scripthandle, "Sound Setup", "MusicParams", MusicParams);
+
+    SCRIPT_PutNumber( scripthandle, "Setup", "ForceSetup",ForceSetup,false,false);
+    SCRIPT_PutNumber( scripthandle, "Misc", "Executions",ud.executions,false,false);
+    SCRIPT_PutNumber( scripthandle, "Misc", "RunMode",RunMode,false,false);
+    SCRIPT_PutNumber( scripthandle, "Misc", "Crosshairs",ud.crosshair,false,false);
+    SCRIPT_PutNumber( scripthandle, "Misc", "ShowLevelStats",ud.levelstats,false,false);
+    SCRIPT_PutNumber( scripthandle, "Misc", "StatusBarScale
