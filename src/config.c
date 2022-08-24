@@ -744,4 +744,26 @@ void CONFIG_WriteSetup( void )
     SCRIPT_PutNumber( scripthandle, "Misc", "RunMode",RunMode,false,false);
     SCRIPT_PutNumber( scripthandle, "Misc", "Crosshairs",ud.crosshair,false,false);
     SCRIPT_PutNumber( scripthandle, "Misc", "ShowLevelStats",ud.levelstats,false,false);
-    SCRIPT_PutNumber( scripthandle, "Misc", "StatusBarScale
+    SCRIPT_PutNumber( scripthandle, "Misc", "StatusBarScale",ud.statusbarscale,false,false);
+    SCRIPT_PutNumber( scripthandle, "Misc", "ShowOpponentWeapons",ShowOpponentWeapons,false,false);
+    SCRIPT_PutNumber( scripthandle, "Misc", "UsePrecache",useprecache,false,false);
+
+    SCRIPT_PutNumber( scripthandle, "Controls","UseJoystick",UseJoystick,false,false);
+    SCRIPT_PutNumber( scripthandle, "Controls","UseMouse",UseMouse,false,false);
+    SCRIPT_PutNumber( scripthandle, "Controls","MouseAimingFlipped",ud.mouseflip,false,false);
+    SCRIPT_PutNumber( scripthandle, "Controls","MouseAiming",ud.mouseaiming,false,false);
+    //SCRIPT_PutNumber( scripthandle, "Controls","GameMouseAiming",(int32) ps[myconnectindex].aim_mode,false,false);
+    SCRIPT_PutNumber( scripthandle, "Controls","AimingFlag",myaimmode,false,false);
+    SCRIPT_PutNumber( scripthandle, "Controls","RunKeyBehaviour",ud.runkey_mode,false,false);
+    SCRIPT_PutNumber( scripthandle, "Controls","AutoAim",AutoAim,false,false);
+    SCRIPT_PutNumber( scripthandle, "Controls","WeaponSwitchMode",ud.weaponswitch,false,false);
+
+    // JBF 20031211
+    for(dummy=0;dummy<NUMGAMEFUNCTIONS;dummy++) {
+        SCRIPT_PutDoubleString( scripthandle, "KeyDefinitions", CONFIG_FunctionNumToName(dummy),
+        KB_ScanCodeToString(KeyboardKeys[dummy][0]), KB_ScanCodeToString(KeyboardKeys[dummy][1]));
+    }
+
+    for(dummy=0;dummy<10;dummy++) {
+        Bsprintf(buf,"WeaponChoice%d",dummy);
+        SCRIPT_PutNumber( scripthandle, "Misc",buf,ud.wch
