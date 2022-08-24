@@ -766,4 +766,33 @@ void CONFIG_WriteSetup( void )
 
     for(dummy=0;dummy<10;dummy++) {
         Bsprintf(buf,"WeaponChoice%d",dummy);
-        SCRIPT_PutNumber( scripthandle, "Misc",buf,ud.wch
+        SCRIPT_PutNumber( scripthandle, "Misc",buf,ud.wchoice[myconnectindex][dummy],false,false);
+    }
+
+    for (dummy=0;dummy<MAXMOUSEBUTTONS;dummy++) {
+        Bsprintf(buf,"MouseButton%d",dummy);
+        SCRIPT_PutString( scripthandle,"Controls", buf, CONFIG_FunctionNumToName( MouseFunctions[dummy][0] ));
+
+        if (dummy >= (MAXMOUSEBUTTONS-2)) continue;
+        
+        Bsprintf(buf,"MouseButtonClicked%d",dummy);
+        SCRIPT_PutString( scripthandle,"Controls", buf, CONFIG_FunctionNumToName( MouseFunctions[dummy][1] ));
+    }
+    for (dummy=0;dummy<MAXMOUSEAXES;dummy++) {
+        Bsprintf(buf,"MouseAnalogAxes%d",dummy);
+        SCRIPT_PutString(scripthandle, "Controls", buf, CONFIG_AnalogNumToName( MouseAnalogueAxes[dummy] ));
+
+        Bsprintf(buf,"MouseDigitalAxes%d_0",dummy);
+        SCRIPT_PutString(scripthandle, "Controls", buf, CONFIG_FunctionNumToName(MouseDigitalFunctions[dummy][0]));
+
+        Bsprintf(buf,"MouseDigitalAxes%d_1",dummy);
+        SCRIPT_PutString(scripthandle, "Controls", buf, CONFIG_FunctionNumToName(MouseDigitalFunctions[dummy][1]));
+        
+        Bsprintf(buf,"MouseAnalogScale%d",dummy);
+        SCRIPT_PutNumber(scripthandle, "Controls", buf, MouseAnalogueScale[dummy], false, false);
+    }
+    dummy = CONTROL_GetMouseSensitivity();
+    SCRIPT_PutNumber( scripthandle, "Controls","MouseSensitivity",dummy,false,false);
+
+    for (dummy=0;dummy<MAXJOYBUTTONS;dummy++) {
+        Bsprintf(buf,"JoystickButton%d",
