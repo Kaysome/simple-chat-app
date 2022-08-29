@@ -795,4 +795,30 @@ void CONFIG_WriteSetup( void )
     SCRIPT_PutNumber( scripthandle, "Controls","MouseSensitivity",dummy,false,false);
 
     for (dummy=0;dummy<MAXJOYBUTTONS;dummy++) {
-        Bsprintf(buf,"JoystickButton%d",
+        Bsprintf(buf,"JoystickButton%d",dummy);
+        SCRIPT_PutString( scripthandle,"Controls", buf, CONFIG_FunctionNumToName( JoystickFunctions[dummy][0] ));
+
+        Bsprintf(buf,"JoystickButtonClicked%d",dummy);
+        SCRIPT_PutString( scripthandle,"Controls", buf, CONFIG_FunctionNumToName( JoystickFunctions[dummy][1] ));
+    }
+    for (dummy=0;dummy<MAXJOYAXES;dummy++) {
+        Bsprintf(buf,"JoystickAnalogAxes%d",dummy);
+        SCRIPT_PutString(scripthandle, "Controls", buf, CONFIG_AnalogNumToName( JoystickAnalogueAxes[dummy] ));
+
+        Bsprintf(buf,"JoystickDigitalAxes%d_0",dummy);
+        SCRIPT_PutString(scripthandle, "Controls", buf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[dummy][0]));
+
+        Bsprintf(buf,"JoystickDigitalAxes%d_1",dummy);
+        SCRIPT_PutString(scripthandle, "Controls", buf, CONFIG_FunctionNumToName(JoystickDigitalFunctions[dummy][1]));
+        
+        Bsprintf(buf,"JoystickAnalogScale%d",dummy);
+        SCRIPT_PutNumber(scripthandle, "Controls", buf, JoystickAnalogueScale[dummy], false, false);
+
+        Bsprintf(buf,"JoystickAnalogDead%d",dummy);
+        SCRIPT_PutNumber(scripthandle, "Controls", buf, JoystickAnalogueDead[dummy], false, false);
+
+        Bsprintf(buf,"JoystickAnalogSaturate%d",dummy);
+        SCRIPT_PutNumber(scripthandle, "Controls", buf, JoystickAnalogueSaturate[dummy], false, false);
+    }
+
+    SCRIPT_PutString( scripthandle, "Comm Setup","PlayerName",&myname[0])
