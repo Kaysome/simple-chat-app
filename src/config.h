@@ -13,4 +13,50 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-See the GNU Ge
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+Original Source: 1996 - Todd Replogle
+Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
+Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
+*/
+//-------------------------------------------------------------------------
+
+#ifndef _config_public
+#define _config_public
+
+#define SETUPNAMEPARM "SETUPFILE"
+
+extern int32 FXDevice;
+extern int32 MusicDevice;
+extern int32 FXVolume;
+extern int32 MusicVolume;
+extern int32 NumVoices;
+extern int32 NumChannels;
+extern int32 NumBits;
+extern int32 MixRate;
+extern int32 ReverseStereo;
+extern char MusicParams[];
+
+extern int32 UseJoystick, UseMouse;
+extern int32 RunMode;
+extern int32 AutoAim;
+extern int32 ShowOpponentWeapons;
+extern int32 ScreenMode;
+extern int32 ScreenWidth;
+extern int32 ScreenHeight;
+extern int32 ScreenBPP;
+extern int32 ForceSetup;
+
+extern byte KeyboardKeys[NUMGAMEFUNCTIONS][2];
+extern int32 MouseFunctions[MAXMOUSEBUTTONS][2];
+extern int32 MouseDigitalFunctions[MAXMOUSEAXES][2];
+extern int32 MouseAnalogueAxes[MAXMOUSEAXES];
+extern int32 MouseAnalogueScale[MAXMOUSEAXES];
+extern int32 JoystickFunctions[MAXJOYBUTTONS][2];
+extern int32 JoystickDigitalFunctions[MAXJOYAXES][2];
+extern int32 JoystickAnalogueAxes[MAXJOYAXES];
+extern int32 JoystickAnalogueScale
