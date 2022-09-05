@@ -59,4 +59,25 @@ extern int32 MouseAnalogueScale[MAXMOUSEAXES];
 extern int32 JoystickFunctions[MAXJOYBUTTONS][2];
 extern int32 JoystickDigitalFunctions[MAXJOYAXES][2];
 extern int32 JoystickAnalogueAxes[MAXJOYAXES];
-extern int32 JoystickAnalogueScale
+extern int32 JoystickAnalogueScale[MAXJOYAXES];
+extern int32 JoystickAnalogueDead[MAXJOYAXES];
+extern int32 JoystickAnalogueSaturate[MAXJOYAXES];
+
+enum {
+    CONFIG_DEFAULTS_CLASSIC,
+    CONFIG_DEFAULTS_MODERN
+};
+void CONFIG_SetMouseDefaults(int style);
+void CONFIG_SetJoystickDefaults(int style);
+void CONFIG_SetDefaultKeyDefinitions(int style);
+
+int32 CONFIG_ReadSetup( void );
+void CONFIG_GetSetupFilename( void );
+void CONFIG_WriteSetup( void );
+void CONFIG_SetupMouse( void );
+void CONFIG_SetupJoystick( void );
+
+int32 CONFIG_GetMapBestTime(char *mapname);
+int32 CONFIG_SetMapBestTime(char *mapname, int32 tm);
+
+#endif
