@@ -530,3 +530,62 @@ extern short weaponsandammosprites[15];
 
 //DUKE3D.H:
 typedef struct
+{
+        short frag[MAXPLAYERS], got_access, last_extra, shield_amount, curr_weapon;
+        short ammo_amount[MAX_WEAPONS], holoduke_on;
+        unsigned char gotweapon[MAX_WEAPONS], inven_icon, jetpack_on, heat_on;
+        short firstaid_amount, steroids_amount, holoduke_amount, jetpack_amount;
+        short heat_amount, scuba_amount, boot_amount;
+        short last_weapon, weapon_pos, kickback_pic;
+        short inv_percent;
+} STATUSBARTYPE;
+
+extern STATUSBARTYPE sbar;
+extern short frags[MAXPLAYERS][MAXPLAYERS];
+extern int cameradist, cameraclock, dukefriction,show_shareware;
+extern unsigned char movesperpacket;
+extern unsigned char gamequit;
+
+extern unsigned char pus,pub,camerashitable,freezerhurtowner,lasermode;
+extern unsigned char syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
+extern signed char multiwho, multipos, multiwhat, multiflag;
+extern int syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
+extern int numfreezebounces,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
+extern unsigned char stereo,playerswhenstarted,everyothertime;
+extern int myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter;
+
+extern int numinterpolations, startofdynamicinterpolations;
+extern int oldipos[MAXINTERPOLATIONS];
+extern int bakipos[MAXINTERPOLATIONS];
+extern int *curipos[MAXINTERPOLATIONS];
+
+extern short numclouds,clouds[128],cloudx[128],cloudy[128];
+extern int cloudtotalclock,totalmemory;
+
+extern int stereomode, stereowidth, stereopixelwidth;
+
+extern int myaimmode, myaimstat, omyaimstat;
+
+#define IFISGLMODE if (POLYMOST_RENDERMODE_POLYGL())
+#define IFISSOFTMODE if (!POLYMOST_RENDERMODE_POLYGL())
+
+#define TILE_SAVESHOT (MAXTILES-1)
+#define TILE_LOADSHOT (MAXTILES-3)
+#define TILE_TILT     (MAXTILES-2)
+#define TILE_ANIM     (MAXTILES-4)
+#define TILE_VIEWSCR  (MAXTILES-5)
+
+extern unsigned char useprecache;
+
+#define NAM_GRENADE_LIFETIME	120
+#define NAM_GRENADE_LIFETIME_VAR	30
+
+#define STRGET_NOECHO (1<<8)
+#define STRGET_NOCONTROLLER (2<<8)
+#define STRGET_PASSWORD (4<<8)
+#define STRGET_NUMERIC (8<<8)
+#define STRGET_SHADE(c) ((short)(((signed char)(c))&255))
+
+#ifdef __cplusplus
+}
+#endif
