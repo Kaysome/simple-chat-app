@@ -196,4 +196,35 @@ extern void invennum(int x,int y,unsigned char num1,char ha,unsigned char sbits)
 extern void weaponnum(short ind,int x,int y,int num1,int num2,char ha);
 extern void weaponnum999(char ind,int x,int y,int num1,int num2,char ha);
 extern void weapon_amounts(struct player_struct *p,int x,int y,int u);
-extern void digitaln
+extern void digitalnumber(int x,int y,int n,char s,unsigned char cs);
+extern void scratchmarks(int x,int y,int n,char s,unsigned char p);
+extern void displayinventory(struct player_struct *p);
+extern void displayfragbar(void );
+extern void coolgaugetext(short snum);
+extern void tics(void );
+extern void clocks(void );
+extern void coords(short snum);
+extern void operatefta(void);
+extern void FTA(short q,struct player_struct *p);
+extern void showtwoscreens(void );
+extern void binscreen(void );
+extern void gameexit(const char *t);
+extern short strget(short x,short y,char *t,short dalen,short c);
+extern void displayrest(int smoothratio);
+extern void updatesectorz(int x,int y,int z,short *sectnum);
+extern void view(struct player_struct *pp,int *vx,int *vy,int *vz,short *vsectnum,short ang,short horiz);
+extern void drawbackground(void );
+extern void displayrooms(short snum,int smoothratio);
+extern short LocateTheLocator(short n,short sn);
+extern short EGS(short whatsect,int s_x,int s_y,int s_z,short s_pn,signed char s_s,signed char s_xr,signed char s_yr,short s_a,short s_ve,int s_zv,short s_ow,signed char s_ss);
+extern char wallswitchcheck(short i);
+extern short spawn(short j,short pn);
+extern void animatesprites(int x,int y,short a,int smoothratio);
+extern void cheats(void );
+extern void nonsharedkeys(void );
+extern void comlinehelp(void);
+extern void checkcommandline(int argc,char const * const *argv);
+extern void Logo(void );
+extern void loadtmb(void );
+extern void compilecons(void );
+extern int encodescriptp
