@@ -293,4 +293,31 @@ extern void ms(short i);
 extern void movefta(void );
 extern short ifhitsectors(short sectnum);
 extern short ifhitbyweapon(short sn);
-extern void m
+extern void movecyclers(void );
+extern void movedummyplayers(void );
+extern void moveplayers(void );
+extern void movefx(void );
+extern void movefallers(void );
+extern void movestandables(void );
+extern void bounce(short i);
+extern void moveweapons(void );
+extern void movetransports(void );
+extern void moveeffectors(void );
+extern void moveactors(void );
+extern void moveexplosions(void );
+
+// game.c
+extern void setstatusbarscale(int sc);
+extern void statusbarsprite(int sx, int sy, int z, short a, short picnum, signed char dashade,
+	unsigned char dapalnum, unsigned char dastat, int cx1, int cy1, int cx2, int cy2);
+
+extern void userack(void);
+
+extern void setgamepalette(struct player_struct *player, unsigned char *pal, int set);
+extern void fadepal(int r, int g, int b, int start, int end, int step);
+
+extern int isspritemakingsound(short i, int num);
+extern int issoundplaying(int num, int xyz);
+extern void stopspritesound(short num, short i);
+
+#endif // __funct_h__
