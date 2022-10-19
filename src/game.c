@@ -1824,3 +1824,1530 @@ void coolgaugetext(short snum)
           if (u&32768)
           {
                 if (u != -1) patchstatusbar(276,SBY+17,299,SBY+17+10);
+                digitalnumber(287,SBY+17,max(p->frag-p->fraggedself,0),-16,10+16+128);
+          }
+     }
+     else
+     {
+          if (u&16384)
+          {
+                if (u != -1) patchstatusbar(275,SBY+18,299,SBY+18+12);
+                if (p->got_access&4) statusbarsprite(275,SBY+16,65536L,0,ACCESS_ICON,0,23,10+16+128,0,0,xdim-1,ydim-1);
+                if (p->got_access&2) statusbarsprite(288,SBY+16,65536L,0,ACCESS_ICON,0,21,10+16+128,0,0,xdim-1,ydim-1);
+                if (p->got_access&1) statusbarsprite(281,SBY+23,65536L,0,ACCESS_ICON,0,0,10+16+128,0,0,xdim-1,ydim-1);
+          }
+     }
+     if (u&(4+8+16+32+64+128+256+512+65536L)) weapon_amounts(p,96,SBY+16,u);
+
+     if (u&1)
+     {
+          if (u != -1) patchstatusbar(20,SBY+17,43,SBY+17+11);
+          if (sprite[p->i].pal == 1 && p->last_extra < 2)
+                 digitalnumber(32,SBY+17,1,-16,10+16+128);
+          else digitalnumber(32,SBY+17,p->last_extra,-16,10+16+128);
+     }
+     if (u&2)
+     {
+          if (u != -1) patchstatusbar(52,SBY+17,75,SBY+17+11);
+          digitalnumber(64,SBY+17,p->shield_amount,-16,10+16+128);
+     }
+
+     if (u&1024)
+     {
+          if (u != -1) patchstatusbar(196,SBY+17,220,SBY+17+11);
+          if (p->curr_weapon != KNEE_WEAPON)
+          {
+                if (p->curr_weapon == HANDREMOTE_WEAPON) i = HANDBOMB_WEAPON; else i = p->curr_weapon;
+                digitalnumber(230-22,SBY+17,p->ammo_amount[i],-16,10+16+128);
+          }
+     }
+
+     if (u&(2048+4096+8192))
+     {
+          if (u != -1)
+          {
+                if (u&(2048+4096)) { patchstatusbar(231,SBY+13,265,SBY+13+18); }
+                                  else { patchstatusbar(250,SBY+24,261,SBY+24+6); }
+          }
+          if (p->inven_icon)
+          {
+                o = 0;
+
+                if (u&(2048+4096))
+                {
+                     switch(p->inven_icon)
+                     {
+                          case 1: i = FIRSTAID_ICON; break;
+                          case 2: i = STEROIDS_ICON; break;
+                          case 3: i = HOLODUKE_ICON; break;
+                          case 4: i = JETPACK_ICON; break;
+                          case 5: i = HEAT_ICON; break;
+                          case 6: i = AIRTANK_ICON; break;
+                          case 7: i = BOOT_ICON; break;
+                     }
+                     statusbarsprite(231-o,SBY+13,65536L,0,i,0,0,10+16+128,0,0,xdim-1,ydim-1);
+                     minitext(292-30-o,SBY+24,"%",6,10+16+128 + MINITEXT_SBAR);
+                     if (p->inven_icon >= 6) minitext(284-35-o,SBY+14,"AUTO",2,10+16+128 + MINITEXT_SBAR);
+                }
+                if (u&(2048+4096))
+                {
+                     switch(p->inven_icon)
+                     {
+                          case 3: j = p->holoduke_on; break;
+                          case 4: j = p->jetpack_on; break;
+                          case 5: j = p->heat_on; break;
+                          default: j = 0x80000000;
+                     }
+                     if (j > 0) minitext(288-30-o,SBY+14,"ON",0,10+16+128 + MINITEXT_SBAR);
+                     else if ((unsigned int)j != 0x80000000) minitext(284-30-o,SBY+14,"OFF",2,10+16+128 + MINITEXT_SBAR);
+                }
+                if (u&8192)
+                {
+                     invennum(284-30-o,SBY+28,(char)inv_percent,0,10+128);
+                }
+          }
+     }
+}
+
+
+#define AVERAGEFRAMES 16
+static int frameval[AVERAGEFRAMES], framecnt = 0;
+
+void tics(void)
+{
+    int i;
+    char b[10];
+
+    i = totalclock;
+    if (i != frameval[framecnt])
+    {
+        sprintf(b,"%d",(TICRATE*AVERAGEFRAMES)/(i-frameval[framecnt]));
+        printext256(windowx1,windowy1,31,-21,b,1);
+        frameval[framecnt] = i;
+    }
+
+    framecnt = ((framecnt+1)&(AVERAGEFRAMES-1));
+}
+
+void coords(short snum)
+{
+    short y = 0;
+
+    if(ud.coop != 1)
+    {
+        if(ud.multimode > 1 && ud.multimode < 5)
+            y = 8;
+        else if(ud.multimode > 4)
+            y = 16;
+    }
+
+    sprintf(buf,"X= %d",ps[snum].posx);
+    printext256(250L,y,31,-1,buf,1);
+    sprintf(buf,"Y= %d",ps[snum].posy);
+    printext256(250L,y+7L,31,-1,buf,1);
+    sprintf(buf,"Z= %d",ps[snum].posz);
+    printext256(250L,y+14L,31,-1,buf,1);
+    sprintf(buf,"A= %d",ps[snum].ang);
+    printext256(250L,y+21L,31,-1,buf,1);
+    sprintf(buf,"ZV= %d",ps[snum].poszv);
+    printext256(250L,y+28L,31,-1,buf,1);
+    sprintf(buf,"OG= %d",ps[snum].on_ground);
+    printext256(250L,y+35L,31,-1,buf,1);
+    sprintf(buf,"AM= %d",ps[snum].ammo_amount[GROW_WEAPON]);
+    printext256(250L,y+43L,31,-1,buf,1);
+    sprintf(buf,"LFW= %d",ps[snum].last_full_weapon);
+    printext256(250L,y+50L,31,-1,buf,1);
+    sprintf(buf,"SECTL= %d",sector[ps[snum].cursectnum].lotag);
+    printext256(250L,y+57L,31,-1,buf,1);
+    sprintf(buf,"SEED= %d",randomseed);
+    printext256(250L,y+64L,31,-1,buf,1);
+    sprintf(buf,"THOLD= %d",ps[snum].transporter_hold);
+    printext256(250L,y+64L+7,31,-1,buf,1);
+}
+
+void operatefta(void)
+{
+     int i, j, k;
+
+     if(ud.screen_size > 0) j = 200-45; else j = 200-8;
+     quotebot = min(quotebot,j);
+     quotebotgoal = min(quotebotgoal,j);
+     if(ps[myconnectindex].gm&MODE_TYPE) j -= 8;
+     quotebotgoal = j; j = quotebot;
+     for(i=0;i<MAXUSERQUOTES;i++)
+     {
+         k = user_quote_time[i]; if (k <= 0) break;
+
+         if (k > 4)
+              gametext(320>>1,j,user_quote[i],0,2+8+16);
+         else if (k > 2) gametext(320>>1,j,user_quote[i],0,2+8+16+1);
+             else gametext(320>>1,j,user_quote[i],0,2+8+16+1+32);
+         j -= 8;
+     }
+
+     if (ps[screenpeek].fta <= 1) return;
+
+     if (ud.coop != 1 && ud.screen_size > 0 && ud.multimode > 1)
+     {
+         j = 0; k = 8;
+         for(i=connecthead;i>=0;i=connectpoint2[i])
+             if (i > j) j = i;
+
+         if (j >= 4 && j <= 8) k += 8;
+         else if (j > 8 && j <= 12) k += 16;
+         else if (j > 12) k += 24;
+     }
+     else k = 0;
+
+     if (ps[screenpeek].ftq == 115 || ps[screenpeek].ftq == 116)
+     {
+         k = quotebot;
+         for(i=0;i<MAXUSERQUOTES;i++)
+         {
+             if (user_quote_time[i] <= 0) break;
+             k -= 8;
+         }
+         k -= 4;
+     }
+
+     j = ps[screenpeek].fta;
+     if (j > 4)
+          gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0,2+8+16);
+     else
+         if (NAM && ps[screenpeek].ftq == 99) gametext(320>>1,k,"Matt Saettler.  matts@saettler.com",0,2+8+16+1);
+     else
+         if (j > 2) gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0,2+8+16+1);
+     else
+         gametext(320>>1,k,fta_quotes[ps[screenpeek].ftq],0,2+8+16+1+32);
+}
+
+void FTA(short q,struct player_struct *p)
+{
+    if( ud.fta_on == 1)
+    {
+        if( p->fta > 0 && q != 115 && q != 116 )
+            if( p->ftq == 115 || p->ftq == 116 ) return;
+
+        p->fta = 100;
+
+        if( p->ftq != q || q == 26 )
+        // || q == 26 || q == 115 || q ==116 || q == 117 || q == 122 )
+        {
+            p->ftq = q;
+            pub = NUMPAGES;
+            pus = NUMPAGES;
+            if (p == &ps[screenpeek]) buildprintf("%s\n",fta_quotes[q]);
+        }
+    }
+}
+
+void showtwoscreens(void)
+{
+    if (VOLUMEONE) {
+        setview(0,0,xdim-1,ydim-1);
+        flushperms();
+        //ps[myconnectindex].palette = palette;
+        setgamepalette(&ps[myconnectindex], palette, 1);
+
+        fadepal(0,0,0, 0,64,7);
+        clearallviews(0L);
+        rotatesprite(0,0,65536L,0,3291,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+        IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
+
+        userack();
+
+        fadepal(0,0,0, 0,64,7);
+        rotatesprite(0,0,65536L,0,3290,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+        IFISSOFTMODE fadepal(0,0,0, 63,0,-7); else nextpage();
+
+        userack();
+    }
+}
+
+void gameexit(const char *t)
+{
+    if(*t != 0) ps[myconnectindex].palette = &palette[0];
+
+    if(numplayers > 1)
+    {
+        allowtimetocorrecterrorswhenquitting();
+        uninitmultiplayers();
+    }
+
+    if(ud.recstat == 1) closedemowrite();
+    else if(ud.recstat == 2) { if (frecfilep) fclose(frecfilep); }  // JBF: fixes crash on demo playback
+
+    if(qe)
+        goto GOTOHERE;
+
+    if(playerswhenstarted > 1 && ud.coop != 1 && *t == ' ')
+    {
+        dobonus(1);
+        setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP);
+    }
+
+    if( *t != 0 && *(t+1) != 'V' && *(t+1) != 'Y')
+        showtwoscreens();
+
+    GOTOHERE:
+
+    Shutdown();
+
+    if(*t != 0)
+    {
+        if (!(t[0] == ' ' && t[1] == 0)) {
+            wm_msgbox("JFDuke3D", "%s", t);
+        }
+    }
+
+    uninitgroupfile();
+
+    exit(0);
+}
+
+
+
+
+short inputloc = 0;
+short strget(short x,short y,char *t,short dalen,short c)
+{
+    short ch, sh, didinput = 0;
+
+    while((ch = KB_Getch()) != 0)
+    {
+        if(ch == asc_BackSpace)
+        {
+            if( inputloc > 0 )
+            {
+                inputloc--;
+                *(t+inputloc) = 0;
+            }
+        }
+        else
+        {
+            if(ch == asc_Enter)
+            {
+                KB_ClearKeyDown(sc_Enter);
+                KB_ClearKeyDown(sc_kpad_Enter);
+                return (1);
+            }
+            else if(ch == asc_Escape)
+            {
+                KB_ClearKeyDown(sc_Escape);
+                return (-1);
+            }
+            else if ( ch >= 32 && inputloc < dalen && ch < 127)
+            {
+                ch = Btoupper(ch);
+                if (!(c & STRGET_NUMERIC) || (ch >= '0' && ch <= '9')) {
+                    *(t+inputloc) = ch;
+                    *(t+inputloc+1) = 0;
+                    inputloc++;
+                }
+                didinput = 1;
+            }
+        }
+    }
+
+    if (!(c & STRGET_NOCONTROLLER) && !didinput)
+    {
+        extern UserInput uinfo;  // menues.c
+        if (uinfo.button0) return (1);
+        else if (uinfo.button1) return (-1);
+    }
+
+    sh = (signed char)(c & 255);
+    if( c & STRGET_NOECHO ) return(0);
+    if( c & STRGET_PASSWORD )
+    {
+        char b[41];
+        int ii;
+        for(ii=0;ii<inputloc;ii++)
+            b[ii] = '*';
+        b[ii] = 0;
+        x = gametext(x,y,b,sh,2+8+16);
+    }
+    else x = gametext(x,y,t,sh,2+8+16);
+    sh = 4-(sintable[(totalclock<<4)&2047]>>11);
+    rotatesprite((x+8)<<16,(y+4)<<16,32768L,0,SPINNINGNUKEICON+((totalclock>>3)%7),sh,0,2+8,0,0,xdim-1,ydim-1);
+
+    return (0);
+}
+
+void typemode(void)
+{
+     short ch, hitstate, i, j;
+
+     if( ps[myconnectindex].gm&MODE_SENDTOWHOM )
+     {
+          if(sendmessagecommand != -1 || ud.multimode < 3 || movesperpacket == 4)
+          {
+                tempbuf[0] = 4;
+                tempbuf[2] = 0;
+                recbuf[0]  = 0;
+
+                if(ud.multimode < 3)
+                     sendmessagecommand = 2;
+
+                snprintf(recbuf, sizeof(recbuf), "%s: %s", ud.user_name[myconnectindex], typebuf);
+                j = strlen(recbuf);
+                memcpy(tempbuf+2,recbuf,j+1);
+
+                if(sendmessagecommand >= ud.multimode || movesperpacket == 4)
+                {
+                     tempbuf[1] = 255;
+                     for(ch=connecthead;ch >= 0;ch=connectpoint2[ch])
+                     {
+                          if (ch != myconnectindex) sendpacket(ch,tempbuf,j+2);
+                          if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+                     }
+                     adduserquote(recbuf);
+                     quotebot += 8;
+                     quotebotgoal = quotebot;
+                }
+                else if(sendmessagecommand >= 0)
+                {
+                     tempbuf[1] = (char)sendmessagecommand;
+                     if ((!networkmode) && (myconnectindex != connecthead))
+                          sendmessagecommand = connecthead;
+                     sendpacket(sendmessagecommand,(unsigned char *)tempbuf,j+2);
+                }
+
+                sendmessagecommand = -1;
+                ps[myconnectindex].gm &= ~(MODE_TYPE|MODE_SENDTOWHOM);
+          }
+          else if(sendmessagecommand == -1)
+          {
+                j = 50;
+                gametext(320>>1,j,"SEND MESSAGE TO...",0,2+8+16); j += 8;
+                for(i=connecthead;i>=0;i=connectpoint2[i])
+                {
+                     if (i == myconnectindex)
+                     {
+                         minitextshade((320>>1)-40+1,j+1,"A/ENTER - ALL",26,0,2+8+16);
+                         minitext((320>>1)-40,j,"A/ENTER - ALL",0,2+8+16); j += 7;
+                     }
+                     else
+                     {
+                         sprintf(buf,"      %d - %s",i+1,ud.user_name[i]);
+                         minitextshade((320>>1)-40-6+1,j+1,buf,26,0,2+8+16);
+                         minitext((320>>1)-40-6,j,buf,0,2+8+16); j += 7;
+                     }
+                }
+                minitextshade((320>>1)-40-4+1,j+1,"    ESC - Abort",26,0,2+8+16);
+                minitext((320>>1)-40-4,j,"    ESC - Abort",0,2+8+16); j += 7;
+
+                if (ud.screen_size > 0) j = 200-45; else j = 200-8;
+                gametext(320>>1,j,typebuf,0,2+8+16);
+
+                if( KB_KeyWaiting() )
+                {
+                     i = KB_GetCh();
+
+                     if(i == 'A' || i == 'a' || i == 13)
+                          sendmessagecommand = ud.multimode;
+                     else if(i >= '1' || i <= (ud.multimode + '1') )
+                          sendmessagecommand = i - '1';
+                     else
+                     {
+                        sendmessagecommand = ud.multimode;
+                          if(i == 27)
+                          {
+                              ps[myconnectindex].gm &= ~(MODE_TYPE|MODE_SENDTOWHOM);
+                              sendmessagecommand = -1;
+                          }
+                          else
+                          typebuf[0] = 0;
+                     }
+
+                     KB_ClearKeyDown(sc_1);
+                     KB_ClearKeyDown(sc_2);
+                     KB_ClearKeyDown(sc_3);
+                     KB_ClearKeyDown(sc_4);
+                     KB_ClearKeyDown(sc_5);
+                     KB_ClearKeyDown(sc_6);
+                     KB_ClearKeyDown(sc_7);
+                     KB_ClearKeyDown(sc_8);
+                     KB_ClearKeyDown(sc_A);
+                     KB_ClearKeyDown(sc_Escape);
+                     KB_ClearKeyDown(sc_Enter);
+                }
+          }
+     }
+     else
+     {
+          if(ud.screen_size > 0) j = 200-45; else j = 200-8;
+          hitstate = strget(320>>1,j,typebuf,30,STRGET_SHADE(1)|STRGET_NOCONTROLLER);
+
+          if(hitstate == 1)
+          {
+                KB_ClearKeyDown(sc_Enter);
+                ps[myconnectindex].gm |= MODE_SENDTOWHOM;
+          }
+          else if(hitstate == -1)
+                ps[myconnectindex].gm &= ~(MODE_TYPE|MODE_SENDTOWHOM);
+          else pub = NUMPAGES;
+     }
+}
+
+void moveclouds(void)
+{
+    if( totalclock > cloudtotalclock || totalclock < (cloudtotalclock-7))
+    {
+        short i;
+
+        cloudtotalclock = totalclock+6;
+
+        for(i=0;i<numclouds;i++)
+        {
+            cloudx[i] += (sintable[(ps[screenpeek].ang+512)&2047]>>9);
+            cloudy[i] += (sintable[ps[screenpeek].ang&2047]>>9);
+
+            sector[clouds[i]].ceilingxpanning = cloudx[i]>>6;
+            sector[clouds[i]].ceilingypanning = cloudy[i]>>6;
+        }
+    }
+}
+
+void displayrest(int smoothratio)
+{
+    int a, i, j;
+    unsigned char fader=0,fadeg=0,fadeb=0,fadef=0,tintr=0,tintg=0,tintb=0,tintf=0,dotint=0;
+
+    struct player_struct *pp;
+    walltype *wal;
+    int cposx,cposy,cang;
+
+    pp = &ps[screenpeek];
+
+    // this takes care of fullscreen tint for OpenGL
+    if (POLYMOST_RENDERMODE_POLYGL()) {
+        if (pp->palette == waterpal) tintr=0,tintg=0,tintb=63,tintf=8;
+        else if (pp->palette == slimepal) tintr=0,tintg=63,tintb=0,tintf=8;
+    }
+
+    // this does pain tinting etc from the CON
+    if( pp->pals_time >= 0 && pp->loogcnt == 0) // JBF 20040101: pals_time > 0 now >= 0
+    {
+        fader = pp->pals[0];
+        fadeg = pp->pals[1];
+        fadeb = pp->pals[2];
+        fadef = pp->pals_time;
+        restorepalette = 1;     // JBF 20040101
+        dotint = 1;
+    }
+    // reset a normal palette
+    else if( restorepalette )
+    {
+        //setbrightness(ud.brightness>>2,&pp->palette[0],0);
+        setgamepalette(pp,pp->palette,0);
+        restorepalette = 0;
+    }
+    // loogies courtesy of being snotted on
+    else if(pp->loogcnt > 0) {
+        //palto(0,64,0,(pp->loogcnt>>1)+128);
+        fader = 0;
+        fadeg = 64;
+        fadeb = 0;
+        fadef = pp->loogcnt>>1;
+        dotint = 1;
+    }
+    if (fadef > tintf) {
+        tintr = fader;
+        tintg = fadeg;
+        tintb = fadeb;
+        tintf = fadef;
+    }
+
+    if(ud.show_help)
+    {
+        switch(ud.show_help)
+        {
+            case 1:
+                rotatesprite(0,0,65536L,0,TEXTSTORY,0,0,10+16+64, 0,0,xdim-1,ydim-1);
+                break;
+            case 2:
+                rotatesprite(0,0,65536L,0,F1HELP,0,0,10+16+64, 0,0,xdim-1,ydim-1);
+                break;
+        }
+        if (tintf > 0 || dotint) palto(tintr,tintg,tintb,tintf|128);
+        return;
+    }
+
+    i = pp->cursectnum;
+
+    show2dsector[i>>3] |= (1<<(i&7));
+    wal = &wall[sector[i].wallptr];
+    for(j=sector[i].wallnum;j>0;j--,wal++)
+    {
+        i = wal->nextsector;
+        if (i < 0) continue;
+        if (wal->cstat&0x0071) continue;
+        if (wall[wal->nextwall].cstat&0x0071) continue;
+        if (sector[i].lotag == 32767) continue;
+        if (sector[i].ceilingz >= sector[i].floorz) continue;
+        show2dsector[i>>3] |= (1<<(i&7));
+    }
+
+    if(ud.camerasprite == -1)
+    {
+        if( ud.overhead_on != 2 )
+        {
+            if(pp->newowner >= 0)
+                cameratext(pp->newowner);
+            else
+            {
+                displayweapon(screenpeek);
+                if(pp->over_shoulder_on == 0 )
+                    displaymasks(screenpeek);
+            }
+            moveclouds();
+        }
+
+        if( ud.overhead_on > 0 )
+        {
+                smoothratio = min(max(smoothratio,0),65536);
+                dointerpolations(smoothratio);
+                if( ud.scrollmode == 0 )
+                {
+                     if(pp->newowner == -1)
+                     {
+                         if (screenpeek == myconnectindex && numplayers > 1)
+                         {
+                             cposx = omyx+mulscale16((int)(myx-omyx),smoothratio);
+                             cposy = omyy+mulscale16((int)(myy-omyy),smoothratio);
+                             cang = omyang+mulscale16((int)(((myang+1024-omyang)&2047)-1024),smoothratio);
+                         }
+                         else
+                         {
+                              cposx = pp->oposx+mulscale16((int)(pp->posx-pp->oposx),smoothratio);
+                              cposy = pp->oposy+mulscale16((int)(pp->posy-pp->oposy),smoothratio);
+                              cang = pp->oang+mulscale16((int)(((pp->ang+1024-pp->oang)&2047)-1024),smoothratio);
+                         }
+                    }
+                    else
+                    {
+                        cposx = pp->oposx;
+                        cposy = pp->oposy;
+                        cang = pp->oang;
+                    }
+                }
+                else
+                {
+
+                     ud.fola += ud.folavel>>3;
+                     ud.folx += (ud.folfvel*sintable[(512+2048-ud.fola)&2047])>>14;
+                     ud.foly += (ud.folfvel*sintable[(512+1024-512-ud.fola)&2047])>>14;
+
+                     cposx = ud.folx;
+                     cposy = ud.foly;
+                     cang = ud.fola;
+                }
+
+                if(ud.overhead_on == 2)
+                {
+                    clearview(0L);
+                    drawmapview(cposx,cposy,pp->zoom,cang);
+                }
+                drawoverheadmap( cposx,cposy,pp->zoom,cang);
+
+                restoreinterpolations();
+
+                if(ud.overhead_on == 2)
+                {
+                    if(ud.screen_size > 0)
+                    {
+                        a = 159;
+                        a += tilesizy[BOTTOMSTATUSBAR] - mulscale16(tilesizy[BOTTOMSTATUSBAR], sbarscale);
+                    }
+                    else a = 194;
+
+                    minitext(1,a-6,volume_names[ud.volume_number],0,2+8+16);
+                    minitext(1,a,level_names[ud.volume_number*11 + ud.level_number],0,2+8+16);
+                }
+        }
+    }
+
+    coolgaugetext(screenpeek);
+    operatefta();
+
+    if( (KB_KeyPressed(sc_Escape) || BUTTON(gamefunc_Show_Menu)) && ud.overhead_on == 0
+        && ud.show_help == 0
+        && ps[myconnectindex].newowner == -1)
+    {
+        if( (ps[myconnectindex].gm&MODE_MENU) == MODE_MENU && current_menu < 51)
+        {
+            KB_ClearKeyDown(sc_Escape);
+            CONTROL_ClearButton(gamefunc_Show_Menu);
+            ps[myconnectindex].gm &= ~MODE_MENU;
+            if(ud.multimode < 2 && ud.recstat != 2)
+            {
+                ready2send = 1;
+                totalclock = ototalclock;
+                cameraclock = totalclock;
+                cameradist = 65536L;
+            }
+            walock[TILE_SAVESHOT] = 199;
+            vscrn();
+        }
+        else if( (ps[myconnectindex].gm&MODE_MENU) != MODE_MENU &&
+            ps[myconnectindex].newowner == -1 &&
+            (ps[myconnectindex].gm&MODE_TYPE) != MODE_TYPE)
+        {
+            KB_ClearKeyDown(sc_Escape);
+            CONTROL_ClearButton(gamefunc_Show_Menu);
+            FX_StopAllSounds();
+            clearsoundlocks();
+
+            intomenusounds();
+
+            ps[myconnectindex].gm |= MODE_MENU;
+
+            if(ud.multimode < 2 && ud.recstat != 2) ready2send = 0;
+
+            if(ps[myconnectindex].gm&MODE_GAME) cmenu(50);
+            else cmenu(0);
+            screenpeek = myconnectindex;
+        }
+    }
+
+    if(ps[myconnectindex].newowner == -1 && ud.overhead_on == 0 && ud.crosshair && ud.camerasprite == -1)
+        rotatesprite((160-(ps[myconnectindex].look_ang>>1))<<16,100L<<16,65536L,0,CROSSHAIR,0,0,2+1,windowx1,windowy1,windowx2,windowy2);
+
+    if(ps[myconnectindex].gm&MODE_TYPE)
+        typemode();
+    else
+        menus();
+
+    if( ud.pause_on==1 && (ps[myconnectindex].gm&MODE_MENU) == 0 )
+        menutext(160,100,0,0,"GAME PAUSED");
+
+    if(ud.coords)
+        coords(screenpeek);
+    if(ud.tickrate)
+        tics();
+
+    // JBF 20040124: display level stats in screen corner
+    if(ud.levelstats && (ps[myconnectindex].gm&MODE_MENU) == 0) {
+        if (ud.screen_size > 0)
+        {
+            i = 159;
+            i += tilesizy[BOTTOMSTATUSBAR] - mulscale16(tilesizy[BOTTOMSTATUSBAR], sbarscale);
+        }
+        else i = 194;
+        if (ud.overhead_on == 2) i -= 6+6+4;
+
+                    // minitext(1,a+6,volume_names[ud.volume_number],0,2+8+16);
+                    // minitext(1,a+12,level_names[ud.volume_number*11 + ud.level_number],0,2+8+16);
+
+        sprintf(buf,"Time: %d:%02d",
+            (ps[myconnectindex].player_par/(26*60)),
+            (ps[myconnectindex].player_par/26)%60);
+        minitext(1,i-6-6,buf,0,2+8+16);
+
+        if(ud.player_skill > 3 )
+            sprintf(buf,"Kills: %d",ps[myconnectindex].actors_killed);
+        else
+            sprintf(buf,"Kills: %d/%d",ps[myconnectindex].actors_killed,
+                ps[myconnectindex].max_actors_killed>ps[myconnectindex].actors_killed?
+                ps[myconnectindex].max_actors_killed:ps[myconnectindex].actors_killed);
+        minitext(1,i-6,buf,0,2+8+16);
+
+        sprintf(buf,"Secrets: %d/%d", ps[myconnectindex].secret_rooms,ps[myconnectindex].max_secret_rooms);
+        minitext(1,i,buf,0,2+8+16);
+    }
+    if (tintf > 0 || dotint) palto(tintr,tintg,tintb,tintf|128);
+}
+
+
+void view(struct player_struct *pp, int *vx, int *vy,int *vz,short *vsectnum, short ang, short horiz)
+{
+     spritetype *sp;
+     int i, nx, ny, nz, hx, hy, hitx, hity, hitz;
+     short bakcstat, hitsect, hitwall, hitsprite, daang;
+
+     nx = (sintable[(ang+1536)&2047]>>4);
+     ny = (sintable[(ang+1024)&2047]>>4);
+     nz = (horiz-100)*128;
+
+     sp = &sprite[pp->i];
+
+     bakcstat = sp->cstat;
+     sp->cstat &= (short)~0x101;
+
+     updatesectorz(*vx,*vy,*vz,vsectnum);
+     hitscan(*vx,*vy,*vz,*vsectnum,nx,ny,nz,&hitsect,&hitwall,&hitsprite,&hitx,&hity,&hitz,CLIPMASK1);
+
+     if(*vsectnum < 0)
+     {
+        sp->cstat = bakcstat;
+        return;
+     }
+
+     hx = hitx-(*vx); hy = hity-(*vy);
+     if (klabs(nx)+klabs(ny) > klabs(hx)+klabs(hy))
+     {
+         *vsectnum = hitsect;
+         if (hitwall >= 0)
+         {
+             daang = getangle(wall[wall[hitwall].point2].x-wall[hitwall].x,
+                                    wall[wall[hitwall].point2].y-wall[hitwall].y);
+
+             i = nx*sintable[daang]+ny*sintable[(daang+1536)&2047];
+             if (klabs(nx) > klabs(ny)) hx -= mulscale28(nx,i);
+                                          else hy -= mulscale28(ny,i);
+         }
+         else if (hitsprite < 0)
+         {
+             if (klabs(nx) > klabs(ny)) hx -= (nx>>5);
+                                          else hy -= (ny>>5);
+         }
+         if (klabs(nx) > klabs(ny)) i = divscale16(hx,nx);
+                                      else i = divscale16(hy,ny);
+         if (i < cameradist) cameradist = i;
+     }
+     *vx = (*vx)+mulscale16(nx,cameradist);
+     *vy = (*vy)+mulscale16(ny,cameradist);
+     *vz = (*vz)+mulscale16(nz,cameradist);
+
+     cameradist = min(cameradist+((totalclock-cameraclock)<<10),65536);
+     cameraclock = totalclock;
+
+     updatesectorz(*vx,*vy,*vz,vsectnum);
+
+     sp->cstat = bakcstat;
+}
+
+    //REPLACE FULLY
+void drawbackground(void)
+{
+    short dapicnum;
+    int x,y,x1,y1,x2,y2,rx;
+#define ROUND16(f) (((f)>>16)+(((f)&0x8000)>>15))
+
+    flushperms();
+
+    switch(ud.m_volume_number)
+    {
+        default:dapicnum = BIGHOLE;break;
+        case 1:dapicnum = BIGHOLE;break;
+        case 2:dapicnum = BIGHOLE;break;
+    }
+
+    if (tilesizx[dapicnum] == 0 || tilesizy[dapicnum] == 0) {
+        pus = pub = NUMPAGES;
+        return;
+    }
+
+    y1 = 0; y2 = ydim;
+    if( ready2send || (ps[myconnectindex].gm&MODE_GAME) || ud.recstat == 2 )
+    {
+        if(ud.coop != 1)
+        {
+            if (ud.multimode > 1) y1 += tilesizy[FRAGBAR];
+            if (ud.multimode > 4) y1 += tilesizy[FRAGBAR];
+            if (ud.multimode > 8) y1 += tilesizy[FRAGBAR];
+            if (ud.multimode > 12) y1 += tilesizy[FRAGBAR];
+        }
+        y1 = scale(y1 * sbarscale, ydim, 200)>>16;
+        if (ud.screen_size >= 8)
+            y2 = ROUND16(scale(200<<16,ydim,200)-scale(tilesizy[BOTTOMSTATUSBAR] * sbarscale,ydim,200) + 32768);
+    } else {
+        // when not rendering a game, fullscreen wipe
+        for(y=0;y<ydim;y+=tilesizy[dapicnum])
+            for(x=0;x<xdim;x+=tilesizx[dapicnum])
+                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,0,xdim-1,ydim-1);
+        return;
+    }
+
+    if(ud.screen_size > 8)
+    {
+        // across top
+        for (y=y1-(y1%tilesizy[dapicnum]); y<windowy1; y+=tilesizy[dapicnum])
+            for (x=0; x<xdim; x+=tilesizx[dapicnum])
+                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,y1,xdim-1,windowy1-1);
+
+        // sides
+        rx = windowx2-windowx2%tilesizx[dapicnum];
+        for (y=windowy1-windowy1%tilesizy[dapicnum]; y<windowy2; y+=tilesizy[dapicnum])
+            for (x=0; x<windowx1 || x+rx<xdim; x+=tilesizx[dapicnum]) {
+                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,windowy1,windowx1-1,windowy2);
+                rotatesprite((x+rx)<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,windowx2+1,windowy1,xdim-1,windowy2);
+            }
+
+        // along bottom
+        for (y=windowy2-(windowy2%tilesizy[dapicnum]); y<y2; y+=tilesizy[dapicnum])
+            for (x=0; x<xdim; x+=tilesizx[dapicnum])
+                rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,windowy2+1,xdim-1,y2-1);
+    }
+
+    // draw in the bits to the left and right of the status bar and fragbar
+    if (ud.screen_size >= 8 || ud.multimode > 1) {
+        int cl, cr, barw;
+        barw = scale(320*sbarscale,ydim<<16,200*pixelaspect);
+        cl = ((xdim<<16)-barw)>>17;
+        cr = ((xdim<<16)+barw)>>17;
+
+        for(y=0; y<y1; y+=tilesizy[dapicnum])
+            for(x=0;x<=xdim-1; x+=tilesizx[dapicnum]) {
+                if (x<cl)
+                    rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,0,cl,y1);
+                else if (x+tilesizx[dapicnum]>cr)
+                    rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,cr,0,xdim-1,y1);
+            }
+
+        if (ud.screen_size >= 8)
+            for(y=y2-y2%tilesizy[dapicnum]; y<ydim-1; y+=tilesizy[dapicnum])
+                for(x=0;x<=xdim-1; x+=tilesizx[dapicnum]) {
+                    if (x<cl)
+                        rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,0,y2,cl,ydim-1);
+                    else if (x+tilesizx[dapicnum]>cr)
+                        rotatesprite(x<<16,y<<16,65536L,0,dapicnum,8,0,8+16+64+128,cr,y2,xdim-1,ydim-1);
+                }
+    }
+
+     if(ud.screen_size > 8)
+     {
+          y = 0;
+          if(ud.coop != 1)
+          {
+             if (ud.multimode > 1) y += 8;
+             if (ud.multimode > 4) y += 8;
+          }
+
+          x1 = max(windowx1-4,0);
+          y1 = max(windowy1-4,y);
+          x2 = min(windowx2+4,xdim-1);
+          y2 = min(windowy2+4,scale(ydim,200-mulscale16(tilesizy[BOTTOMSTATUSBAR], sbarscale),200)-1);
+
+          for(y=y1+4;y<y2-4;y+=64)
+          {
+                rotatesprite(x1<<16,y<<16,65536L,0,VIEWBORDER,0,0,8+16+64+128,x1,y1,x2,y2);
+                rotatesprite((x2+1)<<16,(y+64)<<16,65536L,1024,VIEWBORDER,0,0,8+16+64+128,x1,y1,x2,y2);
+          }
+
+          for(x=x1+4;x<x2-4;x+=64)
+          {
+                rotatesprite((x+64)<<16,y1<<16,65536L,512,VIEWBORDER,0,0,8+16+64+128,x1,y1,x2,y2);
+                rotatesprite(x<<16,(y2+1)<<16,65536L,1536,VIEWBORDER,0,0,8+16+64+128,x1,y1,x2,y2);
+          }
+
+          rotatesprite(x1<<16,y1<<16,65536L,0,VIEWBORDER+1,0,0,8+16+64+128,x1,y1,x2,y2);
+          rotatesprite((x2+1)<<16,y1<<16,65536L,512,VIEWBORDER+1,0,0,8+16+64+128,x1,y1,x2,y2);
+          rotatesprite((x2+1)<<16,(y2+1)<<16,65536L,1024,VIEWBORDER+1,0,0,8+16+64+128,x1,y1,x2,y2);
+          rotatesprite(x1<<16,(y2+1)<<16,65536L,1536,VIEWBORDER+1,0,0,8+16+64+128,x1,y1,x2,y2);
+     }
+
+     pus = pub = NUMPAGES;
+}
+
+
+// Floor Over Floor
+
+// If standing in sector with SE42
+// then draw viewing to SE41 and raise all =hi SE43 cielings.
+
+// If standing in sector with SE43
+// then draw viewing to SE40 and lower all =hi SE42 floors.
+
+// If standing in sector with SE44
+// then draw viewing to SE40.
+
+// If standing in sector with SE45
+// then draw viewing to SE41.
+
+#define FOFTILE 13
+#define FOFTILEX 32
+#define FOFTILEY 32
+int tempsectorz[MAXSECTORS];
+int tempsectorpicnum[MAXSECTORS];
+//short tempcursectnum;
+
+void SE40_Draw(int spnum,int x,int y,int z,short a,short h,int smoothratio)
+{
+ int i=0,j=0,k=0;
+ int floor1=0,floor2=0,ok=0,fofmode=0;
+ int offx,offy;
+
+ if(sprite[spnum].ang!=512) return;
+
+ i = FOFTILE;    //Effect TILE
+ if (!(gotpic[i>>3]&(1<<(i&7)))) return;
+ gotpic[i>>3] &= ~(1<<(i&7));
+
+ floor1=spnum;
+
+ if(sprite[spnum].lotag==42) fofmode=40;
+ if(sprite[spnum].lotag==43) fofmode=41;
+ if(sprite[spnum].lotag==44) fofmode=40;
+ if(sprite[spnum].lotag==45) fofmode=41;
+
+// fofmode=sprite[spnum].lotag-2;
+
+// sectnum=sprite[j].sectnum;
+// sectnum=cursectnum;
+ ok++;
+
+/*  recursive?
+ for(j=0;j<MAXSPRITES;j++)
+ {
+  if(
+     sprite[j].sectnum==sectnum &&
+     sprite[j].picnum==1 &&
+     sprite[j].lotag==110
+    ) { DrawFloorOverFloor(j); break;}
+ }
+*/
+
+// if(ok==0) { Message("no fof",RED); return; }
+
+ for(j=0;j<MAXSPRITES;j++)
+ {
+  if(
+     sprite[j].picnum==1 &&
+     sprite[j].lotag==fofmode &&
+     sprite[j].hitag==sprite[floor1].hitag
+    ) { floor1=j; fofmode=sprite[j].lotag; ok++; break;}
+ }
+// if(ok==1) { Message("no floor1",RED); return; }
+
+ if(fofmode==40) k=41; else k=40;
+
+ for(j=0;j<MAXSPRITES;j++)
+ {
+  if(
+     sprite[j].picnum==1 &&
+     sprite[j].lotag==k &&
+     sprite[j].hitag==sprite[floor1].hitag
+    ) {floor2=j; ok++; break;}
+ }
+
+// if(ok==2) { Message("no floor2",RED); return; }
+
+ for(j=0;j<MAXSPRITES;j++)  // raise ceiling or floor
+ {
+  if(sprite[j].picnum==1 &&
+     sprite[j].lotag==k+2 &&
+     sprite[j].hitag==sprite[floor1].hitag
+    )
+    {
+     if(k==40)
+     {tempsectorz[sprite[j].sectnum]=sector[sprite[j].sectnum].floorz;
+      sector[sprite[j].sectnum].floorz+=(((z-sector[sprite[j].sectnum].floorz)/32768)+1)*32768;
+      tempsectorpicnum[sprite[j].sectnum]=sector[sprite[j].sectnum].floorpicnum;
+      sector[sprite[j].sectnum].floorpicnum=13;
+     }
+     if(k==41)
+     {tempsectorz[sprite[j].sectnum]=sector[sprite[j].sectnum].ceilingz;
+      sector[sprite[j].sectnum].ceilingz+=(((z-sector[sprite[j].sectnum].ceilingz)/32768)-1)*32768;
+      tempsectorpicnum[sprite[j].sectnum]=sector[sprite[j].sectnum].ceilingpicnum;
+      sector[sprite[j].sectnum].ceilingpicnum=13;
+     }
+    }
+ }
+
+ i=floor1;
+ offx=x-sprite[i].x;
+ offy=y-sprite[i].y;
+ i=floor2;
+ drawrooms(offx+sprite[i].x,offy+sprite[i].y,z,a,h,sprite[i].sectnum);
+ animatesprites(x,y,a,smoothratio);
+ drawmasks();
+
+ for(j=0;j<MAXSPRITES;j++)  // restore ceiling or floor
+ {
+  if(sprite[j].picnum==1 &&
+     sprite[j].lotag==k+2 &&
+     sprite[j].hitag==sprite[floor1].hitag
+    )
+    {
+     if(k==40)
+     {sector[sprite[j].sectnum].floorz=tempsectorz[sprite[j].sectnum];
+      sector[sprite[j].sectnum].floorpicnum=tempsectorpicnum[sprite[j].sectnum];
+     }
+     if(k==41)
+     {sector[sprite[j].sectnum].ceilingz=tempsectorz[sprite[j].sectnum];
+      sector[sprite[j].sectnum].ceilingpicnum=tempsectorpicnum[sprite[j].sectnum];
+     }
+    }// end if
+ }// end for
+
+} // end SE40
+
+
+
+
+void se40code(int x,int y,int z,int a,int h, int smoothratio)
+{
+    int i;
+
+    i = headspritestat[15];
+    while(i >= 0)
+    {
+        switch(sprite[i].lotag)
+        {
+//            case 40:
+//            case 41:
+//                SE40_Draw(i,x,y,a,smoothratio);
+//                break;
+            case 42:
+            case 43:
+            case 44:
+            case 45:
+                if(ps[screenpeek].cursectnum == sprite[i].sectnum)
+                    SE40_Draw(i,x,y,z,a,h,smoothratio);
+                break;
+        }
+        i = nextspritestat[i];
+    }
+}
+
+static int oyrepeat=-1;
+
+void displayrooms(short snum,int smoothratio)
+{
+    int cposx,cposy,cposz,dst,j,fz,cz;
+    short sect, cang, k, choriz;
+    struct player_struct *p;
+    int tposx,tposy,i;
+    short tang;
+    int tiltcx,tiltcy,tiltcs=0; // JBF 20030807
+
+    p = &ps[snum];
+
+    if(pub > 0)
+    {
+        drawbackground();
+        pub = 0;
+    }
+
+    if( ud.overhead_on == 2 || ud.show_help || p->cursectnum == -1)
+        return;
+
+    smoothratio = min(max(smoothratio,0),65536);
+
+    visibility = p->visibility;
+
+    if(ud.pause_on || ps[snum].on_crane > -1) smoothratio = 65536;
+
+    sect = p->cursectnum;
+    if(sect < 0 || sect >= MAXSECTORS) return;
+
+    dointerpolations(smoothratio);
+
+    animatecamsprite();
+
+    if(ud.camerasprite >= 0)
+    {
+        spritetype *s;
+
+        s = &sprite[ud.camerasprite];
+
+        if(s->yvel < 0) s->yvel = -100;
+        else if(s->yvel > 199) s->yvel = 300;
+
+        cang = hittype[ud.camerasprite].tempang+mulscale16((int)(((s->ang+1024-hittype[ud.camerasprite].tempang)&2047)-1024),smoothratio);
+
+        se40code(s->x,s->y,s->z,cang,s->yvel,smoothratio);
+
+        drawrooms(s->x,s->y,s->z-(4<<8),cang,s->yvel,s->sectnum);
+        animatesprites(s->x,s->y,cang,smoothratio);
+        drawmasks();
+    }
+    else
+    {
+        i = divscale22(1,sprite[p->i].yrepeat+28);
+        if (i != oyrepeat)
+        {
+            oyrepeat = i;
+            setaspect(oyrepeat,yxaspect);
+        }
+
+        if(screencapt)
+        {
+            walock[TILE_SAVESHOT] = 199;
+            if (waloff[TILE_SAVESHOT] == 0)
+                allocache((void **)&waloff[TILE_SAVESHOT],200*320,&walock[TILE_SAVESHOT]);
+            setviewtotile(TILE_SAVESHOT,200L,320L);
+        }
+        else if( POLYMOST_RENDERMODE_CLASSIC() && ( ( ud.screen_tilting && p->rotscrnang ) || ud.detail==0 ) )
+        {
+                if (ud.screen_tilting) tang = p->rotscrnang; else tang = 0;
+
+        if (xres <= 320 && yres <= 240) {   // JBF 20030807: Increased tilted-screen quality
+            tiltcs = 1;
+            tiltcx = 320;
+            tiltcy = 200;
+        } else {
+            tiltcs = 2;
+            tiltcx = 640;
+            tiltcy = 480;
+        }
+
+                walock[TILE_TILT] = 255;
+                if (waloff[TILE_TILT] == 0)
+                    allocache((void **)&waloff[TILE_TILT],tiltcx*tiltcx,&walock[TILE_TILT]);
+                if ((tang&1023) == 0)
+                    setviewtotile(TILE_TILT,tiltcy>>(1-ud.detail),tiltcx>>(1-ud.detail));
+                else
+                    setviewtotile(TILE_TILT,tiltcx>>(1-ud.detail),tiltcx>>(1-ud.detail));
+                if ((tang&1023) == 512)
+                {     //Block off unscreen section of 90¯ tilted screen
+                    j = ((tiltcx-(60*tiltcs))>>(1-ud.detail));
+                    for(i=((60*tiltcs)>>(1-ud.detail))-1;i>=0;i--)
+                    {
+                        startumost[i] = 1; startumost[i+j] = 1;
+                        startdmost[i] = 0; startdmost[i+j] = 0;
+                    }
+                }
+
+                i = (tang&511); if (i > 256) i = 512-i;
+                i = sintable[i+512]*8 + sintable[i]*5L;
+                setaspect(i>>1,yxaspect);
+        }
+#if USE_POLYMOST
+        else if (POLYMOST_RENDERMODE_POLYMOST() /*&& (p->rotscrnang || p->orotscrnang)*/) {
+            setrollangle(p->orotscrnang + mulscale16(((p->rotscrnang - p->orotscrnang + 1024)&2047)-1024,smoothratio));
+            p->orotscrnang = p->rotscrnang; // JBF: save it for next time
+        }
+#endif
+
+          if ( (snum == myconnectindex) && (numplayers > 1) )
+                  {
+                                cposx = omyx+mulscale16((int)(myx-omyx),smoothratio);
+                                cposy = omyy+mulscale16((int)(myy-omyy),smoothratio);
+                                cposz = omyz+mulscale16((int)(myz-omyz),smoothratio);
+                                cang = omyang+mulscale16((int)(((myang+1024-omyang)&2047)-1024),smoothratio);
+                                choriz = omyhoriz+omyhorizoff+mulscale16((int)(myhoriz+myhorizoff-omyhoriz-omyhorizoff),smoothratio);
+                                sect = mycursectnum;
+                  }
+                  else
+                  {
+                                cposx = p->oposx+mulscale16((int)(p->posx-p->oposx),smoothratio);
+                                cposy = p->oposy+mulscale16((int)(p->posy-p->oposy),smoothratio);
+                                cposz = p->oposz+mulscale16((int)(p->posz-p->oposz),smoothratio);
+                                cang = p->oang+mulscale16((int)(((p->ang+1024-p->oang)&2047)-1024),smoothratio);
+                                choriz = p->ohoriz+p->ohorizoff+mulscale16((int)(p->horiz+p->horizoff-p->ohoriz-p->ohorizoff),smoothratio);
+                  }
+                  cang += p->look_ang;
+
+                  if (p->newowner >= 0)
+                  {
+                                cang = p->ang+p->look_ang;
+                                choriz = p->horiz+p->horizoff;
+                                cposx = p->posx;
+                                cposy = p->posy;
+                                cposz = p->posz;
+                                sect = sprite[p->newowner].sectnum;
+                                smoothratio = 65536L;
+                  }
+
+                  else if( p->over_shoulder_on == 0 )
+                                cposz += p->opyoff+mulscale16((int)(p->pyoff-p->opyoff),smoothratio);
+                  else view(p,&cposx,&cposy,&cposz,&sect,cang,choriz);
+
+        cz = hittype[p->i].ceilingz;
+        fz = hittype[p->i].floorz;
+
+        if(earthquaketime > 0 && p->on_ground == 1)
+        {
+            cposz += 256-(((earthquaketime)&1)<<9);
+            cang += (2-((earthquaketime)&2))<<2;
+        }
+
+        if(sprite[p->i].pal == 1) cposz -= (18<<8);
+
+        if(p->newowner >= 0)
+            choriz = 100+sprite[p->newowner].shade;
+        else if(p->spritebridge == 0)
+        {
+            if( cposz < ( p->truecz + (4<<8) ) ) cposz = cz + (4<<8);
+            else if( cposz > ( p->truefz - (4<<8) ) ) cposz = fz - (4<<8);
+        }
+
+        if (sect >= 0)
+        {
+            getzsofslope(sect,cposx,cposy,&cz,&fz);
+            if (cposz < cz+(4<<8)) cposz = cz+(4<<8);
+            if (cposz > fz-(4<<8)) cposz = fz-(4<<8);
+        }
+
+        if(choriz > 299) choriz = 299;
+        else if(choriz < -99) choriz = -99;
+
+        se40code(cposx,cposy,cposz,cang,choriz,smoothratio);
+
+        if ((gotpic[MIRROR>>3]&(1<<(MIRROR&7))) > 0)
+        {
+            dst = 0x7fffffff; i = 0;
+            for(k=0;k<mirrorcnt;k++)
+            {
+                j = klabs(wall[mirrorwall[k]].x-cposx);
+                j += klabs(wall[mirrorwall[k]].y-cposy);
+                if (j < dst) dst = j, i = k;
+            }
+
+            if( wall[mirrorwall[i]].overpicnum == MIRROR )
+            {
+                preparemirror(cposx,cposy,cposz,cang,choriz,mirrorwall[i],mirrorsector[i],&tposx,&tposy,&tang);
+
+                j = visibility;
+                visibility = (j>>1) + (j>>2);
+
+                drawrooms(tposx,tposy,cposz,tang,choriz,mirrorsector[i]+MAXSECTORS);
+
+                display_mirror = 1;
+                animatesprites(tposx,tposy,tang,smoothratio);
+                display_mirror = 0;
+
+                drawmasks();
+                completemirror();   //Reverse screen x-wise in this function
+                visibility = j;
+            }
+            gotpic[MIRROR>>3] &= ~(1<<(MIRROR&7));
+        }
+
+        drawrooms(cposx,cposy,cposz,cang,choriz,sect);
+        animatesprites(cposx,cposy,cang,smoothratio);
+        drawmasks();
+
+        if(screencapt == 1)
+        {
+            setviewback();
+            screencapt = 0;
+//            walock[TILE_SAVESHOT] = 1;
+        }
+        else if( POLYMOST_RENDERMODE_CLASSIC() && ( ( ud.screen_tilting && p->rotscrnang) || ud.detail==0 ) )
+        {
+            if (ud.screen_tilting) tang = p->rotscrnang; else tang = 0;
+
+            setviewback();
+            picanm[TILE_TILT] &= 0xff0000ff;
+                i = (tang&511); if (i > 256) i = 512-i;
+                i = sintable[i+512]*8 + sintable[i]*5L;
+                if ((1-ud.detail) == 0) i >>= 1;
+            i>>=(tiltcs-1); // JBF 20030807
+                rotatesprite(160<<16,100<<16,i,tang+512,TILE_TILT,0,0,4+2+64,windowx1,windowy1,windowx2,windowy2);
+            walock[TILE_TILT] = 199;
+        }
+    }
+
+    restoreinterpolations();
+
+    if (totalclock < lastvisinc)
+    {
+        if (klabs(p->visibility-ud.const_visibility) > 8)
+            p->visibility += (ud.const_visibility-p->visibility)>>2;
+    }
+    else p->visibility = ud.const_visibility;
+}
+
+
+
+
+
+short LocateTheLocator(short n,short sn)
+{
+    short i;
+
+    i = headspritestat[7];
+    while(i >= 0)
+    {
+        if( (sn == -1 || sn == SECT) && n == SLT )
+            return i;
+        i = nextspritestat[i];
+    }
+    return -1;
+}
+
+short EGS(short whatsect,int s_x,int s_y,int s_z,short s_pn,signed char s_s,signed char s_xr,signed char s_yr,short s_a,short s_ve,int s_zv,short s_ow,signed char s_ss)
+{
+    short i;
+    spritetype *s;
+
+    i = insertsprite(whatsect,s_ss);
+
+    if( i < 0 )
+        gameexit(" Too many sprites spawned.");
+
+    hittype[i].bposx = s_x;
+    hittype[i].bposy = s_y;
+    hittype[i].bposz = s_z;
+
+    s = &sprite[i];
+
+    s->x = s_x;
+    s->y = s_y;
+    s->z = s_z;
+    s->cstat = 0;
+    s->picnum = s_pn;
+    s->shade = s_s;
+    s->xrepeat = s_xr;
+    s->yrepeat = s_yr;
+    s->pal = 0;
+
+    s->ang = s_a;
+    s->xvel = s_ve;
+    s->zvel = s_zv;
+    s->owner = s_ow;
+    s->xoffset = 0;
+    s->yoffset = 0;
+    s->yvel = 0;
+    s->clipdist = 0;
+    s->pal = 0;
+    s->lotag = 0;
+
+    hittype[i].picnum = sprite[s_ow].picnum;
+
+    hittype[i].lastvx = 0;
+    hittype[i].lastvy = 0;
+
+    hittype[i].timetosleep = 0;
+    hittype[i].actorstayput = -1;
+    hittype[i].extra = -1;
+    hittype[i].owner = s_ow;
+    hittype[i].cgg = 0;
+    hittype[i].movflag = 0;
+    hittype[i].tempang = 0;
+    hittype[i].dispicnum = 0;
+    hittype[i].floorz = hittype[s_ow].floorz;
+    hittype[i].ceilingz = hittype[s_ow].ceilingz;
+
+    T1=T3=T4=T6=0;
+    if( actorscrptr[s_pn] )
+    {
+        s->extra = *actorscrptr[s_pn];
+        T5 = *(actorscrptr[s_pn]+1);
+        T2 = *(actorscrptr[s_pn]+2);
+        s->hitag = *(actorscrptr[s_pn]+3);
+    }
+    else
+    {
+        T2=T5=0;
+        s->extra = 0;
+        s->hitag = 0;
+    }
+
+    if (show2dsector[SECT>>3]&(1<<(SECT&7))) show2dsprite[i>>3] |= (1<<(i&7));
+    else show2dsprite[i>>3] &= ~(1<<(i&7));
+
+    clearbufbyte(&spriteext[i], sizeof(spriteexttype), 0);
+/*
+    if(s->sectnum < 0)
+    {
+        s->xrepeat = s->yrepeat = 0;
+        changespritestat(i,5);
+    }
+*/
+    return(i);
+}
+
+char wallswitchcheck(short i)
+{
+    switch(PN)
+    {
+        case HANDPRINTSWITCH:
+        case HANDPRINTSWITCH+1:
+        case ALIENSWITCH:
+        case ALIENSWITCH+1:
+        case MULTISWITCH:
+        case MULTISWITCH+1:
+        case MULTISWITCH+2:
+        case MULTISWITCH+3:
+        case ACCESSSWITCH:
+        case ACCESSSWITCH2:
+        case PULLSWITCH:
+        case PULLSWITCH+1:
+        case HANDSWITCH:
+        case HANDSWITCH+1:
+        case SLOTDOOR:
+        case SLOTDOOR+1:
+        case LIGHTSWITCH:
+        case LIGHTSWITCH+1:
+        case SPACELIGHTSWITCH:
+        case SPACELIGHTSWITCH+1:
+        case SPACEDOORSWITCH:
+        case SPACEDOORSWITCH+1:
+        case FRANKENSTINESWITCH:
+        case FRANKENSTINESWITCH+1:
+        case LIGHTSWITCH2:
+        case LIGHTSWITCH2+1:
+        case POWERSWITCH1:
+        case POWERSWITCH1+1:
+        case LOCKSWITCH1:
+        case LOCKSWITCH1+1:
+        case POWERSWITCH2:
+        case POWERSWITCH2+1:
+        case DIPSWITCH:
+        case DIPSWITCH+1:
+        case DIPSWITCH2:
+        case DIPSWITCH2+1:
+        case TECHSWITCH:
+        case TECHSWITCH+1:
+        case DIPSWITCH3:
+        case DIPSWITCH3+1:
+            return 1;
+    }
+    return 0;
+}
+
+
+int tempwallptr;
+short spawn( short j, short pn )
+{
+    short i, s, startwall, endwall, sect, clostest=0;
+    int x, y, d;
+    spritetype *sp;
+
+    if(j >= 0)
+    {
+        i = EGS(sprite[j].sectnum,sprite[j].x,sprite[j].y,sprite[j].z
+            ,pn,0,0,0,0,0,0,j,0);
+        hittype[i].picnum = sprite[j].picnum;
+    }
+    else
+    {
+        i = pn;
+
+        hittype[i].picnum = PN;
+        hittype[i].timetosleep = 0;
+        hittype[i].extra = -1;
+
+        hittype[i].bposx = SX;
+        hittype[i].bposy = SY;
+        hittype[i].bposz = SZ;
+
+        OW = hittype[i].owner = i;
+        hittype[i].cgg = 0;
+        hittype[i].movflag = 0;
+        hittype[i].tempang = 0;
+        hittype[i].dispicnum = 0;
+        hittype[i].floorz = sector[SECT].floorz;
+        hittype[i].ceilingz = sector[SECT].ceilingz;
+
+        hittype[i].lastvx = 0;
+        hittype[i].lastvy = 0;
+        hittype[i].actorstayput = -1;
+
+        T1 = T2 = T3 = T4 = T5 = T6 = 0;
+
+        if( PN != SPEAKER && PN != LETTER && PN != DUCK && PN != TARGET && PN != TRIPBOMB && PN != VIEWSCREEN && PN != VIEWSCREEN2 && (CS&48) )
+            if( !(PN >= CRACK1 && PN <= CRACK4) )
+        {
+            if(SS == 127) return i;
+            if( wallswitchcheck(i) == 1 && (CS&16) )
+            {
+                if( PN != ACCESSSWITCH && PN != ACCESSSWITCH2 && sprite[i].pal)
+                {
+                    if( (ud.multimode < 2) || (ud.multimode > 1 && ud.coop==1) )
+                    {
+                        sprite[i].xrepeat = sprite[i].yrepeat = 0;
+                        sprite[i].cstat = SLT = SHT = 0;
+                        return i;
+                    }
+                }
+                CS |= 257;
+                if( sprite[i].pal && PN != ACCESSSWITCH && PN != ACCESSSWITCH2)
+                    sprite[i].pal = 0;
+                return i;
+            }
