@@ -4814,3 +4814,1491 @@ short spawn( short j, short pn )
                         for(s=startwall;s<endwall;s++)
                         {
                             if(!(wall[s].hitag&1))
+                                wall[s].shade=sp->shade;
+                            if( (wall[s].cstat&2) && wall[s].nextwall >= 0)
+                                wall[wall[s].nextwall].shade = sp->shade;
+                        }
+                        break;
+
+                    case 31:
+                        T2 = sector[sect].floorz;
+                    //    T3 = sp->hitag;
+                        if(sp->ang != 1536) sector[sect].floorz = sp->z;
+
+                        startwall = sector[sect].wallptr;
+                        endwall = startwall+sector[sect].wallnum;
+
+                        for(s=startwall;s<endwall;s++)
+                            if(wall[s].hitag == 0) wall[s].hitag = 9999;
+
+                        setinterpolation(&sector[sect].floorz);
+
+                        break;
+                    case 32:
+                        T2 = sector[sect].ceilingz;
+                        T3 = sp->hitag;
+                        if(sp->ang != 1536) sector[sect].ceilingz = sp->z;
+
+                        startwall = sector[sect].wallptr;
+                        endwall = startwall+sector[sect].wallnum;
+
+                        for(s=startwall;s<endwall;s++)
+                            if(wall[s].hitag == 0) wall[s].hitag = 9999;
+
+                        setinterpolation(&sector[sect].ceilingz);
+
+                        break;
+
+                    case 4: //Flashing lights
+
+                        T3 = sector[sect].floorshade;
+
+                        startwall = sector[sect].wallptr;
+                        endwall = startwall+sector[sect].wallnum;
+
+                        sp->owner = sector[sect].ceilingpal<<8;
+                        sp->owner |= sector[sect].floorpal;
+
+                        for(s=startwall;s<endwall;s++)
+                            if(wall[s].shade > T4)
+                                T4 = wall[s].shade;
+
+                        break;
+
+                    case 9:
+                        if( sector[sect].lotag &&
+                            labs(sector[sect].ceilingz-sp->z) > 1024)
+                                sector[sect].lotag |= 32768; //If its open
+                        // fall through
+                    case 8:
+                        //First, get the ceiling-floor shade
+
+                        T1 = sector[sect].floorshade;
+                        T2 = sector[sect].ceilingshade;
+
+                        startwall = sector[sect].wallptr;
+                        endwall = startwall+sector[sect].wallnum;
+
+                        for(s=startwall;s<endwall;s++)
+                            if(wall[s].shade > T3)
+                                T3 = wall[s].shade;
+
+                        T4 = 1; //Take Out;
+
+                        break;
+
+                    case 11://Pivitor rotater
+                        if(sp->ang>1024) T4 = 2;
+                        else T4 = -2;
+                        // fall through
+                    case 0:
+                    case 2://Earthquakemakers
+                    case 5://Boss Creature
+                    case 6://Subway
+                    case 14://Caboos
+                    case 15://Subwaytype sliding door
+                    case 16://That rotating blocker reactor thing
+                    case 26://ESCELATOR
+                    case 30://No rotational subways
+
+                        if(sp->lotag == 0)
+                        {
+                            if( sector[sect].lotag == 30 )
+                            {
+                                if(sp->pal) sprite[i].clipdist = 1;
+                                else sprite[i].clipdist = 0;
+                                T4 = sector[sect].floorz;
+                                sector[sect].hitag = i;
+                            }
+
+                            for(j = 0;j < MAXSPRITES;j++)
+                            {
+                                if( sprite[j].statnum < MAXSTATUS )
+                                if( sprite[j].picnum == SECTOREFFECTOR &&
+                                    sprite[j].lotag == 1 &&
+                                    sprite[j].hitag == sp->hitag)
+                                {
+                                    if( sp->ang == 512 )
+                                    {
+                                        sp->x = sprite[j].x;
+                                        sp->y = sprite[j].y;
+                                    }
+                                    break;
+                                }
+                            }
+                            if(j == MAXSPRITES)
+                            {
+                                buildprintf("Found lonely Sector Effector (lotag 0) at (%d,%d)\n",sp->x,sp->y);
+                                deletesprite(i);
+                                break;
+                            }
+                            sp->owner = j;
+                        }
+
+                        startwall = sector[sect].wallptr;
+                        endwall = startwall+sector[sect].wallnum;
+
+                        T2 = tempwallptr;
+                        for(s=startwall;s<endwall;s++)
+                        {
+                            msx[tempwallptr] = wall[s].x-sp->x;
+                            msy[tempwallptr] = wall[s].y-sp->y;
+                            tempwallptr++;
+                            if(tempwallptr > 2047)
+                            {
+                                sprintf(buf,"Too many moving sectors at (%d,%d).\n",wall[s].x,wall[s].y);
+                                gameexit(buf);
+                            }
+                        }
+                        if( sp->lotag == 30 || sp->lotag == 6 || sp->lotag == 14 || sp->lotag == 5 )
+                        {
+
+                            startwall = sector[sect].wallptr;
+                            endwall = startwall+sector[sect].wallnum;
+
+                            if(sector[sect].hitag == -1)
+                                sp->extra = 0;
+                            else sp->extra = 1;
+
+                            sector[sect].hitag = i;
+
+                            j = 0;
+
+                            for(s=startwall;s<endwall;s++)
+                            {
+                                if( wall[ s ].nextsector >= 0 &&
+                                    sector[ wall[ s ].nextsector].hitag == 0 &&
+                                        sector[ wall[ s ].nextsector].lotag < 3 )
+                                    {
+                                        s = wall[s].nextsector;
+                                        j = 1;
+                                        break;
+                                    }
+                            }
+
+                            if(j == 0)
+                            {
+                                sprintf(buf,"Subway found no zero'd sectors with locators\nat (%d,%d).\n",sp->x,sp->y);
+                                gameexit(buf);
+                            }
+
+                            sp->owner = -1;
+                            T1 = s;
+
+                            if(sp->lotag != 30)
+                                T4 = sp->hitag;
+                        }
+
+                        else if(sp->lotag == 16)
+                            T4 = sector[sect].ceilingz;
+
+                        else if( sp->lotag == 26 )
+                        {
+                            T4 = sp->x;
+                            T5 = sp->y;
+                            if(sp->shade==sector[sect].floorshade) //UP
+                                sp->zvel = -256;
+                            else
+                                sp->zvel = 256;
+
+                            sp->shade = 0;
+                        }
+                        else if( sp->lotag == 2)
+                        {
+                            T6 = sector[sp->sectnum].floorheinum;
+                            sector[sp->sectnum].floorheinum = 0;
+                        }
+                }
+
+                switch(sp->lotag)
+                {
+                    case 6:
+                    case 14:
+                        j = callsound(sect,i);
+                        if(j == -1) j = SUBWAY;
+                        hittype[i].lastvx = j;
+                        // fall through
+                    case 30:
+                        if(numplayers > 1) break;
+                        // fall through
+                    case 0:
+                    case 1:
+                    case 5:
+                    case 11:
+                    case 15:
+                    case 16:
+                    case 26:
+                        setsectinterpolate(i);
+                        break;
+                }
+
+                switch(sprite[i].lotag)
+                {
+                    case 40:
+                    case 41:
+                    case 43:
+                    case 44:
+                    case 45:
+                        changespritestat(i,15);
+                        break;
+                    default:
+                        changespritestat(i,3);
+                        break;
+                }
+
+                break;
+
+
+            case SEENINE:
+            case OOZFILTER:
+
+                sp->shade = -16;
+                if(sp->xrepeat <= 8)
+                {
+                    sp->cstat = (short)32768;
+                    sp->xrepeat=sp->yrepeat=0;
+                }
+                else sp->cstat = 1+256;
+                sp->extra = impact_damage<<2;
+                sp->owner = i;
+
+                changespritestat(i,6);
+                break;
+
+            case CRACK1:
+            case CRACK2:
+            case CRACK3:
+            case CRACK4:
+            case FIREEXT:
+                if(sp->picnum == FIREEXT)
+                {
+                    sp->cstat = 257;
+                    sp->extra = impact_damage<<2;
+                }
+                else
+                {
+                    sp->cstat |= (sp->cstat & 48) ? 1 : 17;
+                    sp->extra = 1;
+                }
+
+                if( ud.multimode < 2 && sp->pal != 0)
+                {
+                    sp->xrepeat = sp->yrepeat = 0;
+                    changespritestat(i,5);
+                    break;
+                }
+
+                sp->pal = 0;
+                sp->owner = i;
+                changespritestat(i,6);
+                sp->xvel = 8;
+                ssp(i,CLIPMASK0);
+                break;
+
+            case TOILET:
+            case STALL:
+                sp->lotag = 1;
+                sp->cstat |= 257;
+                sp->clipdist = 8;
+                sp->owner = i;
+                break;
+
+            case CANWITHSOMETHING:
+            case CANWITHSOMETHING2:
+            case CANWITHSOMETHING3:
+            case CANWITHSOMETHING4:
+            case RUBBERCAN:
+                sp->extra = 0;
+                // fall through
+            case EXPLODINGBARREL:
+            case HORSEONSIDE:
+            case FIREBARREL:
+            case NUKEBARREL:
+            case FIREVASE:
+            case NUKEBARRELDENTED:
+            case NUKEBARRELLEAKED:
+            case WOODENHORSE:
+
+                if(j >= 0)
+                    sp->xrepeat = sp->yrepeat = 32;
+                sp->clipdist = 72;
+                makeitfall(i);
+                if(j >= 0)
+                    sp->owner = j;
+                else sp->owner = i;
+                // fall through
+            case EGG:
+                if( ud.monsters_off == 1 && sp->picnum == EGG )
+                {
+                    sp->xrepeat = sp->yrepeat = 0;
+                    changespritestat(i,5);
+                }
+                else
+                {
+                    if(sp->picnum == EGG)
+                        sp->clipdist = 24;
+                    sp->cstat = 257|(TRAND&4);
+                    changespritestat(i,2);
+                }
+                break;
+            case TOILETWATER:
+                sp->shade = -16;
+                changespritestat(i,6);
+                break;
+    }
+    return i;
+}
+
+
+#ifdef _MSC_VER
+// Visual C thought this was a bit too hard to optimise so we'd better
+// tell it not to try... such a pussy it is.
+//#pragma auto_inline( off )
+#pragma optimize("g",off)
+#endif
+void animatesprites(int x,int y,short a,int smoothratio)
+{
+    short i, j, k, p, sect;
+    int l, t1,t3,t4;
+    spritetype *s,*t;
+
+    for(j=0;j < spritesortcnt; j++)
+    {
+        t = &tsprite[j];
+        i = t->owner;
+        s = &sprite[t->owner];
+
+        switch(t->picnum)
+        {
+            case BLOODPOOL:
+            case PUKE:
+            case FOOTPRINTS:
+            case FOOTPRINTS2:
+            case FOOTPRINTS3:
+            case FOOTPRINTS4:
+                if(t->shade == 127) continue;
+                break;
+            case RESPAWNMARKERRED:
+            case RESPAWNMARKERYELLOW:
+            case RESPAWNMARKERGREEN:
+                if(ud.marker == 0)
+                    t->xrepeat = t->yrepeat = 0;
+                continue;
+            case CHAIR3:
+#if USE_POLYMOST && USE_OPENGL
+                if (bpp > 8 && usemodels && md_tilehasmodel(t->picnum) >= 0) {
+                    t->cstat &= ~4;
+                    break;
+                }
+#endif
+
+                k = (((t->ang+3072+128-a)&2047)>>8)&7;
+                if(k>4)
+                {
+                    k = 8-k;
+                    t->cstat |= 4;
+                }
+                else t->cstat &= ~4;
+                t->picnum = s->picnum+k;
+                break;
+            case BLOODSPLAT1:
+            case BLOODSPLAT2:
+            case BLOODSPLAT3:
+            case BLOODSPLAT4:
+                if(ud.lockout) t->xrepeat = t->yrepeat = 0;
+                else if(t->pal == 6)
+                {
+                    t->shade = -127;
+                    continue;
+                }
+                // fall through
+            case BULLETHOLE:
+            case CRACK1:
+            case CRACK2:
+            case CRACK3:
+            case CRACK4:
+                t->shade = 16;
+                continue;
+            case NEON1:
+            case NEON2:
+            case NEON3:
+            case NEON4:
+            case NEON5:
+            case NEON6:
+                continue;
+            case GREENSLIME:
+            case GREENSLIME+1:
+            case GREENSLIME+2:
+            case GREENSLIME+3:
+            case GREENSLIME+4:
+            case GREENSLIME+5:
+            case GREENSLIME+6:
+            case GREENSLIME+7:
+                break;
+            default:
+                if( ( (t->cstat&16) ) || ( badguy(t) && t->extra > 0) || t->statnum == 10)
+                    continue;
+        }
+
+        if (sector[t->sectnum].ceilingstat&1)
+            l = sector[t->sectnum].ceilingshade;
+        else
+            l = sector[t->sectnum].floorshade;
+
+        if(l < -127) l = -127;
+        if(l > 128) l =  127;
+        t->shade = l;
+    }
+
+
+    for(j=0;j < spritesortcnt; j++ )  //Between drawrooms() and drawmasks()
+    {                             //is the perfect time to animate sprites
+        t = &tsprite[j];
+        i = t->owner;
+        s = &sprite[i];
+
+        switch(s->picnum)
+        {
+            case SECTOREFFECTOR:
+                if(t->lotag == 27 && ud.recstat == 1)
+                {
+                    t->picnum = 11+((totalclock>>3)&1);
+                    t->cstat |= 128;
+                }
+                else
+                    t->xrepeat = t->yrepeat = 0;
+                break;
+            case NATURALLIGHTNING:
+               t->shade = -127;
+               break;
+            case FEM1:
+            case FEM2:
+            case FEM3:
+            case FEM4:
+            case FEM5:
+            case FEM6:
+            case FEM7:
+            case FEM8:
+            case FEM9:
+            case FEM10:
+            case MAN:
+            case MAN2:
+            case WOMAN:
+            case NAKED1:
+            case PODFEM1:
+            case FEMMAG1:
+            case FEMMAG2:
+            case FEMPIC1:
+            case FEMPIC2:
+            case FEMPIC3:
+            case FEMPIC4:
+            case FEMPIC5:
+            case FEMPIC6:
+            case FEMPIC7:
+            case BLOODYPOLE:
+            case FEM6PAD:
+            case STATUE:
+            case STATUEFLASH:
+            case OOZ:
+            case OOZ2:
+            case WALLBLOOD1:
+            case WALLBLOOD2:
+            case WALLBLOOD3:
+            case WALLBLOOD4:
+            case WALLBLOOD5:
+            case WALLBLOOD7:
+            case WALLBLOOD8:
+            case SUSHIPLATE1:
+            case SUSHIPLATE2:
+            case SUSHIPLATE3:
+            case SUSHIPLATE4:
+            case FETUS:
+            case FETUSJIB:
+            case FETUSBROKE:
+            case HOTMEAT:
+            case FOODOBJECT16:
+            case DOLPHIN1:
+            case DOLPHIN2:
+            case TOUGHGAL:
+            case TAMPON:
+            case XXXSTACY:
+            case 4946:
+            case 4947:
+            case 693:
+            case 2254:
+            case 4560:
+            case 4561:
+            case 4562:
+            case 4498:
+            case 4957:
+                if(ud.lockout)
+                {
+                    t->xrepeat = t->yrepeat = 0;
+                    continue;
+                }
+        }
+
+        if( t->statnum == 99 ) continue;
+        if( s->statnum != 1 && s->picnum == APLAYER && ps[s->yvel].newowner == -1 && s->owner >= 0 )
+        {
+            t->x -= mulscale16(65536-smoothratio,ps[s->yvel].posx-ps[s->yvel].oposx);
+            t->y -= mulscale16(65536-smoothratio,ps[s->yvel].posy-ps[s->yvel].oposy);
+            t->z = ps[s->yvel].oposz + mulscale16(smoothratio,ps[s->yvel].posz-ps[s->yvel].oposz);
+            t->z += (40<<8);
+        }
+        else if( ( s->statnum == 0 && s->picnum != CRANEPOLE) || s->statnum == 10 || s->statnum == 6 || s->statnum == 4 || s->statnum == 5 || s->statnum == 1 )
+        {
+            t->x -= mulscale16(65536-smoothratio,s->x-hittype[i].bposx);
+            t->y -= mulscale16(65536-smoothratio,s->y-hittype[i].bposy);
+            t->z -= mulscale16(65536-smoothratio,s->z-hittype[i].bposz);
+        }
+
+        sect = s->sectnum;
+        t1 = T2;t3 = T4;t4 = T5;
+
+        switch(s->picnum)
+        {
+            case DUKELYINGDEAD:
+                t->z += (24<<8);
+                break;
+            case BLOODPOOL:
+            case FOOTPRINTS:
+            case FOOTPRINTS2:
+            case FOOTPRINTS3:
+            case FOOTPRINTS4:
+                if(t->pal == 6)
+                    t->shade = -127;
+                // fall through
+            case PUKE:
+            case MONEY:
+            case MONEY+1:
+            case MAIL:
+            case MAIL+1:
+            case PAPER:
+            case PAPER+1:
+                if(ud.lockout && s->pal == 2)
+                {
+                    t->xrepeat = t->yrepeat = 0;
+                    continue;
+                }
+                break;
+            case TRIPBOMB:
+                continue;
+            case FORCESPHERE:
+                if(t->statnum == 5)
+                {
+                    short sqa,sqb;
+
+                    sqa =
+                        getangle(
+                            sprite[s->owner].x-ps[screenpeek].posx,
+                            sprite[s->owner].y-ps[screenpeek].posy);
+                    sqb =
+                        getangle(
+                            sprite[s->owner].x-t->x,
+                            sprite[s->owner].y-t->y);
+
+                    if( klabs(getincangle(sqa,sqb)) > 512 )
+                        if( ldist(&sprite[s->owner],t) < ldist(&sprite[ps[screenpeek].i],&sprite[s->owner]) )
+                            t->xrepeat = t->yrepeat = 0;
+                }
+                continue;
+            case BURNING:
+            case BURNING2:
+                if( sprite[s->owner].statnum == 10 )
+                {
+                    if( display_mirror == 0 && sprite[s->owner].yvel == screenpeek && ps[sprite[s->owner].yvel].over_shoulder_on == 0 )
+                        t->xrepeat = 0;
+                    else
+                    {
+                        t->ang = getangle(x-t->x,y-t->y);
+                        t->x = sprite[s->owner].x;
+                        t->y = sprite[s->owner].y;
+                        t->x += sintable[(t->ang+512)&2047]>>10;
+                        t->y += sintable[t->ang&2047]>>10;
+                    }
+                }
+                break;
+
+            case ATOMICHEALTH:
+                t->z -= (4<<8);
+                break;
+            case CRYSTALAMMO:
+                t->shade = (sintable[(totalclock<<4)&2047]>>10);
+                continue;
+            case VIEWSCREEN:
+            case VIEWSCREEN2:
+                if(camsprite >= 0 && hittype[OW].temp_data[0] == 1)
+                {
+                    t->picnum = STATIC;
+                    t->cstat |= (rand()&12);
+                    t->xrepeat += 8;
+                    t->yrepeat += 8;
+                } else if (camsprite >= 0 && waloff[TILE_VIEWSCR] && walock[TILE_VIEWSCR] > 200) {
+                    t->picnum = TILE_VIEWSCR;
+                }
+                break;
+
+            case SHRINKSPARK:
+                t->picnum = SHRINKSPARK+( (totalclock>>4)&3 );
+                break;
+            case GROWSPARK:
+                t->picnum = GROWSPARK+( (totalclock>>4)&3 );
+                break;
+            case RPG:
+#if USE_POLYMOST && USE_OPENGL
+                if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
+                    t->cstat &= ~4;
+                    break;
+                }
+#endif
+
+                 k = getangle(s->x-x,s->y-y);
+                 k = (((s->ang+3072+128-k)&2047)/170);
+                 if(k > 6)
+                 {
+                    k = 12-k;
+                    t->cstat |= 4;
+                 }
+                 else t->cstat &= ~4;
+                 t->picnum = RPG+k;
+                 break;
+
+            case RECON:
+#if USE_POLYMOST && USE_OPENGL
+                if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
+                    t->cstat &= ~4;
+                    break;
+                }
+#endif
+
+                k = getangle(s->x-x,s->y-y);
+                if( T1 < 4 )
+                    k = (((s->ang+3072+128-k)&2047)/170);
+                else k = (((s->ang+3072+128-k)&2047)/170);
+
+                if(k>6)
+                {
+                    k = 12-k;
+                    t->cstat |= 4;
+                }
+                else t->cstat &= ~4;
+
+                if( klabs(t3) > 64 ) k += 7;
+                t->picnum = RECON+k;
+
+                break;
+
+            case APLAYER:
+
+                p = s->yvel;
+
+                if(t->pal == 1) t->z -= (18<<8);
+
+                if(ps[p].over_shoulder_on > 0 && ps[p].newowner < 0 )
+                {
+                    t->cstat |= 2;
+                    if ( screenpeek == myconnectindex && numplayers >= 2 )
+                    {
+                        t->x = omyx+mulscale16((int)(myx-omyx),smoothratio);
+                        t->y = omyy+mulscale16((int)(myy-omyy),smoothratio);
+                        t->z = omyz+mulscale16((int)(myz-omyz),smoothratio)+(40<<8);
+                        t->ang = omyang+mulscale16((int)(((myang+1024-omyang)&2047)-1024),smoothratio);
+                        t->sectnum = mycursectnum;
+                    }
+                }
+
+                if( ( display_mirror == 1 || screenpeek != p || s->owner == -1 ) && ud.multimode > 1 && ud.showweapons && sprite[ps[p].i].extra > 0 && ps[p].curr_weapon > 0 )
+                {
+                    memcpy((spritetype *)&tsprite[spritesortcnt],(spritetype *)t,sizeof(spritetype));
+
+                    tsprite[spritesortcnt].statnum = 99;
+
+                    tsprite[spritesortcnt].yrepeat = ( t->yrepeat>>3 );
+                    if(t->yrepeat < 4) t->yrepeat = 4;
+
+                    tsprite[spritesortcnt].shade = t->shade;
+                    tsprite[spritesortcnt].cstat = 0;
+
+                    switch(ps[p].curr_weapon)
+                    {
+                        case PISTOL_WEAPON:      tsprite[spritesortcnt].picnum = FIRSTGUNSPRITE;       break;
+                        case SHOTGUN_WEAPON:     tsprite[spritesortcnt].picnum = SHOTGUNSPRITE;        break;
+                        case CHAINGUN_WEAPON:    tsprite[spritesortcnt].picnum = CHAINGUNSPRITE;       break;
+                        case RPG_WEAPON:         tsprite[spritesortcnt].picnum = RPGSPRITE;            break;
+                        case HANDREMOTE_WEAPON:
+                        case HANDBOMB_WEAPON:    tsprite[spritesortcnt].picnum = HEAVYHBOMB;           break;
+                        case TRIPBOMB_WEAPON:    tsprite[spritesortcnt].picnum = TRIPBOMBSPRITE;       break;
+                        case GROW_WEAPON:        tsprite[spritesortcnt].picnum = GROWSPRITEICON;       break;
+                        case SHRINKER_WEAPON:    tsprite[spritesortcnt].picnum = SHRINKERSPRITE;       break;
+                        case FREEZE_WEAPON:      tsprite[spritesortcnt].picnum = FREEZESPRITE;         break;
+                        case DEVISTATOR_WEAPON:  tsprite[spritesortcnt].picnum = DEVISTATORSPRITE;     break;
+                    }
+
+                    if(s->owner >= 0)
+                        tsprite[spritesortcnt].z = ps[p].posz-(12<<8);
+                    else tsprite[spritesortcnt].z = s->z-(51<<8);
+                    if(ps[p].curr_weapon == HANDBOMB_WEAPON)
+                    {
+                        tsprite[spritesortcnt].xrepeat = 10;
+                        tsprite[spritesortcnt].yrepeat = 10;
+                    }
+                    else
+                    {
+                        tsprite[spritesortcnt].xrepeat = 16;
+                        tsprite[spritesortcnt].yrepeat = 16;
+                    }
+                    tsprite[spritesortcnt].pal = 0;
+                    spritesortcnt++;
+                }
+
+                if(s->owner == -1)
+                {
+#if USE_POLYMOST && USE_OPENGL
+                    if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
+                        k = 0;
+                        t->cstat &= ~4;
+                    } else
+#endif
+                    {
+                        k = (((s->ang+3072+128-a)&2047)>>8)&7;
+                        if(k>4)
+                        {
+                            k = 8-k;
+                            t->cstat |= 4;
+                        }
+                        else t->cstat &= ~4;
+                    }
+
+                    if(sector[t->sectnum].lotag == 2) k += 1795-1405;
+                    else if( (hittype[i].floorz-s->z) > (64<<8) ) k += 60;
+
+                    t->picnum += k;
+                    t->pal = ps[p].palookup;
+
+                    goto PALONLY;
+                }
+
+                if( ps[p].on_crane == -1 && (sector[s->sectnum].lotag&0x7ff) != 1 )
+                {
+                    l = s->z-hittype[ps[p].i].floorz+(3<<8);
+                    if( l > 1024 && s->yrepeat > 32 && s->extra > 0 )
+                        s->yoffset = (signed char)(l/(s->yrepeat<<2));
+                    else s->yoffset=0;
+                }
+
+                if(ps[p].newowner > -1)
+                {
+                    t4 = *(actorscrptr[APLAYER]+1);
+                    t3 = 0;
+                    t1 = *(actorscrptr[APLAYER]+2);
+                }
+
+                if(ud.camerasprite == -1 && ps[p].newowner == -1)
+                    if(s->owner >= 0 && display_mirror == 0 && ps[p].over_shoulder_on == 0 )
+                        if( ud.multimode < 2 || ( ud.multimode > 1 && p == screenpeek ) )
+                {
+                    t->owner = -1;
+                    t->xrepeat = t->yrepeat = 0;
+                    continue;
+                }
+
+                PALONLY:
+
+                if( sector[sect].floorpal )
+                    t->pal = sector[sect].floorpal;
+
+                if(s->owner == -1) continue;
+
+                if( t->z > hittype[i].floorz && t->xrepeat < 32 )
+                    t->z = hittype[i].floorz;
+
+                break;
+
+            case JIBS1:
+            case JIBS2:
+            case JIBS3:
+            case JIBS4:
+            case JIBS5:
+            case JIBS6:
+            case HEADJIB1:
+            case LEGJIB1:
+            case ARMJIB1:
+            case LIZMANHEAD1:
+            case LIZMANARM1:
+            case LIZMANLEG1:
+            case DUKELEG:
+            case DUKEGUN:
+            case DUKETORSO:
+                if(ud.lockout)
+                {
+                    t->xrepeat = t->yrepeat = 0;
+                    continue;
+                }
+                if(t->pal == 6) t->shade = -120;
+                // fall through
+            case SCRAP1:
+            case SCRAP2:
+            case SCRAP3:
+            case SCRAP4:
+            case SCRAP5:
+            case SCRAP6:
+            case SCRAP6+1:
+            case SCRAP6+2:
+            case SCRAP6+3:
+            case SCRAP6+4:
+            case SCRAP6+5:
+            case SCRAP6+6:
+            case SCRAP6+7:
+
+                if(hittype[i].picnum == BLIMP && t->picnum == SCRAP1 && s->yvel >= 0)
+                    t->picnum = s->yvel;
+                else t->picnum += T1;
+                t->shade -= 6;
+
+                if( sector[sect].floorpal )
+                    t->pal = sector[sect].floorpal;
+                break;
+
+            case WATERBUBBLE:
+                if(sector[t->sectnum].floorpicnum == FLOORSLIME)
+                {
+                    t->pal = 7;
+                    break;
+                }
+                // fall through
+            default:
+
+                if( sector[sect].floorpal )
+                    t->pal = sector[sect].floorpal;
+                break;
+        }
+
+        if( actorscrptr[s->picnum] )
+        {
+            if(t4)
+            {
+                l = *(decodescriptptr(t4)+2);
+
+#if USE_POLYMOST && USE_OPENGL
+                if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
+                    k = 0;
+                    t->cstat &= ~4;
+                } else
+#endif
+                switch( l ) {
+                    case 2:
+                        k = (((s->ang+3072+128-a)&2047)>>8)&1;
+                        break;
+
+                    case 3:
+                    case 4:
+                        k = (((s->ang+3072+128-a)&2047)>>7)&7;
+                        if(k > 3)
+                        {
+                            t->cstat |= 4;
+                            k = 7-k;
+                        }
+                        else t->cstat &= ~4;
+                        break;
+
+                    case 5:
+                        k = getangle(s->x-x,s->y-y);
+                        k = (((s->ang+3072+128-k)&2047)>>8)&7;
+                        if(k>4)
+                        {
+                            k = 8-k;
+                            t->cstat |= 4;
+                        }
+                        else t->cstat &= ~4;
+                        break;
+                    case 7:
+                        k = getangle(s->x-x,s->y-y);
+                        k = (((s->ang+3072+128-k)&2047)/170);
+                        if(k>6)
+                        {
+                            k = 12-k;
+                            t->cstat |= 4;
+                        }
+                        else t->cstat &= ~4;
+                        break;
+                    case 8:
+                        k = (((s->ang+3072+128-a)&2047)>>8)&7;
+                        t->cstat &= ~4;
+                        break;
+                    default:
+                        k = 0;
+                        break;
+                }
+
+                t->picnum += k + ( *decodescriptptr(t4) ) + l * t3;
+
+                if(l > 0) while(tilesizx[t->picnum] == 0 && t->picnum > 0 )
+                    t->picnum -= l;       //Hack, for actors
+
+                if( hittype[i].dispicnum >= 0)
+                    hittype[i].dispicnum = t->picnum;
+            }
+            else if(display_mirror == 1)
+                t->cstat |= 4;
+        }
+
+        if( s->statnum == 13 || badguy(s) || (s->picnum == APLAYER && s->owner >= 0) )
+            if(t->statnum != 99 && s->picnum != EXPLOSION2 && s->picnum != HANGLIGHT && s->picnum != DOMELITE)
+                if(s->picnum != HOTMEAT)
+        {
+            if( hittype[i].dispicnum < 0 )
+            {
+                hittype[i].dispicnum++;
+                continue;
+            }
+            else if( ud.shadows && spritesortcnt < (MAXSPRITESONSCREEN-2))
+            {
+                int daz,xrep,yrep;
+
+                if( (sector[sect].lotag&0xff) > 2 || s->statnum == 4 || s->statnum == 5 || s->picnum == DRONE || s->picnum == COMMANDER )
+                    daz = sector[sect].floorz;
+                else
+                    daz = hittype[i].floorz;
+
+                if( (s->z-daz) < (8<<8) )
+                    if( ps[screenpeek].posz < daz )
+                {
+                    memcpy((spritetype *)&tsprite[spritesortcnt],(spritetype *)t,sizeof(spritetype));
+
+                    tsprite[spritesortcnt].statnum = 99;
+
+                    tsprite[spritesortcnt].yrepeat = ( t->yrepeat>>3 );
+                    if(t->yrepeat < 4) t->yrepeat = 4;
+
+                    tsprite[spritesortcnt].shade = 127;
+                    tsprite[spritesortcnt].cstat |= 2;
+
+                    tsprite[spritesortcnt].z = daz;
+                    xrep = tsprite[spritesortcnt].xrepeat;// - (klabs(daz-t->z)>>11);
+                    tsprite[spritesortcnt].xrepeat = xrep;
+                    tsprite[spritesortcnt].pal = 4;
+
+                    yrep = tsprite[spritesortcnt].yrepeat;// - (klabs(daz-t->z)>>11);
+                    tsprite[spritesortcnt].yrepeat = yrep;
+
+#if USE_POLYMOST && USE_OPENGL
+                    if (bpp > 8 && usemodels && md_tilehasmodel(t->picnum) >= 0)
+                    {
+                        tsprite[spritesortcnt].yrepeat = 0;
+                            // 512:trans reverse
+                            //1024:tell MD2SPRITE.C to use Z-buffer hacks to hide overdraw issues
+                        tsprite[spritesortcnt].cstat |= (512+1024);
+                    }
+#endif
+
+                    spritesortcnt++;
+                }
+            }
+
+            if( ps[screenpeek].heat_amount > 0 && ps[screenpeek].heat_on )
+            {
+                t->pal = 6;
+                t->shade = 0;
+            }
+        }
+
+
+        switch(s->picnum)
+        {
+            case LASERLINE:
+                if(sector[t->sectnum].lotag == 2) t->pal = 8;
+                t->z = sprite[s->owner].z-(3<<8);
+                if(lasermode == 2 && ps[screenpeek].heat_on == 0 )
+                    t->yrepeat = 0;
+                // fall through
+            case EXPLOSION2:
+            case EXPLOSION2BOT:
+            case FREEZEBLAST:
+            case ATOMICHEALTH:
+            case FIRELASER:
+            case SHRINKSPARK:
+            case GROWSPARK:
+            case CHAINGUN:
+            case SHRINKEREXPLOSION:
+            case RPG:
+            case FLOORFLAME:
+                if(t->picnum == EXPLOSION2)
+                {
+                    ps[screenpeek].visibility = -127;
+                    lastvisinc = totalclock+32;
+                    //restorepalette = 1;   // JBF 20040101: why?
+                }
+                t->shade = -127;
+                break;
+            case FIRE:
+            case FIRE2:
+            case BURNING:
+            case BURNING2:
+                if( sprite[s->owner].picnum != TREE1 && sprite[s->owner].picnum != TREE2 )
+                    t->z = sector[t->sectnum].floorz;
+                t->shade = -127;
+                break;
+            case COOLEXPLOSION1:
+                t->shade = -127;
+                t->picnum += (s->shade>>1);
+                break;
+            case PLAYERONWATER:
+#if USE_POLYMOST && USE_OPENGL
+                if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
+                    k = 0;
+                    t->cstat &= ~4;
+                } else
+#endif
+                {
+                    k = (((t->ang+3072+128-a)&2047)>>8)&7;
+                    if(k>4)
+                    {
+                        k = 8-k;
+                        t->cstat |= 4;
+                    }
+                    else t->cstat &= ~4;
+                }
+
+                t->picnum = s->picnum+k+((T1<4)*5);
+                t->shade = sprite[s->owner].shade;
+
+                break;
+
+            case WATERSPLASH2:
+                t->picnum = WATERSPLASH2+t1;
+                break;
+            case REACTOR2:
+                t->picnum = s->picnum + T3;
+                break;
+            case SHELL:
+                t->picnum = s->picnum+(T1&1);
+                // fall through
+            case SHOTGUNSHELL:
+                t->cstat |= 12;
+                if(T1 > 1) t->cstat &= ~4;
+                if(T1 > 2) t->cstat &= ~12;
+                break;
+            case FRAMEEFFECT1_13:
+                if (PLUTOPAK) break;
+                // fall through
+            case FRAMEEFFECT1:
+                if(s->owner >= 0 && sprite[s->owner].statnum < MAXSTATUS)
+                {
+                    if(sprite[s->owner].picnum == APLAYER)
+                        if(ud.camerasprite == -1)
+                            if(screenpeek == sprite[s->owner].yvel && display_mirror == 0)
+                    {
+                        t->owner = -1;
+                        break;
+                    }
+                    if( (sprite[s->owner].cstat&32768) == 0 )
+                    {
+                        t->picnum = hittype[s->owner].dispicnum;
+                        t->pal = sprite[s->owner].pal;
+                        t->shade = sprite[s->owner].shade;
+                        t->ang = sprite[s->owner].ang;
+                        t->cstat = 2|sprite[s->owner].cstat;
+                    }
+                }
+                break;
+
+            case CAMERA1:
+            case RAT:
+#if USE_POLYMOST && USE_OPENGL
+                if (bpp > 8 && usemodels && md_tilehasmodel(s->picnum) >= 0) {
+                    t->cstat &= ~4;
+                    break;
+                }
+#endif
+
+                k = (((t->ang+3072+128-a)&2047)>>8)&7;
+                if(k>4)
+                {
+                    k = 8-k;
+                    t->cstat |= 4;
+                }
+                else t->cstat &= ~4;
+                t->picnum = s->picnum+k;
+                break;
+        }
+
+        hittype[i].dispicnum = t->picnum;
+        if(sector[t->sectnum].floorpicnum == MIRROR)
+            t->xrepeat = t->yrepeat = 0;
+    }
+}
+#ifdef _MSC_VER
+//#pragma auto_inline( )
+#pragma optimize("",on)
+#endif
+
+
+
+#define NUMCHEATCODES 26
+char cheatquotes[NUMCHEATCODES][14] = {
+    {"cornholio"},
+    {"stuff"},
+    {"scotty###"},
+    {"coords"},
+    {"view"},
+    {"time"},
+    {"unlock"},
+    {"cashman"},
+    {"items"},
+    {"rate"},
+    {"skill#"},
+    {"beta"},
+    {"hyper"},
+    {"monsters"},
+    {"<RESERVED>"},
+    {"<RESERVED>"},
+    {"todd"},
+    {"showmap"},
+    {"kroz"},
+    {"allen"},
+    {"clip"},
+    {"weapons"},
+    {"inventory"},
+    {"keys"},
+    {"debug"}
+};
+
+
+char cheatbuf[10];
+unsigned char cheatbuflen;
+void cheats(void)
+{
+    short ch, i, j, k=0, weapon;
+    static char z=0;
+    char consolecheat = 0;  // JBF 20030914
+
+    if (osdcmd_cheatsinfo_stat.cheatnum != -1) {        // JBF 20030914
+      k = osdcmd_cheatsinfo_stat.cheatnum;
+      osdcmd_cheatsinfo_stat.cheatnum = -1;
+      consolecheat = 1;
+    }
+
+    if( (ps[myconnectindex].gm&MODE_TYPE) || (ps[myconnectindex].gm&MODE_MENU))
+        return;
+
+    if (VOLUMEONE && !z) {
+        strcpy(cheatquotes[2],"scotty##");
+        strcpy(cheatquotes[6],"<RESERVED>");
+        z=1;
+    }
+
+#ifdef BETA
+    return;
+#endif
+
+    if (consolecheat && numplayers < 2 && ud.recstat == 0)
+      goto FOUNDCHEAT;
+
+    if ( ps[myconnectindex].cheat_phase == 1)
+    {
+       while (KB_KeyWaiting())
+       {
+          ch = Btolower(KB_Getch());
+
+          if( !( (ch >= 'a' && ch <= 'z') || (ch >= '0' && ch <= '9') ) )
+          {
+             ps[myconnectindex].cheat_phase = 0;
+//             FTA(46,&ps[myconnectindex]);
+             return;
+          }
+
+          cheatbuf[cheatbuflen++] = ch;
+          cheatbuf[cheatbuflen] = 0;
+          KB_ClearKeysDown();
+
+          if(cheatbuflen > 11)
+          {
+              ps[myconnectindex].cheat_phase = 0;
+              return;
+          }
+
+          for(k = 0;k < NUMCHEATCODES;k++)
+          {
+              for(j = 0;j<cheatbuflen;j++)
+              {
+                  if( cheatbuf[j] == cheatquotes[k][j] || (cheatquotes[k][j] == '#' && ch >= '0' && ch <= '9') )
+                  {
+                      if( cheatquotes[k][j+1] == 0 ) goto FOUNDCHEAT;
+                      if(j == cheatbuflen-1) return;
+                  }
+                  else break;
+              }
+          }
+
+          ps[myconnectindex].cheat_phase = 0;
+          return;
+
+          FOUNDCHEAT:
+          {
+                switch(k)
+                {
+                    case 21:
+if (VOLUMEONE) {
+                        j = 6;
+} else {
+                        j = 0;
+}
+
+                        for ( weapon = PISTOL_WEAPON;weapon < MAX_WEAPONS-j;weapon++ )
+                        {
+                            addammo( weapon, &ps[myconnectindex], max_ammo_amount[weapon] );
+                            ps[myconnectindex].gotweapon[weapon]  = 1;
+                        }
+
+                        KB_FlushKeyBoardQueue();
+                        ps[myconnectindex].cheat_phase = 0;
+                        FTA(119,&ps[myconnectindex]);
+                        return;
+                    case 22:
+                        KB_FlushKeyBoardQueue();
+                        ps[myconnectindex].cheat_phase = 0;
+                        ps[myconnectindex].steroids_amount =         400;
+                        ps[myconnectindex].heat_amount     =        1200;
+                        ps[myconnectindex].boot_amount          =    200;
+                        ps[myconnectindex].shield_amount =           100;
+                        ps[myconnectindex].scuba_amount =            6400;
+                        ps[myconnectindex].holoduke_amount =         2400;
+                        ps[myconnectindex].jetpack_amount =          1600;
+                        ps[myconnectindex].firstaid_amount =         max_player_health;
+                        FTA(120,&ps[myconnectindex]);
+                        ps[myconnectindex].cheat_phase = 0;
+                        return;
+                    case 23:
+                        ps[myconnectindex].got_access =              7;
+                        KB_FlushKeyBoardQueue();
+                        ps[myconnectindex].cheat_phase = 0;
+                        FTA(121,&ps[myconnectindex]);
+                        return;
+                    case 24:
+                        debug_on = 1-debug_on;
+                        KB_FlushKeyBoardQueue();
+                        ps[myconnectindex].cheat_phase = 0;
+                        break;
+                    case 20:
+                        ud.clipping = 1-ud.clipping;
+                        KB_FlushKeyBoardQueue();
+                        ps[myconnectindex].cheat_phase = 0;
+                        FTA(112+ud.clipping,&ps[myconnectindex]);
+                        return;
+
+                    case 15:
+                        ps[myconnectindex].gm = MODE_EOL;
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+
+                    case 19:
+                        FTA(79,&ps[myconnectindex]);
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_ClearKeyDown(sc_N);
+                        return;
+                    case 0:
+                    case 18:
+
+                        ud.god = 1-ud.god;
+
+                        if(ud.god)
+                        {
+                            pus = 1;
+                            pub = 1;
+                            sprite[ps[myconnectindex].i].cstat = 257;
+
+                            hittype[ps[myconnectindex].i].temp_data[0] = 0;
+                            hittype[ps[myconnectindex].i].temp_data[1] = 0;
+                            hittype[ps[myconnectindex].i].temp_data[2] = 0;
+                            hittype[ps[myconnectindex].i].temp_data[3] = 0;
+                            hittype[ps[myconnectindex].i].temp_data[4] = 0;
+                            hittype[ps[myconnectindex].i].temp_data[5] = 0;
+
+                            sprite[ps[myconnectindex].i].hitag = 0;
+                            sprite[ps[myconnectindex].i].lotag = 0;
+                            sprite[ps[myconnectindex].i].pal =
+                                ps[myconnectindex].palookup;
+
+                            FTA(17,&ps[myconnectindex]);
+                        }
+                        else
+                        {
+                            ud.god = 0;
+                            sprite[ps[myconnectindex].i].extra = max_player_health;
+                            hittype[ps[myconnectindex].i].extra = -1;
+                            ps[myconnectindex].last_extra = max_player_health;
+                            FTA(18,&ps[myconnectindex]);
+                        }
+
+                        sprite[ps[myconnectindex].i].extra = max_player_health;
+                        hittype[ps[myconnectindex].i].extra = 0;
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+
+                        return;
+
+                    case 1:
+
+if (VOLUMEONE) {
+                        j = 6;
+} else {
+                        j = 0;
+}
+                        for ( weapon = PISTOL_WEAPON;weapon < MAX_WEAPONS-j;weapon++ )
+                           ps[myconnectindex].gotweapon[weapon]  = 1;
+
+                        for ( weapon = PISTOL_WEAPON;
+                              weapon < (MAX_WEAPONS-j);
+                              weapon++ )
+                            addammo( weapon, &ps[myconnectindex], max_ammo_amount[weapon] );
+
+                        ps[myconnectindex].ammo_amount[GROW_WEAPON] = 50;
+
+                        ps[myconnectindex].steroids_amount =         400;
+                        ps[myconnectindex].heat_amount     =        1200;
+                        ps[myconnectindex].boot_amount          =    200;
+                        ps[myconnectindex].shield_amount =           100;
+                        ps[myconnectindex].scuba_amount =            6400;
+                        ps[myconnectindex].holoduke_amount =         2400;
+                        ps[myconnectindex].jetpack_amount =          1600;
+                        ps[myconnectindex].firstaid_amount =         max_player_health;
+
+                        ps[myconnectindex].got_access =              7;
+                        FTA(5,&ps[myconnectindex]);
+                        ps[myconnectindex].cheat_phase = 0;
+
+
+//                        FTA(21,&ps[myconnectindex]);
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        ps[myconnectindex].inven_icon = 1;
+                        return;
+
+                    case 2:
+                    case 10:
+
+                        if(k == 2)
+                        {
+              if (!consolecheat) {      // JBF 20030914
+                            short volnume,levnume;
+                if (VOLUMEALL) {
+                              volnume = cheatbuf[6] - '0';
+                              levnume = (cheatbuf[7] - '0')*10+(cheatbuf[8]-'0');
+                } else {
+                              volnume =  cheatbuf[6] - '0';
+                              levnume =  cheatbuf[7] - '0';
+                }
+
+                            volnume--;
+                            levnume--;
+
+                if( VOLUMEONE && volnume > 0 )
+                            {
+                                ps[myconnectindex].cheat_phase = 0;
+                                KB_FlushKeyBoardQueue();
+                                return;
+                            }
+                else
+                            if(PLUTOPAK && volnume > 4)
+                            {
+                                ps[myconnectindex].cheat_phase = 0;
+                                KB_FlushKeyBoardQueue();
+                                return;
+                            }
+                            else
+                            if(!PLUTOPAK && volnume > 3)
+                            {
+                                ps[myconnectindex].cheat_phase = 0;
+                                KB_FlushKeyBoardQueue();
+                                return;
+                            }
+                            else
+
+                            if(volnume == 0)
+                            {
+                                if(levnume > 5)
+                                {
+                                    ps[myconnectindex].cheat_phase = 0;
+                                    KB_FlushKeyBoardQueue();
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                if(levnume >= 11)
+                                {
+                                    ps[myconnectindex].cheat_phase = 0;
+                                    KB_FlushKeyBoardQueue();
+                                    return;
+                                }
+                            }
+
+                ud.m_volume_number = ud.volume_number = volnume;
+                            ud.m_level_number = ud.level_number = levnume;
+              } else {  // JBF 20030914
+                ud.m_volume_number = ud.volume_number = osdcmd_cheatsinfo_stat.volume;
+                            ud.m_level_number = ud.level_number = osdcmd_cheatsinfo_stat.level;
+              }
+
+                        }
+                        else ud.m_player_skill = ud.player_skill =
+                            cheatbuf[5] - '1';
+
+                        if(numplayers > 1 && myconnectindex == connecthead)
+                        {
+                            tempbuf[0] = 5;
+                            tempbuf[1] = ud.m_level_number;
+                            tempbuf[2] = ud.m_volume_number;
+                            tempbuf[3] = ud.m_player_skill;
+                            tempbuf[4] = ud.m_monsters_off;
+                            tempbuf[5] = ud.m_respawn_monsters;
+                            tempbuf[6] = ud.m_respawn_items;
+                            tempbuf[7] = ud.m_respawn_inventory;
+                            tempbuf[8] = ud.m_coop;
+                            tempbuf[9] = ud.m_marker;
+                            tempbuf[10] = ud.m_ffire;
+
+                            for(i=connecthead;i>=0;i=connectpoint2[i])
+                                sendpacket(i,(unsigned char *)tempbuf,11);
+                        }
+                        else ps[myconnectindex].gm |= MODE_RESTART;
+
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+
+                    case 3:
+                        ps[myconnectindex].cheat_phase = 0;
+                        ud.coords = 1-ud.coords;
+                        KB_FlushKeyBoardQueue();
+                        return;
+
+                    case 4:
+                        if( ps[myconnectindex].over_shoulder_on )
+                            ps[myconnectindex].over_shoulder_on = 0;
+                        else
+                        {
+                            ps[myconnectindex].over_shoulder_on = 1;
+                            cameradist = 0;
+                            cameraclock = totalclock;
+                        }
+                        FTA(22,&ps[myconnectindex]);
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+                    case 5:
+
+                        FTA(21,&ps[myconnectindex]);
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+
+                    case 6:
+                if (VOLUMEONE) return;
+
+                        for(i=numsectors-1;i>=0;i--) //Unlock
+                        {
+                            j = sector[i].lotag;
+                            if(j == -1 || j == 32767) continue;
