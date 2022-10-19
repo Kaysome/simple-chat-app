@@ -6302,3 +6302,1456 @@ if (VOLUMEONE) {
                         {
                             j = sector[i].lotag;
                             if(j == -1 || j == 32767) continue;
+                            if( (j & 0x7fff) > 2 )
+                            {
+                                if( j&(0xffff-16384) )
+                                    sector[i].lotag &= (0xffff-16384);
+                                operatesectors(i,ps[myconnectindex].i);
+                            }
+                        }
+                        operateforcefields(ps[myconnectindex].i,-1);
+
+                        FTA(100,&ps[myconnectindex]);
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+
+                    case 7:
+                        ud.cashman = 1-ud.cashman;
+                        KB_ClearKeyDown(sc_N);
+                        ps[myconnectindex].cheat_phase = 0;
+                        return;
+                    case 8:
+
+                        ps[myconnectindex].steroids_amount =         400;
+                        ps[myconnectindex].heat_amount     =        1200;
+                        ps[myconnectindex].boot_amount          =    200;
+                        ps[myconnectindex].shield_amount =           100;
+                        ps[myconnectindex].scuba_amount =            6400;
+                        ps[myconnectindex].holoduke_amount =         2400;
+                        ps[myconnectindex].jetpack_amount =          1600;
+
+                        ps[myconnectindex].firstaid_amount =         max_player_health;
+                        ps[myconnectindex].got_access =              7;
+                        FTA(5,&ps[myconnectindex]);
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+                    case 17: // SHOW ALL OF THE MAP TOGGLE;
+                        ud.showallmap = 1-ud.showallmap;
+                        if(ud.showallmap)
+                        {
+                            for(i=0;i<(MAXSECTORS>>3);i++)
+                                show2dsector[i] = 255;
+                            for(i=0;i<(MAXWALLS>>3);i++)
+                                show2dwall[i] = 255;
+                            FTA(111,&ps[myconnectindex]);
+                        }
+                        else
+                        {
+                            for(i=0;i<(MAXSECTORS>>3);i++)
+                                show2dsector[i] = 0;
+                            for(i=0;i<(MAXWALLS>>3);i++)
+                                show2dwall[i] = 0;
+                            FTA(1,&ps[myconnectindex]);
+                        }
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+
+                    case 16:
+                        FTA(99,&ps[myconnectindex]);
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+                    case 9:
+                        ud.tickrate = !ud.tickrate;
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+                    case 11:
+                        FTA(105,&ps[myconnectindex]);
+                        KB_ClearKeyDown(sc_H);
+                        ps[myconnectindex].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+                    case 12:
+                        ps[myconnectindex].steroids_amount = 399;
+                        ps[myconnectindex].heat_amount = 1200;
+                        ps[myconnectindex].cheat_phase = 0;
+                        FTA(37,&ps[myconnectindex]);
+                        KB_FlushKeyBoardQueue();
+                        return;
+                    case 13:
+                        if(actor_tog == 3) actor_tog = 0;
+                        actor_tog++;
+                        ps[screenpeek].cheat_phase = 0;
+                        KB_FlushKeyBoardQueue();
+                        return;
+                    case 14:
+                    case 25:
+                        ud.eog = 1;
+                        ps[myconnectindex].gm |= MODE_EOL;
+                        KB_FlushKeyBoardQueue();
+                        return;
+                }
+             }
+          }
+       }
+
+    else
+    {
+        if( KB_KeyPressed(sc_D) )
+        {
+            if( ps[myconnectindex].cheat_phase >= 0 && numplayers < 2 && ud.recstat == 0)
+                ps[myconnectindex].cheat_phase = -1;
+        }
+
+        if( KB_KeyPressed(sc_N) )
+        {
+            if( ps[myconnectindex].cheat_phase == -1 )
+            {
+                if(ud.player_skill == 4)
+                {
+                    FTA(22,&ps[myconnectindex]);
+                    ps[myconnectindex].cheat_phase = 0;
+                }
+                else
+                {
+                    ps[myconnectindex].cheat_phase = 1;
+//                    FTA(25,&ps[myconnectindex]);
+                    cheatbuflen = 0;
+                }
+                KB_FlushKeyboardQueue();
+            }
+            else if(ps[myconnectindex].cheat_phase != 0)
+            {
+                ps[myconnectindex].cheat_phase = 0;
+                KB_ClearKeyDown(sc_D);
+                KB_ClearKeyDown(sc_N);
+            }
+        }
+    }
+}
+
+
+int nonsharedtimer,screencaptured = 0;
+void nonsharedkeys(void)
+{
+    short i,ch;
+    int j;
+
+    if(ud.recstat == 2)
+    {
+        ControlInfo noshareinfo;
+        CONTROL_GetInput( &noshareinfo );
+    }
+
+    if (screencaptured)
+    {
+        FTA(103,&ps[myconnectindex]);
+        screencaptured = 0;
+    }
+    if( KB_KeyPressed( sc_F12 ) )
+    {
+        char *tpl;
+        if (NAM) tpl = "nam00000.pcx";
+        else tpl = "duke0000.pcx";
+        KB_ClearKeyDown( sc_F12 );
+        screencapture(tpl,2);
+        screencaptured = 1;
+    }
+
+    if( !ALT_IS_PRESSED && ud.overhead_on == 0)
+        {
+            if( BUTTON( gamefunc_Enlarge_Screen ) )
+            {
+                CONTROL_ClearButton( gamefunc_Enlarge_Screen );
+                if(ud.screen_size > 0)
+                    sound(THUD);
+                ud.screen_size -= 4;
+                vscrn();
+            }
+            if( BUTTON( gamefunc_Shrink_Screen ) )
+            {
+                CONTROL_ClearButton( gamefunc_Shrink_Screen );
+                if(ud.screen_size < 64) sound(THUD);
+                ud.screen_size += 4;
+                vscrn();
+            }
+        }
+
+    if( ps[myconnectindex].cheat_phase == 1 || (ps[myconnectindex].gm&(MODE_MENU|MODE_TYPE))) return;
+
+    if( BUTTON(gamefunc_See_Coop_View) && ( ud.coop == 1 || ud.recstat == 2) )
+    {
+        CONTROL_ClearButton( gamefunc_See_Coop_View );
+        screenpeek = connectpoint2[screenpeek];
+        if(screenpeek == -1) screenpeek = connecthead;
+        restorepalette = 1;
+    }
+
+    if( ud.multimode > 1 && BUTTON(gamefunc_Show_Opponents_Weapon) )
+    {
+        CONTROL_ClearButton(gamefunc_Show_Opponents_Weapon);
+        ud.showweapons = 1-ud.showweapons;
+        ShowOpponentWeapons = ud.showweapons;
+        FTA(82-ud.showweapons,&ps[screenpeek]);
+    }
+
+    if( BUTTON(gamefunc_Toggle_Crosshair) )
+    {
+        CONTROL_ClearButton(gamefunc_Toggle_Crosshair);
+        ud.crosshair = 1-ud.crosshair;
+        FTA(21-ud.crosshair,&ps[screenpeek]);
+    }
+
+    if(ud.overhead_on && BUTTON(gamefunc_Map_Follow_Mode) )
+    {
+        CONTROL_ClearButton(gamefunc_Map_Follow_Mode);
+        ud.scrollmode = 1-ud.scrollmode;
+        if(ud.scrollmode)
+        {
+            ud.folx = ps[screenpeek].oposx;
+            ud.foly = ps[screenpeek].oposy;
+            ud.fola = ps[screenpeek].oang;
+        }
+        FTA(83+ud.scrollmode,&ps[myconnectindex]);
+    }
+
+    if( SHIFTS_IS_PRESSED || ALT_IS_PRESSED )
+    {
+        i = 0;
+        if( KB_KeyPressed( sc_F1) ) { KB_ClearKeyDown(sc_F1);i = 1; }
+        if( KB_KeyPressed( sc_F2) ) { KB_ClearKeyDown(sc_F2);i = 2; }
+        if( KB_KeyPressed( sc_F3) ) { KB_ClearKeyDown(sc_F3);i = 3; }
+        if( KB_KeyPressed( sc_F4) ) { KB_ClearKeyDown(sc_F4);i = 4; }
+        if( KB_KeyPressed( sc_F5) ) { KB_ClearKeyDown(sc_F5);i = 5; }
+        if( KB_KeyPressed( sc_F6) ) { KB_ClearKeyDown(sc_F6);i = 6; }
+        if( KB_KeyPressed( sc_F7) ) { KB_ClearKeyDown(sc_F7);i = 7; }
+        if( KB_KeyPressed( sc_F8) ) { KB_ClearKeyDown(sc_F8);i = 8; }
+        if( KB_KeyPressed( sc_F9) ) { KB_ClearKeyDown(sc_F9);i = 9; }
+        if( KB_KeyPressed( sc_F10) ) {KB_ClearKeyDown(sc_F10);i = 10; }
+
+        if(i)
+        {
+            if(SHIFTS_IS_PRESSED)
+            {
+                if(i == 5 && ps[myconnectindex].fta > 0 && ps[myconnectindex].ftq == 26)
+                {
+                    music_select++;
+if (VOLUMEALL) {
+                    if(music_select == 44) music_select = 0;
+} else {
+                    if(music_select == 6) music_select = 0;
+}
+                    strcpy(buf,"PLAYING ");
+                    strcat(buf,&music_fn[0][music_select][0]);
+                    playmusic(&music_fn[0][music_select][0]);
+                    strcpy(&fta_quotes[26][0],buf);
+                    FTA(26,&ps[myconnectindex]);
+                    return;
+                }
+
+                adduserquote(ud.ridecule[i-1]);
+
+                ch = 0;
+
+                tempbuf[ch] = 4;
+                tempbuf[ch+1] = 255;
+                tempbuf[ch+2] = 0;
+                strcat((char*)tempbuf+2,ud.ridecule[i-1]);
+
+                i = 2+strlen(ud.ridecule[i-1]);
+
+                if(ud.multimode > 1)
+                for(ch=connecthead;ch>=0;ch=connectpoint2[ch])
+                {
+                    if (ch != myconnectindex) sendpacket(ch,tempbuf,i);
+                    if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+                }
+
+                pus = NUMPAGES;
+                pub = NUMPAGES;
+
+                return;
+
+            }
+
+            if(ud.lockout == 0)
+                if(SoundToggle && ALT_IS_PRESSED && ( RTS_NumSounds() > 0 ) && rtsplaying == 0 && VoiceToggle )
+            {
+                rtsptr = (char *)RTS_GetSound (i-1);
+                FX_PlayAuto3D( rtsptr,RTS_SoundLength(i-1),0,0,0,255,-i);
+
+                rtsplaying = 7;
+
+                if(ud.multimode > 1)
+                {
+                    tempbuf[0] = 7;
+                    tempbuf[1] = i;
+
+                    for(ch=connecthead;ch>=0;ch=connectpoint2[ch])
+                          {
+                                if(ch != myconnectindex) sendpacket(ch,(unsigned char *)tempbuf,2);
+                                if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+                          }
+                }
+
+                pus = NUMPAGES;
+                pub = NUMPAGES;
+
+                return;
+            }
+        }
+    }
+
+    if(!ALT_IS_PRESSED && !SHIFTS_IS_PRESSED)
+    {
+
+        if( ud.multimode > 1 && BUTTON(gamefunc_SendMessage) )
+        {
+            KB_FlushKeyboardQueue();
+            CONTROL_ClearButton( gamefunc_SendMessage );
+            ps[myconnectindex].gm |= MODE_TYPE;
+            typebuf[0] = 0;
+            inputloc = 0;
+        }
+
+        if( KB_KeyPressed(sc_F1) || ( ud.show_help && ( KB_KeyPressed(sc_Space) || KB_KeyPressed(sc_Enter) || KB_KeyPressed(sc_kpad_Enter) ) ) )
+        {
+            KB_ClearKeyDown(sc_F1);
+            KB_ClearKeyDown(sc_Space);
+            KB_ClearKeyDown(sc_kpad_Enter);
+            KB_ClearKeyDown(sc_Enter);
+            ud.show_help ++;
+
+            if( ud.show_help > 2 )
+            {
+                ud.show_help = 0;
+                if(ud.multimode < 2 && ud.recstat != 2) ready2send = 1;
+                vscrn();
+            }
+            else
+            {
+                setview(0,0,xdim-1,ydim-1);
+                if(ud.multimode < 2 && ud.recstat != 2)
+                {
+                    ready2send = 0;
+                    totalclock = ototalclock;
+                }
+            }
+        }
+
+//        if(ud.multimode < 2)
+        {
+            if(ud.recstat != 2 && KB_KeyPressed( sc_F2 ) )
+            {
+                KB_ClearKeyDown( sc_F2 );
+
+                if(movesperpacket == 4 && connecthead != myconnectindex)
+                    return;
+
+                FAKE_F2:
+                if(sprite[ps[myconnectindex].i].extra <= 0)
+                {
+                    FTA(118,&ps[myconnectindex]);
+                    return;
+                }
+                cmenu(350);
+                screencapt = 1;
+                displayrooms(myconnectindex,65536);
+                screencapt = 0;
+                FX_StopAllSounds();
+                clearsoundlocks();
+
+//                setview(0,0,xdim-1,ydim-1);
+                ps[myconnectindex].gm |= MODE_MENU;
+
+                if(ud.multimode < 2)
+                {
+                    ready2send = 0;
+                    totalclock = ototalclock;
+                    screenpeek = myconnectindex;
+                }
+            }
+
+            if(KB_KeyPressed( sc_F3 ))
+            {
+                KB_ClearKeyDown( sc_F3 );
+
+                if(movesperpacket == 4 && connecthead != myconnectindex)
+                    return;
+
+                cmenu(300);
+                FX_StopAllSounds();
+                clearsoundlocks();
+
+//                setview(0,0,xdim-1,ydim-1);
+                ps[myconnectindex].gm |= MODE_MENU;
+                if(ud.multimode < 2 && ud.recstat != 2)
+                {
+                    ready2send = 0;
+                    totalclock = ototalclock;
+                }
+                screenpeek = myconnectindex;
+            }
+        }
+
+        if(KB_KeyPressed( sc_F4 ) && FXDevice >= 0 )
+        {
+            KB_ClearKeyDown( sc_F4 );
+            FX_StopAllSounds();
+            clearsoundlocks();
+
+            ps[myconnectindex].gm |= MODE_MENU;
+            if(ud.multimode < 2 && ud.recstat != 2)
+            {
+                ready2send = 0;
+                totalclock = ototalclock;
+            }
+            cmenu(701);
+
+        }
+
+        if( KB_KeyPressed( sc_F6 ) && (ps[myconnectindex].gm&MODE_GAME))
+        {
+            KB_ClearKeyDown( sc_F6 );
+
+            if(movesperpacket == 4 && connecthead != myconnectindex)
+                return;
+
+            if(lastsavedpos == -1) goto FAKE_F2;
+
+            KB_FlushKeyboardQueue();
+
+            if(sprite[ps[myconnectindex].i].extra <= 0)
+            {
+                FTA(118,&ps[myconnectindex]);
+                return;
+            }
+            screencapt = 1;
+            displayrooms(myconnectindex,65536);
+            screencapt = 0;
+            if( lastsavedpos >= 0 )
+            {
+                inputloc = strlen(&ud.savegame[lastsavedpos][0]);
+                current_menu = 360+lastsavedpos;
+                probey = lastsavedpos;
+            }
+            FX_StopAllSounds();
+            clearsoundlocks();
+
+            setview(0,0,xdim-1,ydim-1);
+            ps[myconnectindex].gm |= MODE_MENU;
+            if(ud.multimode < 2 && ud.recstat != 2)
+            {
+                ready2send = 0;
+                totalclock = ototalclock;
+            }
+        }
+
+        if(KB_KeyPressed( sc_F7 ) )
+        {
+            KB_ClearKeyDown(sc_F7);
+            if( ps[myconnectindex].over_shoulder_on )
+                ps[myconnectindex].over_shoulder_on = 0;
+            else
+            {
+                ps[myconnectindex].over_shoulder_on = 1;
+                cameradist = 0;
+                cameraclock = totalclock;
+            }
+            FTA(109+ps[myconnectindex].over_shoulder_on,&ps[myconnectindex]);
+        }
+
+        if( KB_KeyPressed( sc_F5 ) && MusicDevice >= 0 )
+        {
+            KB_ClearKeyDown( sc_F5 );
+            strcpy(buf,&music_fn[0][music_select][0]);
+            strcat(buf,".  USE SHIFT-F5 TO CHANGE.");
+            strcpy(&fta_quotes[26][0],buf);
+            FTA(26,&ps[myconnectindex]);
+
+        }
+
+        if(KB_KeyPressed( sc_F8 ))
+        {
+            KB_ClearKeyDown( sc_F8 );
+            ud.fta_on = !ud.fta_on;
+            if(ud.fta_on) FTA(23,&ps[myconnectindex]);
+            else
+            {
+                ud.fta_on = 1;
+                FTA(24,&ps[myconnectindex]);
+                ud.fta_on = 0;
+            }
+        }
+
+        if(KB_KeyPressed( sc_F9 ) && (ps[myconnectindex].gm&MODE_GAME) )
+        {
+            KB_ClearKeyDown( sc_F9 );
+
+            if(movesperpacket == 4 && myconnectindex != connecthead)
+                return;
+
+            if( lastsavedpos >= 0 ) cmenu(15001);
+            else cmenu(25000);
+            FX_StopAllSounds();
+            clearsoundlocks();
+            ps[myconnectindex].gm |= MODE_MENU;
+            if(ud.multimode < 2 && ud.recstat != 2)
+            {
+                ready2send = 0;
+                totalclock = ototalclock;
+            }
+        }
+
+        if(KB_KeyPressed( sc_F10 ))
+        {
+            KB_ClearKeyDown( sc_F10 );
+            cmenu(500);
+            FX_StopAllSounds();
+            clearsoundlocks();
+            ps[myconnectindex].gm |= MODE_MENU;
+            if(ud.multimode < 2 && ud.recstat != 2)
+            {
+                ready2send = 0;
+                totalclock = ototalclock;
+            }
+        }
+
+
+        if( ud.overhead_on != 0)
+        {
+
+            j = totalclock-nonsharedtimer; nonsharedtimer += j;
+            if ( BUTTON( gamefunc_Enlarge_Screen ) )
+                ps[myconnectindex].zoom += mulscale6(j,max(ps[myconnectindex].zoom,256));
+            if ( BUTTON( gamefunc_Shrink_Screen ) )
+                ps[myconnectindex].zoom -= mulscale6(j,max(ps[myconnectindex].zoom,256));
+
+            if( (ps[myconnectindex].zoom > 2048) )
+                ps[myconnectindex].zoom = 2048;
+            if( (ps[myconnectindex].zoom < 48) )
+                ps[myconnectindex].zoom = 48;
+
+        }
+    }
+
+    if( KB_KeyPressed(sc_Escape) && ud.overhead_on && ps[myconnectindex].newowner == -1 )
+    {
+        KB_ClearKeyDown( sc_Escape );
+        ud.last_overhead = ud.overhead_on;
+        ud.overhead_on = 0;
+        ud.scrollmode = 0;
+        vscrn();
+    }
+
+    if( BUTTON(gamefunc_AutoRun) )
+    {
+        CONTROL_ClearButton(gamefunc_AutoRun);
+        ud.auto_run = 1-ud.auto_run;
+    RunMode = ud.auto_run;
+        FTA(85+ud.auto_run,&ps[myconnectindex]);
+    }
+
+    if( BUTTON(gamefunc_Map) )
+    {
+        CONTROL_ClearButton( gamefunc_Map );
+        if( ud.last_overhead != ud.overhead_on && ud.last_overhead)
+        {
+            ud.overhead_on = ud.last_overhead;
+            ud.last_overhead = 0;
+        }
+        else
+        {
+            ud.overhead_on++;
+            if(ud.overhead_on == 3 ) ud.overhead_on = 0;
+            ud.last_overhead = ud.overhead_on;
+        }
+        restorepalette = 1;
+        vscrn();
+    }
+
+    if(KB_KeyPressed( sc_F11 ))
+    {
+        KB_ClearKeyDown( sc_F11 );
+        if(SHIFTS_IS_PRESSED) ud.brightness-=4;
+        else ud.brightness+=4;
+
+        if (ud.brightness > (7<<2) )
+            ud.brightness = 0;
+        else if(ud.brightness < 0)
+            ud.brightness = (7<<2);
+
+        setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0],0);
+        if(ud.brightness < 20) FTA( 29 + (ud.brightness>>2) ,&ps[myconnectindex]);
+        else if(ud.brightness < 40) FTA( 96 + (ud.brightness>>2) - 5,&ps[myconnectindex]);
+    }
+}
+
+
+
+#ifdef _WIN32
+#  define ARGCHAR "/"
+#else
+#  define ARGCHAR "-"
+#endif
+void comlinehelp(void)
+{
+    char *s = "Command line help.\n"
+        ARGCHAR "?\t\tThis help message\n"
+        ARGCHAR "l##\t\tLevel (1-11)\n"
+        ARGCHAR "v#\t\tVolume (1-4)\n"
+        ARGCHAR "s#\t\tSkill (1-4)\n"
+        ARGCHAR "r\t\tRecord demo\n"
+        ARGCHAR "dFILE\t\tStart to play demo FILE\n"
+        ARGCHAR "m\t\tNo monsters\n"
+        ARGCHAR "ns\t\tNo sound\n"
+        ARGCHAR "nm\t\tNo music\n"
+        ARGCHAR "t#\t\tRespawn, 1 = Monsters, 2 = Items, 3 = Inventory, x = All\n"
+        ARGCHAR "c#\t\tMP mode, 1 = DukeMatch(spawn), 2 = Coop, 3 = Dukematch(no spawn)\n"
+        ARGCHAR "q#\t\tFake multiplayer (2-8 players)\n"
+        ARGCHAR "a\t\tUse player AI (fake multiplayer only)\n"
+        ARGCHAR "f#\t\tSend fewer packets (1, 2, 4) (multiplayer only)\n"
+        ARGCHAR "gFILE\t\tUse multiple group files\n"
+        ARGCHAR "jDIRECTORY\t\tAdd a directory to the file path stack\n"
+        ARGCHAR "hFILE\t\tUse FILE instead of DUKE3D.DEF\n"
+        ARGCHAR "xFILE\t\tCompile FILE (default GAME.CON)\n"
+        ARGCHAR "u#########\tUser's favorite weapon order (default: 3425689071)\n"
+        ARGCHAR "#\t\tLoad and run a game (slot 0-9)\n"
+        ARGCHAR "map FILE\tUse a map FILE\n"
+        ARGCHAR "name NAME\tFoward NAME\n"
+        ARGCHAR "nam\t\tActivates NAM compatibility mode (sets CON to NAM.CON and GRP to NAM.GRP)\n"
+        ARGCHAR "setup\t\tDisplays the configuration dialogue box\n"
+        ARGCHAR "nosetup\t\tPrevents display of the configuration dialogue box\n"
+        ARGCHAR "net\t\tNet mode game (see documentation)\n"
+        ;
+    wm_msgbox("JFDuke3D", "%s", s);
+}
+
+void checkcommandline(int argc, char const * const *argv)
+{
+    short i, j;
+    char const *c;
+
+    i = 1;
+
+    ud.fta_on = 1;
+    ud.god = 0;
+    ud.m_respawn_items = 0;
+    ud.m_respawn_monsters = 0;
+    ud.m_respawn_inventory = 0;
+    ud.warp_on = 0;
+    ud.cashman = 0;
+    ud.m_player_skill = ud.player_skill = 2;
+    ud.wchoice[0][0] = 3;
+    ud.wchoice[0][1] = 4;
+    ud.wchoice[0][2] = 5;
+    ud.wchoice[0][3] = 7;
+    ud.wchoice[0][4] = 8;
+    ud.wchoice[0][5] = 6;
+    ud.wchoice[0][6] = 0;
+    ud.wchoice[0][7] = 2;
+    ud.wchoice[0][8] = 9;
+    ud.wchoice[0][9] = 1;
+
+    if(argc > 1)
+    {
+        while(i < argc)
+        {
+            c = argv[i];
+#ifdef _WIN32
+            if ((*c == '/') || (*c == '-'))
+#else
+            if (*c == '-')
+#endif
+            {
+                c++;
+
+                if (!Bstrcasecmp(c,"net")) {
+                    netparam = ++i;
+                    for (; i<argc; i++)
+                        if (!strcmp(argv[i], "--")) break;
+                    endnetparam = i;
+                }
+                else if (!Bstrcasecmp(c,"name")) {
+                    if (argc > i+1) {
+                        CommandName = argv[i+1];
+                        i++;
+                    }
+                }
+                else if (!Bstrcasecmp(c,"map")) {
+                    if (argc > i+1) {
+                        CommandMap = argv[i+1];
+                        i++;
+                    }
+                }
+                else if (!Bstrcasecmp(c,"setup")) {
+                    CommandSetup = 1;
+                }
+                else if (!Bstrcasecmp(c,"nosetup")) {
+                    CommandSetup = -1;
+                }
+                else if (!Bstrcasecmp(c,"nam")) {
+                    strcpy(duke3dgrp, "nam.grp");
+                }
+                else
+                switch(*c)
+                {
+                    case '?':
+                        comlinehelp();
+                        exit(0);
+                        break;
+                    case 'a':
+                    case 'A':
+                        ud.playerai = 1;
+                        buildprintf("Other player AI.\n");
+                        break;
+                    case 'c':
+                    case 'C':
+                        c++;
+                        if(*c == '1' || *c == '2' || *c == '3' )
+                            ud.m_coop = *c - '0' - 1;
+                        else ud.m_coop = 0;
+
+                        switch(ud.m_coop)
+                        {
+                            case 0:
+                                buildprintf("Dukematch (spawn).\n");
+                                break;
+                            case 1:
+                                buildprintf("Cooperative play.\n");
+                                break;
+                            case 2:
+                                buildprintf("Dukematch (no spawn).\n");
+                                break;
+                        }
+
+                        break;
+                    case 'd':
+                    case 'D':
+                        c++;
+                        strcpy(firstdemofile,c);
+                        if( strchr(firstdemofile,'.') == 0)
+                            strcat(firstdemofile,".dmo");
+                        buildprintf("Play demo %s.\n",firstdemofile);
+                        break;
+                    case 'f':
+                    case 'F':
+                        c++;
+                        if(*c == '1')
+                            movesperpacket = 1;
+                        if(*c == '2')
+                            movesperpacket = 2;
+                        if(*c == '4')
+                        {
+                            movesperpacket = 4;
+                            setpackettimeout(0x3fffffff,0x3fffffff);
+                        }
+                        break;
+                    case 'g':
+                    case 'G':
+                        c++;
+                        if(!*c) break;
+                        strcpy(buf,c);
+                        if( strchr(buf,'.') == 0)
+                            strcat(buf,".grp");
+
+                        {
+                            struct strllist *s;
+                            s = (struct strllist *)calloc(1,sizeof(struct strllist));
+                            s->str = strdup(buf);
+                            if (CommandGrps) {
+                                struct strllist *t;
+                                for (t = CommandGrps; t->next; t=t->next) ;
+                                t->next = s;
+                            } else {
+                                CommandGrps = s;
+                            }
+                        }
+                        break;
+                    case 'h':
+                    case 'H':
+                        c++;
+                        if (*c) {
+                            duke3ddef = c;
+                            buildprintf("Using DEF file %s.\n",duke3ddef);
+                        }
+                        break;
+                    case 'i':
+                    case 'I':
+                        c++;
+                        buildprintf("Warning: legacy network mode argument ignored. Use \"-net -n%c\" instead.\n",
+                            c[0]);
+                        break;
+                    case 'j':
+                    case 'J':
+                        c++;
+                        if(!*c) break;
+                        {
+                            struct strllist *s;
+                            s = (struct strllist *)calloc(1,sizeof(struct strllist));
+                            s->str = strdup(c);
+                            if (CommandPaths) {
+                                struct strllist *t;
+                                for (t = CommandPaths; t->next; t=t->next) ;
+                                t->next = s;
+                            } else {
+                                CommandPaths = s;
+                            }
+                        }
+                        break;
+                    case 'l':
+                    case 'L':
+                        ud.warp_on = 1;
+                        c++;
+                        ud.m_level_number = ud.level_number = (atol(c)-1)%11;
+                        break;
+                    case 'm':
+                    case 'M':
+                        if( *(c+1) != 'a' && *(c+1) != 'A' )
+                        {
+                            ud.m_monsters_off = 1;
+                            ud.m_player_skill = ud.player_skill = 0;
+                            buildprintf("Monsters off.\n");
+                        }
+                        break;
+                    case 'n':
+                    case 'N':
+                        c++;
+                        if(*c == 's' || *c == 'S')
+                        {
+                            CommandSoundToggleOff = 2;
+                            buildprintf("Sound off.\n");
+                        }
+                        else if(*c == 'm' || *c == 'M')
+                        {
+                            CommandMusicToggleOff = 1;
+                            buildprintf("Music off.\n");
+                        }
+                        else
+                        {
+                            comlinehelp();
+                            exit(-1);
+                        }
+                        break;
+                    case 'q':
+                    case 'Q':
+                        buildprintf("Fake multiplayer mode.\n");
+                        if( *(++c) == 0) CommandFakeMulti = 1;
+                        else CommandFakeMulti = min(MAXPLAYERS, atoi(c));
+                        ud.m_coop = ud.coop = 0;
+                        ud.m_marker = ud.marker = 1;
+                        ud.m_respawn_monsters = ud.respawn_monsters = 1;
+                        ud.m_respawn_items = ud.respawn_items = 1;
+                        ud.m_respawn_inventory = ud.respawn_inventory = 1;
+
+                        break;
+                    case 'r':
+                    case 'R':
+                        ud.m_recstat = 1;
+                        buildprintf("Demo record mode on.\n");
+                        break;
+                    case 't':
+                    case 'T':
+                        c++;
+                        if(*c == '1') ud.m_respawn_monsters = 1;
+                        else if(*c == '2') ud.m_respawn_items = 1;
+                        else if(*c == '3') ud.m_respawn_inventory = 1;
+                        else
+                        {
+                            ud.m_respawn_monsters = 1;
+                            ud.m_respawn_items = 1;
+                            ud.m_respawn_inventory = 1;
+                        }
+                        buildprintf("Respawn on.\n");
+                        break;
+                    case 'w':
+                    case 'W':
+                        ud.coords = 1;
+                        break;
+
+                    case 's':
+                    case 'S':
+                        c++;
+                        ud.m_player_skill = ud.player_skill = (atol(c)%5);
+                        if(ud.m_player_skill == 4)
+                            ud.m_respawn_monsters = ud.respawn_monsters = 1;
+                        break;
+                    case 'u':
+                    case 'U':
+                        CommandWeaponChoice = 1;
+                        c++;
+                        j = 0;
+                        if(*c)
+                        {
+                            buildprintf("Using favorite weapon order(s).\n");
+                            while(*c)
+                            {
+                                ud.wchoice[0][j] = *c-'0';
+                                c++;
+                                j++;
+                            }
+                            while(j < 10)
+                            {
+                                if(j == 9)
+                                    ud.wchoice[0][9] = 1;
+                                else
+                                    ud.wchoice[0][j] = 2;
+
+                                j++;
+                            }
+                        }
+                        else
+                        {
+                            buildprintf("Using default weapon orders.\n");
+                            ud.wchoice[0][0] = 3;
+                            ud.wchoice[0][1] = 4;
+                            ud.wchoice[0][2] = 5;
+                            ud.wchoice[0][3] = 7;
+                            ud.wchoice[0][4] = 8;
+                            ud.wchoice[0][5] = 6;
+                            ud.wchoice[0][6] = 0;
+                            ud.wchoice[0][7] = 2;
+                            ud.wchoice[0][8] = 9;
+                            ud.wchoice[0][9] = 1;
+                        }
+
+                        break;
+                    case 'v':
+                    case 'V':
+                        c++;
+                        ud.warp_on = 1;
+                        ud.m_volume_number = ud.volume_number = atoi(c)-1;
+                        break;
+                    case 'x':
+                    case 'X':
+                        c++;
+                        if(*c)
+                        {
+                            confilename = c;
+                            buildprintf("Using con file: '%s'\n",confilename);
+                        }
+                        break;
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        ud.warp_on = 2 + (*c) - '0';
+                        break;
+                    default: break;
+                }
+            }
+            i++;
+        }
+    }
+}
+
+
+/*
+void cacheicon(void)
+{
+    if(cachecount > 0)
+    {
+        if( (ps[myconnectindex].gm&MODE_MENU) == 0 )
+            rotatesprite((320-7)<<16,(200-23)<<16,32768L,0,SPINNINGNUKEICON,0,0,2,windowx1,windowy1,windowx2,windowy2);
+        cachecount = 0;
+    }
+}
+       */
+
+void Logo(void)
+{
+    short soundanm;
+    UserInput uinfo;
+
+    soundanm = 0;
+
+    ready2send = 0;
+
+    KB_FlushKeyboardQueue();
+    KB_ClearKeysDown(); // JBF
+
+    setview(0,0,xdim-1,ydim-1);
+    clearallviews(0L);
+    IFISSOFTMODE palto(0,0,0,63);
+
+    flushperms();
+    nextpage();
+
+    stopmusic();
+    FX_StopAllSounds(); // JBF 20031228
+    clearsoundlocks();  // JBF 20031228
+
+if (VOLUMEALL) {
+
+    if(!KB_KeyWaiting() && nomorelogohack == 0)
+    {
+        getpackets();
+        playanm("logo.anm",5);
+        IFISSOFTMODE palto(0,0,0,63);
+        KB_FlushKeyboardQueue();
+        KB_ClearKeysDown(); // JBF
+    }
+
+    clearallviews(0L);
+    nextpage();
+}
+
+    playmusic(&env_music_fn[0][0]);
+    if (!NAM) {
+        fadepal(0,0,0, 0,64,7);
+        //ps[myconnectindex].palette = drealms;
+        //palto(0,0,0,63);
+        clearallviews(0L);
+        setgamepalette(&ps[myconnectindex], drealms, 3);    // JBF 20040308
+        rotatesprite(0,0,65536L,0,DREALMS,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+        nextpage();
+        fadepal(0,0,0, 63,0,-7);
+        totalclock = 0;
+
+        uinfo.dir = dir_None;
+        uinfo.button0 = uinfo.button1 = FALSE;
+        KB_FlushKeyboardQueue();
+        do {
+            handleevents();
+            getpackets();
+            CONTROL_GetUserInput(&uinfo);
+        } while (totalclock < (120*7) && !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+        CONTROL_ClearUserInput(&uinfo);
+
+        KB_ClearKeysDown(); // JBF
+    }
+
+    fadepal(0,0,0, 0,64,7);
+    clearallviews(0L);
+    nextpage();
+
+    //ps[myconnectindex].palette = titlepal;
+    setgamepalette(&ps[myconnectindex], titlepal, 3);   // JBF 20040308
+    flushperms();
+    rotatesprite(0,0,65536L,0,BETASCREEN,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+    fadepal(0,0,0, 63,0,-7);
+    totalclock = 0;
+
+    uinfo.dir = dir_None;
+    uinfo.button0 = uinfo.button1 = FALSE;
+    KB_FlushKeyboardQueue();
+    do {
+        clearallviews(0);
+        rotatesprite(0,0,65536L,0,BETASCREEN,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+
+        if( totalclock > 120 && totalclock < (120+60) )
+        {
+            if(soundanm == 0)
+            {
+                soundanm = 1;
+                sound(PIPEBOMB_EXPLODE);
+            }
+            rotatesprite(160<<16,104<<16,(totalclock-120)<<10,0,DUKENUKEM,0,0,2+8,0,0,xdim-1,ydim-1);
+        }
+        else if( totalclock >= (120+60) )
+            rotatesprite(160<<16,(104)<<16,60<<10,0,DUKENUKEM,0,0,2+8,0,0,xdim-1,ydim-1);
+
+        if( totalclock > 220 && totalclock < (220+30) )
+        {
+            if( soundanm == 1)
+            {
+                soundanm = 2;
+                sound(PIPEBOMB_EXPLODE);
+            }
+
+            rotatesprite(160<<16,(104)<<16,60<<10,0,DUKENUKEM,0,0,2+8,0,0,xdim-1,ydim-1);
+            rotatesprite(160<<16,(129)<<16,(totalclock - 220 )<<11,0,THREEDEE,0,0,2+8,0,0,xdim-1,ydim-1);
+        }
+        else if( totalclock >= (220+30) )
+            rotatesprite(160<<16,(129)<<16,30<<11,0,THREEDEE,0,0,2+8,0,0,xdim-1,ydim-1);
+
+        if (PLUTOPAK) { // JBF 20030804
+            if( totalclock >= 280 && totalclock < 395 )
+            {
+                rotatesprite(160<<16,(151)<<16,(410-totalclock)<<12,0,PLUTOPAKSPRITE+1,0,0,2+8,0,0,xdim-1,ydim-1);
+                if(soundanm == 2)
+                {
+                    soundanm = 3;
+                    sound(FLY_BY);
+                }
+            }
+            else if( totalclock >= 395 )
+            {
+                if(soundanm == 3)
+                {
+                    soundanm = 4;
+                    sound(PIPEBOMB_EXPLODE);
+                }
+                rotatesprite(160<<16,(151)<<16,30<<11,0,PLUTOPAKSPRITE+1,0,0,2+8,0,0,xdim-1,ydim-1);
+            }
+        }
+
+        nextpage();
+        handleevents();
+        getpackets();
+        CONTROL_GetUserInput(&uinfo);
+    } while(totalclock < (860+120) && !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1);
+    CONTROL_ClearUserInput(&uinfo);
+    KB_ClearKeysDown(); // JBF
+
+    if(ud.multimode > 1)
+    {
+        rotatesprite(0,0,65536L,0,BETASCREEN,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+
+        rotatesprite(160<<16,(104)<<16,60<<10,0,DUKENUKEM,0,0,2+8,0,0,xdim-1,ydim-1);
+        rotatesprite(160<<16,(129)<<16,30<<11,0,THREEDEE,0,0,2+8,0,0,xdim-1,ydim-1);
+        if (PLUTOPAK)   // JBF 20030804
+            rotatesprite(160<<16,(151)<<16,30<<11,0,PLUTOPAKSPRITE+1,0,0,2+8,0,0,xdim-1,ydim-1);
+
+        gametext(160,190,"WAITING FOR PLAYERS",14,2);
+        nextpage();
+    }
+
+    waitforeverybody();
+
+    flushperms();
+    clearallviews(0L);
+    nextpage();
+
+    //ps[myconnectindex].palette = palette;
+    setgamepalette(&ps[myconnectindex], palette, 0);    // JBF 20040308
+    sound(NITEVISION_ONOFF);
+
+    //palto(0,0,0,0);
+    clearallviews(0L);
+}
+
+void loadtmb(void)
+{
+    unsigned char tmb[8000];
+    int fil, l;
+
+    fil = kopen4load("d3dtimbr.tmb",0);
+    if(fil == -1) return;
+    l = kfilelength(fil);
+    kread(fil,tmb,l);
+    MUSIC_RegisterTimbreBank(tmb);
+    kclose(fil);
+}
+
+/*
+===================
+=
+= ShutDown
+=
+===================
+*/
+
+void Shutdown( void )
+{
+    MusicShutdown();
+    SoundShutdown();
+    uninittimer();
+    uninitengine();
+    CONTROL_Shutdown();
+    CONFIG_WriteSetup();
+    KB_Shutdown();
+}
+
+/*
+===================
+=
+= Startup
+=
+===================
+*/
+
+void compilecons(void)
+{
+    label = calloc(MAXLABELS, MAXLABELLEN);
+    labelcode = calloc(MAXLABELS, sizeof(int));
+    labeltype = calloc(MAXLABELS, sizeof(char));
+
+    loadefs(confilename);
+    if( loadfromgrouponly )
+    {
+        buildprintf("  * Using default CONs.\n");
+        loadefs(confilename);
+    }
+
+    // Shrink the labels and their values to the minimum amount needed
+    // for the number of labels used. Dispose of the labeltype values.
+    label = realloc(label, labelcnt * MAXLABELLEN);
+    labelcode = realloc(labelcode, labelcnt * sizeof(int));
+    free(labeltype);
+    labeltype = NULL;
+}
+
+void Startup(void)
+{
+    int i;
+
+    if (initengine()) {
+       wm_msgbox("Build Engine Initialisation Error",
+               "There was a problem initialising the Build engine: %s", engineerrstr);
+       exit(1);
+    }
+
+    compilecons();
+
+#ifdef AUSTRALIA
+    ud.lockout = 1;
+#endif
+
+    if (CommandSoundToggleOff) SoundToggle = 0;
+    if (CommandMusicToggleOff) MusicToggle = 0;
+    if (CommandName) strcpy(myname,CommandName);
+    if (CommandMap) {
+       if (VOLUMEONE) {
+           buildprintf("The -map option is available in the registered version only!\n");
+           boardfilename[0] = 0;
+       } else {
+           char *dot, *slash;
+
+           Bstrcpy(boardfilename, CommandMap);
+
+           dot = Bstrrchr(boardfilename,'.');
+           slash = Bstrrchr(boardfilename,'/');
+           if (!slash) slash = Bstrrchr(boardfilename,'\\');
+
+           if ((!slash && !dot) || (slash && dot < slash))
+               Bstrcat(boardfilename,".map");
+
+           buildprintf("Using level: '%s'.\n",boardfilename);
+       }
+    }
+
+    if (VOLUMEONE) {
+       buildprintf("*** You have run Duke Nukem 3D %d times. ***\n\n",ud.executions);
+       if(ud.executions >= 50) buildprintf("IT IS NOW TIME TO UPGRADE TO THE COMPLETE VERSION!!!\n");
+    }
+
+    if (CONTROL_Startup( 1, &GetTime, TICRATE )) {
+        uninitengine();
+        exit(1);
+    }
+    SetupGameButtons();
+    CONFIG_SetupMouse();
+    CONFIG_SetupJoystick();
+
+    CONTROL_JoystickEnabled = (UseJoystick && CONTROL_JoyPresent);
+    CONTROL_MouseEnabled = (UseMouse && CONTROL_MousePresent);
+
+    inittimer(TICRATE, NULL);
+
+    //buildprintf("* Hold Esc to Abort. *\n");
+    buildprintf("Loading art header.\n");
+    if (loadpics("tiles000.art",MAXCACHE1DSIZE) < 0)
+        gameexit("Failed loading art.");
+
+    buildprintf("Loading palette/lookups.\n");
+    genspriteremaps();
+
+    readsavenames();
+
+    tilesizx[MIRROR] = tilesizy[MIRROR] = 0;
+
+    for(i=0;i<MAXPLAYERS;i++) playerreadyflag[i] = 0;
+
+    if (netsuccess) {
+        buildprintf("Waiting for players...\n");
+        while (initmultiplayerscycle()) {
+            handleevents();
+            if (quitevent) {
+                Shutdown();
+                return;
+            }
+        }
+    } else {
+        initsingleplayers();
+    }
+
+    screenpeek = myconnectindex;
+    ps[myconnectindex].palette = &palette[0];
+
+    getnames();
+}
+
+
+void sendscore(char *s)
+{
+    if(numplayers > 1)
+      genericmultifunction(-1,(unsigned char *)s,(int)strlen(s)+1,5);
+}
+
+
+void getnames(void)
+{
+     int i,l;
+
+     for(i=0;myname[i] && i < (int)sizeof(ud.user_name[0])-1;i++)
+          ud.user_name[myconnectindex][i] = Btoupper(myname[i]);
+     ud.user_name[myconnectindex][i] = 0;
+
+     if(numplayers > 1)
+     {
+          tempbuf[0] = 6;
+          tempbuf[1] = myconnectindex;
+          tempbuf[2] = BYTEVERSION;
+          l = 3;
+
+              //null terminated player name to send
+          for(i=0;ud.user_name[myconnectindex][i];i++)
+               tempbuf[l++] = ud.user_name[myconnectindex][i];
+          tempbuf[l++] = 0;
+
+          for(i=0;i<10;i++)
+          {
+                ud.wchoice[myconnectindex][i] = ud.wchoice[0][i];
+                tempbuf[l++] = (char)ud.wchoice[0][i];
+          }
+
+          tempbuf[l++] = ps[myconnectindex].aim_mode = ud.mouseaiming;
+          tempbuf[l++] = ps[myconnectindex].auto_aim = AutoAim;
+          tempbuf[l++] = ps[myconnectindex].weaponswitch = ud.weaponswitch;
+
+          for(i=connecthead;i>=0;i=connectpoint2[i])
+          {
+                if (i != myconnectindex) sendpacket(i,&tempbuf[0],l);
+                if ((!networkmode) && (myconnectindex != connecthead)) break; //slaves in M/S mode only send to master
+          }
+
+        getpackets();
+
+        waitforeverybody();
+    }
+}
+
+void writestring(int a1,int a2,int a3,short a4,int vx,int vy,int vz)
+{
+
+    FILE *fp;
+
+    fp = (FILE *)fopen("debug.txt","rt+");
+
+    fprintf(fp,"%d %d %d %d %d %d %d\n",a1,a2,a3,a4,vx,vy,vz);
+
+    fclose(fp);
+
+}
+
+
+void backtomenu(void)
+{
+    boardfilename[0] = 0;
+    if (ud.recstat == 1) closedemowrite();
+    ud.warp_on = 0;
+    ps[myconnectindex].gm = MODE_MENU;
+    cmenu(0);
+    KB_FlushKeyboardQueue();
+}
+
+#include "osdfuncs.h"
+#include "osdcmds.h"
+#include "grpscan.h"
+
+int gametype = GAMEGRP_GAME_DUKE;
+const char *gameeditionname = "Unknown edition";
+
+#if defined RENDERTYPEWIN || (defined RENDERTYPESDL && (defined __APPLE__ || defined HAVE_GTK))
+# define HAVE_STARTWIN
+#endif
+
+int app_main(int argc, char const * const argv[])
+{
+    int i, j;
+    int configloaded;
+    struct grpfile const *gamegrp = NULL;
+
+#ifndef HAVE_STARTWIN
+    (void)configloaded;
+#endif
+#ifdef RENDERTYPEWIN
+    if (win_checkinstance()) {
+        if (!wm_ynbox("JFDuke3D","Another Build game is currently running. "
+                    "Do you wish to continue starting this copy?"))
+            return 0;
+    }
+#endif
+
+#if defined(DATADIR)
+    {
+        const char *datadir = DATADIR;
+        if (datadir && datadir[0]) {
+            addsearchpath(datadir);
+        }
+    }
+#endif
+
+    {
+        char *supportdir = Bgetsupportdir(TRUE);
+        char *appdir = Bgetappdir();
+        char dirpath[BMAX_PATH+1];
+
+        // the OSX app bundle, or on Windows the directory where the EXE was launched
+        if (appdir) {
+            addsearchpath(appdir);
+            free(appdir);
+        }
+
+        // the global support files directory
+        if (supportdir) {
+            Bsnprintf(dirpath, sizeof(dirpath), "%s/JFDuke3D", supportdir);
+            addsearchpath(dirpath);
+            free(supportdir);
+        }
+    }
+
+    checkcommandline(argc,argv);
+
+    {
+        struct strllist *s;
+        while (CommandPaths) {
+            s = CommandPaths->next;
+            addsearchpath(CommandPaths->str);
+
+            free(CommandPaths->str);
+            free(CommandPaths);
+            CommandPaths = s;
+        }
+    }
+
+    // creating a 'user_profiles_disabled' file in the current working
+    // directory where the game was launched makes the installation
+    // "portable" by writing into the working directory
+    if (access("user_profiles_disabled", F_OK) == 0) {
+        char cwd[BMAX_PATH+1];
+        if (getcwd(cwd, sizeof(cwd))) {
+            addsearchpath(cwd);
+        }
+    } else {
+        char *supportdir;
+        char dirpath[BMAX_PATH];
+        int asperr;
+
+        if ((supportdir = Bgetsupportdir(FALSE))) {
+#if defined(_WIN32) || defined(__APPLE__)
+            const char *dirname = "JFDuke3D";
+#else
+            const char *dirname = ".jfduke3d";
+#endif
+            snprintf(dirpath, sizeof(dirpath), "%s/%s", supportdir, dirname);
+            asperr = addsearchpath(dirpath);
+            if (asperr == -2) {
+                if (Bmkdir(dirpath, S_IRWXU) == 0) {
+                    asperr = addsearchpath(dirpath);
+                } else {
+                    buildprintf("warning: could not create directory %s\n", dirpath);
+                    asperr = -1;
+                }
+            }
