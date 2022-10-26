@@ -9192,3 +9192,1229 @@ void dobonus(char bonusonly)
     }
     breathe[] = {
         {  0,  30,VICTORY1+1,176,59 },
+        { 30,  60,VICTORY1+2,176,59 },
+        { 60,  90,VICTORY1+1,176,59 },
+        { 90, 120,0         ,176,59 }
+    },
+    bossmove[] = {
+        {   0, 120,VICTORY1+3,86,59 },
+        { 220, 260,VICTORY1+4,86,59 },
+        { 260, 290,VICTORY1+5,86,59 },
+        { 290, 320,VICTORY1+6,86,59 },
+        { 320, 350,VICTORY1+7,86,59 },
+        { 350, 380,VICTORY1+8,86,59 }
+    };
+    #define NUM_BONUS_MOVES(set) (int)(sizeof(set)/sizeof(set[0]))
+
+    if (ud.volume_number == 0 && ud.last_level == 8 && boardfilename[0]) {
+        lastmapname = Bstrrchr(boardfilename,'\\');
+        if (!lastmapname) lastmapname = Bstrrchr(boardfilename,'/');
+        if (!lastmapname) lastmapname = boardfilename;
+    } else lastmapname = level_names[(ud.volume_number*11)+ud.last_level-1];
+
+    bonuscnt = 0;
+
+    fadepal(0,0,0, 0,64,7);
+    setview(0,0,xdim-1,ydim-1);
+    clearallviews(0L);
+    nextpage();
+    flushperms();
+
+    FX_StopAllSounds();
+    clearsoundlocks();
+    FX_SetReverb(0L);
+
+    if(bonusonly) goto FRAGBONUS;
+
+    if(numplayers < 2 && ud.eog && ud.from_bonus == 0)
+        switch(ud.volume_number)
+    {
+        case 0:
+            if(ud.lockout == 0)
+            {
+                setgamepalette(&ps[myconnectindex], endingpal, 3);
+                clearallviews(0L);
+                rotatesprite(0,50<<16,65536L,0,VICTORY1,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+                nextpage();
+                //ps[myconnectindex].palette = endingpal;
+                fadepal(0,0,0, 63,0,-1);
+
+                uinfo.dir = dir_None;
+                uinfo.button0 = uinfo.button1 = FALSE;
+                KB_FlushKeyboardQueue();
+                totalclock = 0;
+                while( 1 )
+                {
+                    clearallviews(0L);
+                    rotatesprite(0,50<<16,65536L,0,VICTORY1,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+
+                    // boss
+                    if( totalclock > 390 && totalclock < 780 )
+                        for(t=0;t<NUM_BONUS_MOVES(bossmove);t++)
+                            if( bossmove[t].pic && (totalclock%390) > bossmove[t].tmin && (totalclock%390) <= bossmove[t].tmax )
+                    {
+                        if(t==2 && bonuscnt == 1) { sound(SHOTGUN_FIRE);sound(SQUISHED); bonuscnt++; }
+                        rotatesprite(bossmove[t].x<<16,bossmove[t].y<<16,65536L,0,bossmove[t].pic,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+                    }
+
+                    // Breathe
+                    if( totalclock < 450 || totalclock >= 750 )
+                    {
+                        if(totalclock >= 750)
+                        {
+                            rotatesprite(86<<16,59<<16,65536L,0,VICTORY1+8,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+                            if(totalclock >= 750 && bonuscnt == 2) { sound(DUKETALKTOBOSS); bonuscnt++; }
+                        }
+                        for(t=0;t<NUM_BONUS_MOVES(breathe);t++)
+                            if( breathe[t].pic && (totalclock%120) > breathe[t].tmin && (totalclock%120) <= breathe[t].tmax )
+                        {
+                                if(t==1 && bonuscnt == 0)
+                                {
+                                    sound(BOSSTALKTODUKE);
+                                    bonuscnt++;
+                                }
+                                rotatesprite(breathe[t].x<<16,breathe[t].y<<16,65536L,0,breathe[t].pic,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+                        }
+                    }
+
+                    nextpage();
+                    handleevents();
+                    getpackets();
+                    CONTROL_GetUserInput(&uinfo);
+                    if( KB_KeyWaiting() || uinfo.button0 || uinfo.button1 ) {
+                        CONTROL_ClearUserInput(&uinfo);
+                        break;
+                    }
+                }
+            }
+
+            fadepal(0,0,0, 0,64,1);
+
+            //ps[myconnectindex].palette = palette;
+            setgamepalette(&ps[myconnectindex], palette, 3);
+
+            rotatesprite(0,0,65536L,0,3292,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+            IFISSOFTMODE {
+                fadepal(0,0,0, 63,0,-1);
+            } else {
+                nextpage();
+            }
+
+            userack();
+
+            fadepal(0,0,0, 0,64,1);
+            stopmusic();
+            FX_StopAllSounds();
+            clearsoundlocks();
+            break;
+        case 1:
+            stopmusic();
+            clearallviews(0L);
+            nextpage();
+
+            if(ud.lockout == 0)
+            {
+                playanm("cineov2.anm",1);
+                KB_FlushKeyBoardQueue();
+                clearallviews(0L);
+                nextpage();
+            }
+
+            sound(PIPEBOMB_EXPLODE);
+
+            fadepal(0,0,0, 0,64,1);
+            setview(0,0,xdim-1,ydim-1);
+            //ps[myconnectindex].palette = palette;
+            setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
+            rotatesprite(0,0,65536L,0,3293,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+            IFISSOFTMODE {
+                fadepal(0,0,0, 63,0,-1);
+            } else {
+                nextpage();
+            }
+
+            userack();
+
+            IFISSOFTMODE {
+                fadepal(0,0,0, 0,64,1);
+            }
+
+            break;
+
+        case 3:
+
+            setview(0,0,xdim-1,ydim-1);
+
+            stopmusic();
+            clearallviews(0L);
+            nextpage();
+
+            if(ud.lockout == 0)
+            {
+                KB_FlushKeyboardQueue();
+                playanm("vol4e1.anm",8);
+                clearallviews(0L);
+                nextpage();
+                playanm("vol4e2.anm",10);
+                clearallviews(0L);
+                nextpage();
+                playanm("vol4e3.anm",11);
+                clearallviews(0L);
+                nextpage();
+            }
+
+            FX_StopAllSounds();
+            clearsoundlocks();
+            sound(ENDSEQVOL3SND4);
+            KB_FlushKeyBoardQueue();
+
+            //ps[myconnectindex].palette = palette;
+            setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
+            IFISSOFTMODE palto(0,0,0,63);
+            clearallviews(0L);
+            menutext(160,60,0,0,"THANKS TO ALL OUR");
+            menutext(160,60+16,0,0,"FANS FOR GIVING");
+            menutext(160,60+16+16,0,0,"US BIG HEADS.");
+            menutext(160,70+16+16+16,0,0,"LOOK FOR A DUKE NUKEM 3D");
+            menutext(160,70+16+16+16+16,0,0,"SEQUEL SOON.");
+            nextpage();
+
+            fadepal(0,0,0, 63,0,-3);
+
+            userack();
+
+            fadepal(0,0,0, 0,64,3);
+
+            clearallviews(0L);
+            nextpage();
+
+            playanm("DUKETEAM.ANM",4);
+
+            userack();
+
+            clearallviews(0L);
+            nextpage();
+            IFISSOFTMODE palto(0,0,0,63);
+
+            FX_StopAllSounds();
+            clearsoundlocks();
+            KB_FlushKeyBoardQueue();
+
+            break;
+
+        case 2:
+
+            stopmusic();
+            clearallviews(0L);
+            nextpage();
+            if(ud.lockout == 0)
+            {
+                fadepal(0,0,0, 63,0,-1);
+                playanm("cineov3.anm",2);
+                KB_FlushKeyBoardQueue();
+                ototalclock = totalclock+200;
+                while(totalclock < ototalclock) { handleevents(); getpackets(); }
+                clearallviews(0L);
+                nextpage();
+
+                FX_StopAllSounds();
+                clearsoundlocks();
+            }
+
+            playanm("RADLOGO.ANM",3);
+
+            if( ud.lockout == 0 && !KB_KeyWaiting() )
+            {
+                sound(ENDSEQVOL3SND5);
+                while(issoundplaying(ENDSEQVOL3SND5, 0)) { handleevents(); getpackets(); }
+                if(KB_KeyWaiting()) goto ENDANM;
+                sound(ENDSEQVOL3SND6);
+                while(issoundplaying(ENDSEQVOL3SND6, 0)) { handleevents(); getpackets(); }
+                if(KB_KeyWaiting()) goto ENDANM;
+                sound(ENDSEQVOL3SND7);
+                while(issoundplaying(ENDSEQVOL3SND7, 0)) { handleevents(); getpackets(); }
+                if(KB_KeyWaiting()) goto ENDANM;
+                sound(ENDSEQVOL3SND8);
+                while(issoundplaying(ENDSEQVOL3SND8, 0)) { handleevents(); getpackets(); }
+                if(KB_KeyWaiting()) goto ENDANM;
+                sound(ENDSEQVOL3SND9);
+                while(issoundplaying(ENDSEQVOL3SND9, 0)) { handleevents(); getpackets(); }
+            }
+
+            KB_FlushKeyBoardQueue();
+            uinfo.dir = dir_None;
+            uinfo.button0 = uinfo.button1 = FALSE;
+            totalclock = 0;
+            do {
+                handleevents();
+                getpackets();
+                CONTROL_GetUserInput(&uinfo);
+                if (PLUTOPAK && totalclock >= 120) break;
+            } while (!KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1);
+            CONTROL_ClearUserInput(&uinfo);
+
+            ENDANM:
+
+            if (!PLUTOPAK) {
+                FX_StopAllSounds();
+                clearsoundlocks();
+                sound(ENDSEQVOL3SND4);
+
+                clearallviews(0l);
+                nextpage();
+
+                playanm("DUKETEAM.ANM",4);
+
+                userack();
+            }
+
+            FX_StopAllSounds();
+            clearsoundlocks();
+
+            KB_FlushKeyBoardQueue();
+
+            clearallviews(0L);
+
+            break;
+    }
+
+    FRAGBONUS:
+
+    //ps[myconnectindex].palette = palette;
+    setgamepalette(&ps[myconnectindex], palette, 3);    // JBF 20040308
+    IFISSOFTMODE palto(0,0,0,63);   // JBF 20031228
+    KB_FlushKeyboardQueue();
+    uinfo.dir = dir_None;
+    uinfo.button0 = uinfo.button1 = FALSE;
+    totalclock = 0;
+    bonuscnt = 0;
+
+    stopmusic();
+    FX_StopAllSounds();
+    clearsoundlocks();
+
+    if(playerswhenstarted > 1 && ud.coop != 1 )
+    {
+        if(!(MusicToggle == 0 || MusicDevice < 0))
+            sound(BONUSMUSIC);
+
+        rotatesprite(0,0,65536L,0,MENUSCREEN,16,0,2+8+16+64,0,0,xdim-1,ydim-1);
+        rotatesprite(160<<16,34<<16,65536L,0,INGAMEDUKETHREEDEE,0,0,10,0,0,xdim-1,ydim-1);
+        if (PLUTOPAK)   // JBF 20030804
+            rotatesprite((260)<<16,36<<16,65536L,0,PLUTOPAKSPRITE+2,0,0,2+8,0,0,xdim-1,ydim-1);
+        gametext(160,58+2,"MULTIPLAYER TOTALS",0,2+8+16);
+        gametext(160,58+10,level_names[(ud.volume_number*11)+ud.last_level-1],0,2+8+16);
+
+        gametext(160,165,"PRESS ANY KEY TO CONTINUE",0,2+8+16);
+
+
+        t = 0;
+        minitext(23,80,"   NAME                                           KILLS",8,2+8+16);
+        for(i=0;i<playerswhenstarted;i++)
+        {
+            sprintf(buf,"%-4d",i+1);
+            minitext(92+(i*23),80,buf,3,2+8+16);
+        }
+
+        for(i=0;i<playerswhenstarted;i++)
+        {
+            xfragtotal = 0;
+            sprintf(buf,"%d",i+1);
+
+            minitext(30,90+t,buf,0,2+8+16);
+            minitext(38,90+t,ud.user_name[i],ps[i].palookup,2+8+16);
+
+            for(y=0;y<playerswhenstarted;y++)
+            {
+                if(i == y)
+                {
+                    sprintf(buf,"%-4d",ps[y].fraggedself);
+                    minitext(92+(y*23),90+t,buf,2,2+8+16);
+                    xfragtotal -= ps[y].fraggedself;
+                }
+                else
+                {
+                    sprintf(buf,"%-4d",frags[i][y]);
+                    minitext(92+(y*23),90+t,buf,0,2+8+16);
+                    xfragtotal += frags[i][y];
+                }
+
+                if(myconnectindex == connecthead)
+                {
+                    sprintf(buf,"stats %d killed %d %d\n",i+1,y+1,frags[i][y]);
+                    sendscore(buf);
+                }
+            }
+
+            sprintf(buf,"%-4d",xfragtotal);
+            minitext(101+(8*23),90+t,buf,2,2+8+16);
+
+            t += 7;
+        }
+
+        for(y=0;y<playerswhenstarted;y++)
+        {
+            yfragtotal = 0;
+            for(i=0;i<playerswhenstarted;i++)
+            {
+                if(i == y)
+                    yfragtotal += ps[i].fraggedself;
+                yfragtotal += frags[i][y];
+            }
+            sprintf(buf,"%-4d",yfragtotal);
+            minitext(92+(y*23),96+(8*7),buf,2,2+8+16);
+        }
+
+        minitext(45,96+(8*7),"DEATHS",8,2+8+16);
+        nextpage();
+
+        fadepal(0,0,0, 63,0,-7);
+
+        userack();
+
+        if( KB_KeyPressed( sc_F12 ) )
+        {
+            char *tpl;
+            if (NAM) tpl = "nam00000.tga";
+            else tpl = "duke0000.tga";
+            KB_ClearKeyDown( sc_F12 );
+            screencapture(tpl,0);
+        }
+
+        if(bonusonly || ud.multimode > 1) return;
+
+        fadepal(0,0,0, 0,64,7);
+    }
+
+    if(bonusonly || ud.multimode > 1) return;
+
+    switch(ud.volume_number)
+    {
+        case 1:
+            gfx_offset = 5;
+            break;
+        default:
+            gfx_offset = 0;
+            break;
+    }
+
+    clearallviews(0);
+    rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+
+    menutext(160,20-6,0,0,lastmapname);
+    menutext(160,36-6,0,0,"COMPLETED");
+
+    gametext(160,192,"PRESS ANY KEY TO CONTINUE",16,2+8+16);
+
+    if(!(MusicToggle == 0 || MusicDevice < 0))
+        sound(BONUSMUSIC);
+
+    nextpage();
+    fadepal(0,0,0, 63,0,-1);
+    bonuscnt = 0;
+    totalclock = 0;
+
+    playerbest = CONFIG_GetMapBestTime(level_file_names[ud.volume_number*11+ud.last_level-1]);
+    if (ps[myconnectindex].player_par < playerbest || playerbest < 0) {
+        CONFIG_SetMapBestTime(level_file_names[ud.volume_number*11+ud.last_level-1], ps[myconnectindex].player_par);
+        if (playerbest >= 0) {
+            yourtime = "New Best Time:";
+            besttime = "Previous Best:";
+        }
+    }
+
+    {
+        int longesttime;
+
+        longesttime = max(ps[myconnectindex].player_par, playerbest);
+        longesttime = max(partime[ud.volume_number*11+ud.last_level-1], longesttime);
+        longesttime = max(designertime[ud.volume_number*11+ud.last_level-1], longesttime);
+        longesttime = min(MAXTIME, longesttime);
+
+        for (clockpad=1, longesttime/=26*60; longesttime>9; longesttime/=10) clockpad++;
+        clockpad = max(2, clockpad);
+    }
+
+    uinfo.dir = dir_None;
+    uinfo.button0 = uinfo.button1 = FALSE;
+    KB_FlushKeyboardQueue();
+    while( 1 )
+    {
+        int yy = 0, zz;
+
+        handleevents();
+        CONTROL_GetUserInput(&uinfo);
+
+        if(ps[myconnectindex].gm&MODE_EOL)
+        {
+            clearallviews(0);
+            rotatesprite(0,0,65536L,0,BONUSSCREEN+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+
+            if( totalclock > (1000000000L) && totalclock < (1000000320L) )
+            {
+                switch( (totalclock>>4)%15 )
+                {
+                    case 0:
+                        if(bonuscnt == 6)
+                        {
+                            bonuscnt++;
+                            sound(SHOTGUN_COCK);
+                            switch(rand()&3)
+                            {
+                                case 0:
+                                    sound(BONUS_SPEECH1);
+                                    break;
+                                case 1:
+                                    sound(BONUS_SPEECH2);
+                                    break;
+                                case 2:
+                                    sound(BONUS_SPEECH3);
+                                    break;
+                                case 3:
+                                    sound(BONUS_SPEECH4);
+                                    break;
+                            }
+                        }
+                        // fall through
+                    case 1:
+                    case 4:
+                    case 5:
+                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+3+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+                        break;
+                    case 2:
+                    case 3:
+                       rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+4+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+                       break;
+                }
+            }
+            else if( totalclock > (10240+120L) ) break;
+            else
+            {
+                switch( (totalclock>>5)&3 )
+                {
+                    case 1:
+                    case 3:
+                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+1+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+                        break;
+                    case 2:
+                        rotatesprite(199<<16,31<<16,65536L,0,BONUSSCREEN+2+gfx_offset,0,0,2+8+16+64,0,0,xdim-1,ydim-1);
+                        break;
+                }
+            }
+
+            menutext(160,20-6,0,0,lastmapname);
+            menutext(160,36-6,0,0,"COMPLETED");
+
+            gametext(160,192,"PRESS ANY KEY TO CONTINUE",16,2+8+16);
+
+            if( totalclock > (60*3) )
+            {
+                int ttime;
+
+                yy = zz = 59;
+                gametext(10,yy+9,yourtime,0,2+8+16); yy+=10;
+                gametext(10,yy+9,"Par Time:",0,2+8+16); yy+=10;
+                if (!NAM) { gametext(10,yy+9,"3D Realms' Time:",0,2+8+16); yy+=10; }
+                gametext(10,yy+9,besttime,0,2+8+16); yy += 10;
+
+                if(bonuscnt == 0)
+                    bonuscnt++;
+
+                yy = zz;
+                if( totalclock > (60*4) )
+                {
+                    if(bonuscnt == 1)
+                    {
+                        bonuscnt++;
+                        sound(PIPEBOMB_EXPLODE);
+                    }
+
+                    ttime = min(MAXTIME, ps[myconnectindex].player_par);
+                    sprintf(buf,"%0*d:%02d",clockpad, ttime/(26*60), (ttime/26)%60);
+                    gametext((320>>2)+71,yy+9,buf,0,2+8+16); yy+=10;
+
+                    ttime = min(MAXTIME, partime[ud.volume_number*11+ud.last_level-1]);
+                    sprintf(buf,"%0*d:%02d",clockpad, ttime/(26*60), (ttime/26)%60);
+                    gametext((320>>2)+71,yy+9,buf,0,2+8+16); yy+=10;
+
+                    if (!NAM) {
+                        ttime = min(MAXTIME, designertime[ud.volume_number*11+ud.last_level-1]);
+                        sprintf(buf,"%0*d:%02d",clockpad, ttime/(26*60), (ttime/26)%60);
+                        gametext((320>>2)+71,yy+9,buf,0,2+8+16); yy+=10;
+                    }
+
+                    if (playerbest > 0) {
+                        ttime = min(MAXTIME, playerbest);
+                        sprintf(buf,"%0*d:%02d",clockpad, ttime/(26*60), (ttime/26)%60);
+                    } else {
+                        strcpy(buf,"None");
+                    }
+                    gametext((320>>2)+71,yy+9,buf,0,2+8+16); yy+=10;
+
+                }
+            }
+
+            zz = yy += 5;
+            if( totalclock > (60*6) )
+            {
+                gametext(10,yy+9,"Enemies Killed:",0,2+8+16); yy += 10;
+                gametext(10,yy+9,"Enemies Left:",0,2+8+16); yy += 10;
+
+                if(bonuscnt == 2)
+                {
+                    bonuscnt++;
+                    sound(FLY_BY);
+                }
+
+                yy = zz;
+                if( totalclock > (60*7) )
+                {
+                    if(bonuscnt == 3)
+                    {
+                        bonuscnt++;
+                        sound(PIPEBOMB_EXPLODE);
+                    }
+                    sprintf(buf,"%-3d",ps[myconnectindex].actors_killed);
+                    gametext((320>>2)+70,yy+9,buf,0,2+8+16); yy += 10;
+                    if(ud.player_skill > 3 )
+                    {
+                        sprintf(buf,"N/A");
+                        gametext((320>>2)+70,yy+9,buf,0,2+8+16); yy += 10;
+                    }
+                    else
+                    {
+                        if( (ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed) < 0 )
+                            sprintf(buf,"%-3d",0);
+                        else sprintf(buf,"%-3d",ps[myconnectindex].max_actors_killed-ps[myconnectindex].actors_killed);
+                        gametext((320>>2)+70,yy+9,buf,0,2+8+16); yy += 10;
+                    }
+                }
+            }
+
+            zz = yy += 5;
+            if( totalclock > (60*9) )
+            {
+                gametext(10,yy+9,"Secrets Found:",0,2+8+16); yy += 10;
+                gametext(10,yy+9,"Secrets Missed:",0,2+8+16); yy += 10;
+                if(bonuscnt == 4) bonuscnt++;
+
+                yy = zz;
+                if( totalclock > (60*10) )
+                {
+                    if(bonuscnt == 5)
+                    {
+                        bonuscnt++;
+                        sound(PIPEBOMB_EXPLODE);
+                    }
+                    sprintf(buf,"%-3d",ps[myconnectindex].secret_rooms);
+                    gametext((320>>2)+70,yy+9,buf,0,2+8+16); yy += 10;
+                    if( ps[myconnectindex].secret_rooms > 0 )
+                        sprintf(buf,"%-3d%%",(100*ps[myconnectindex].secret_rooms/ps[myconnectindex].max_secret_rooms));
+                    sprintf(buf,"%-3d",ps[myconnectindex].max_secret_rooms-ps[myconnectindex].secret_rooms);
+                    gametext((320>>2)+70,yy+9,buf,0,2+8+16); yy += 10;
+                }
+            }
+
+            if(totalclock > 10240 && totalclock < 10240+10240)
+                totalclock = 1024;
+
+            if( ( KB_KeyWaiting() || uinfo.button0 || uinfo.button1 ) && totalclock > (60*2) )  // JBF 20030809
+            {
+                if( KB_KeyPressed( sc_F12 ) )
+                {
+                    char *tpl;
+                    if (NAM) tpl = "nam00000.tga";
+                    else tpl = "duke0000.tga";
+                    KB_ClearKeyDown( sc_F12 );
+                    screencapture(tpl,0);
+                }
+
+                if( totalclock < (60*13) )
+                {
+                    KB_FlushKeyboardQueue();
+                    totalclock = (60*13);
+                }
+                else if( totalclock < (1000000000L))
+                   totalclock = (1000000000L);
+            }
+        }
+        else break;
+
+        CONTROL_ClearUserInput(&uinfo);
+
+        nextpage();
+    }
+}
+
+
+void cameratext(short i)
+{
+    char flipbits;
+    int x , y;
+
+    if(!T1)
+    {
+        rotatesprite(24<<16,33<<16,65536L,0,CAMCORNER,0,0,2,windowx1,windowy1,windowx2,windowy2);
+        rotatesprite((320-26)<<16,34<<16,65536L,0,CAMCORNER+1,0,0,2,windowx1,windowy1,windowx2,windowy2);
+        rotatesprite(22<<16,163<<16,65536L,512,CAMCORNER+1,0,0,2+4,windowx1,windowy1,windowx2,windowy2);
+        rotatesprite((310-10)<<16,163<<16,65536L,512,CAMCORNER+1,0,0,2,windowx1,windowy1,windowx2,windowy2);
+        if(totalclock&16)
+            rotatesprite(46<<16,32<<16,65536L,0,CAMLIGHT,0,0,2,windowx1,windowy1,windowx2,windowy2);
+    }
+    else
+    {
+        flipbits = (totalclock<<1)&48;
+        for(x=0;x<394;x+=64)
+            for(y=0;y<200;y+=64)
+                rotatesprite(x<<16,y<<16,65536L,0,STATIC,0,0,2+flipbits,windowx1,windowy1,windowx2,windowy2);
+    }
+}
+
+void vglass(int x,int y,short a,short wn,short n)
+{
+    int z, zincs;
+    short sect;
+
+    sect = wall[wn].nextsector;
+    if(sect == -1) return;
+    zincs = ( sector[sect].floorz-sector[sect].ceilingz ) / n;
+
+    for(z = sector[sect].ceilingz;z < sector[sect].floorz; z += zincs )
+        EGS(sect,x,y,z-(TRAND&8191),GLASSPIECES+(z&(TRAND%3)),-32,36,36,a+128-(TRAND&255),16+(TRAND&31),0,-1,5);
+}
+
+void lotsofglass(short i,short wallnum,short n)
+{
+     int j, xv, yv, z, x1, y1;
+     short sect, a;
+
+     sect = -1;
+
+     if(wallnum < 0)
+     {
+        for(j=n-1; j >= 0 ;j--)
+        {
+            a = SA-256+(TRAND&511)+1024;
+            EGS(SECT,SX,SY,SZ,GLASSPIECES+(j%3),-32,36,36,a,32+(TRAND&63),1024-(TRAND&1023),i,5);
+        }
+        return;
+     }
+
+     j = n+1;
+
+     x1 = wall[wallnum].x;
+     y1 = wall[wallnum].y;
+
+     xv = wall[wall[wallnum].point2].x-x1;
+     yv = wall[wall[wallnum].point2].y-y1;
+
+     x1 -= ksgn(yv);
+     y1 += ksgn(xv);
+
+     xv /= j;
+     yv /= j;
+
+     for(j=n;j>0;j--)
+         {
+                  x1 += xv;
+                  y1 += yv;
+
+          updatesector(x1,y1,&sect);
+          if(sect >= 0)
+          {
+              z = sector[sect].floorz-(TRAND&(klabs(sector[sect].ceilingz-sector[sect].floorz)));
+              if( z < -(32<<8) || z > (32<<8) )
+                  z = SZ-(32<<8)+(TRAND&((64<<8)-1));
+              a = SA-1024;
+              EGS(SECT,x1,y1,z,GLASSPIECES+(j%3),-32,36,36,a,32+(TRAND&63),-(TRAND&1023),i,5);
+          }
+         }
+}
+
+void spriteglass(short i,short n)
+{
+    int j, k, a, z;
+
+    for(j=n;j>0;j--)
+    {
+        a = TRAND&2047;
+        z = SZ-((TRAND&16)<<8);
+        k = EGS(SECT,SX,SY,z,GLASSPIECES+(j%3),TRAND&15,36,36,a,32+(TRAND&63),-512-(TRAND&2047),i,5);
+        sprite[k].pal = sprite[i].pal;
+    }
+}
+
+void ceilingglass(short i,short sectnum,short n)
+{
+     int j, xv, yv, z, x1, y1;
+     short a,s, startwall,endwall;
+
+     startwall = sector[sectnum].wallptr;
+     endwall = startwall+sector[sectnum].wallnum;
+
+     for(s=startwall;s<(endwall-1);s++)
+     {
+         x1 = wall[s].x;
+         y1 = wall[s].y;
+
+         xv = (wall[s+1].x-x1)/(n+1);
+         yv = (wall[s+1].y-y1)/(n+1);
+
+         for(j=n;j>0;j--)
+         {
+              x1 += xv;
+              y1 += yv;
+              a = TRAND&2047;
+              z = sector[sectnum].ceilingz+((TRAND&15)<<8);
+              EGS(sectnum,x1,y1,z,GLASSPIECES+(j%3),-32,36,36,a,(TRAND&31),0,i,5);
+          }
+     }
+}
+
+
+
+void lotsofcolourglass(short i,short wallnum,short n)
+{
+     int j, xv, yv, z, x1, y1;
+     short sect = -1, a, k;
+
+     if(wallnum < 0)
+     {
+        for(j=n-1; j >= 0 ;j--)
+        {
+            a = TRAND&2047;
+            k = EGS(SECT,SX,SY,SZ-(TRAND&(63<<8)),GLASSPIECES+(j%3),-32,36,36,a,32+(TRAND&63),1024-(TRAND&2047),i,5);
+            sprite[k].pal = TRAND&15;
+        }
+        return;
+     }
+
+     j = n+1;
+     x1 = wall[wallnum].x;
+     y1 = wall[wallnum].y;
+
+     xv = (wall[wall[wallnum].point2].x-wall[wallnum].x)/j;
+     yv = (wall[wall[wallnum].point2].y-wall[wallnum].y)/j;
+
+     for(j=n;j>0;j--)
+         {
+                  x1 += xv;
+                  y1 += yv;
+
+          updatesector(x1,y1,&sect);
+          z = sector[sect].floorz-(TRAND&(klabs(sector[sect].ceilingz-sector[sect].floorz)));
+          if( z < -(32<<8) || z > (32<<8) )
+              z = SZ-(32<<8)+(TRAND&((64<<8)-1));
+          a = SA-1024;
+          k = EGS(SECT,x1,y1,z,GLASSPIECES+(j%3),-32,36,36,a,32+(TRAND&63),-(TRAND&2047),i,5);
+          sprite[k].pal = TRAND&7;
+         }
+}
+
+void userack(void)
+{
+    UserInput uinfo = { FALSE, FALSE, dir_None };
+
+    KB_FlushKeyboardQueue();
+    do {
+        handleevents();
+        getpackets();
+        CONTROL_GetUserInput(&uinfo);
+    } while ( !KB_KeyWaiting() && !uinfo.button0 && !uinfo.button1 );
+    CONTROL_ClearUserInput(&uinfo);
+}
+
+void SetupGameButtons( void )
+{
+   CONTROL_DefineFlag(gamefunc_Move_Forward,false);
+   CONTROL_DefineFlag(gamefunc_Move_Backward,false);
+   CONTROL_DefineFlag(gamefunc_Turn_Left,false);
+   CONTROL_DefineFlag(gamefunc_Turn_Right,false);
+   CONTROL_DefineFlag(gamefunc_Strafe,false);
+   CONTROL_DefineFlag(gamefunc_Fire,false);
+   CONTROL_DefineFlag(gamefunc_Open,false);
+   CONTROL_DefineFlag(gamefunc_Run,false);
+   CONTROL_DefineFlag(gamefunc_AutoRun,false);
+   CONTROL_DefineFlag(gamefunc_Jump,false);
+   CONTROL_DefineFlag(gamefunc_Crouch,false);
+   CONTROL_DefineFlag(gamefunc_Look_Up,false);
+   CONTROL_DefineFlag(gamefunc_Look_Down,false);
+   CONTROL_DefineFlag(gamefunc_Look_Left,false);
+   CONTROL_DefineFlag(gamefunc_Look_Right,false);
+   CONTROL_DefineFlag(gamefunc_Strafe_Left,false);
+   CONTROL_DefineFlag(gamefunc_Strafe_Right,false);
+   CONTROL_DefineFlag(gamefunc_Aim_Up,false);
+   CONTROL_DefineFlag(gamefunc_Aim_Down,false);
+   CONTROL_DefineFlag(gamefunc_Weapon_1,false);
+   CONTROL_DefineFlag(gamefunc_Weapon_2,false);
+   CONTROL_DefineFlag(gamefunc_Weapon_3,false);
+   CONTROL_DefineFlag(gamefunc_Weapon_4,false);
+   CONTROL_DefineFlag(gamefunc_Weapon_5,false);
+   CONTROL_DefineFlag(gamefunc_Weapon_6,false);
+   CONTROL_DefineFlag(gamefunc_Weapon_7,false);
+   CONTROL_DefineFlag(gamefunc_Weapon_8,false);
+   CONTROL_DefineFlag(gamefunc_Weapon_9,false);
+   CONTROL_DefineFlag(gamefunc_Weapon_10,false);
+   CONTROL_DefineFlag(gamefunc_Inventory,false);
+   CONTROL_DefineFlag(gamefunc_Inventory_Left,false);
+   CONTROL_DefineFlag(gamefunc_Inventory_Right,false);
+   CONTROL_DefineFlag(gamefunc_Holo_Duke,false);
+   CONTROL_DefineFlag(gamefunc_Jetpack,false);
+   CONTROL_DefineFlag(gamefunc_NightVision,false);
+   CONTROL_DefineFlag(gamefunc_MedKit,false);
+   CONTROL_DefineFlag(gamefunc_TurnAround,false);
+   CONTROL_DefineFlag(gamefunc_SendMessage,false);
+   CONTROL_DefineFlag(gamefunc_Map,false);
+   CONTROL_DefineFlag(gamefunc_Shrink_Screen,false);
+   CONTROL_DefineFlag(gamefunc_Enlarge_Screen,false);
+   CONTROL_DefineFlag(gamefunc_Center_View,false);
+   CONTROL_DefineFlag(gamefunc_Holster_Weapon,false);
+   CONTROL_DefineFlag(gamefunc_Show_Opponents_Weapon,false);
+   CONTROL_DefineFlag(gamefunc_Map_Follow_Mode,false);
+   CONTROL_DefineFlag(gamefunc_See_Coop_View,false);
+   CONTROL_DefineFlag(gamefunc_Mouse_Aiming,false);
+   CONTROL_DefineFlag(gamefunc_Toggle_Crosshair,false);
+   CONTROL_DefineFlag(gamefunc_Steroids,false);
+   CONTROL_DefineFlag(gamefunc_Quick_Kick,false);
+   CONTROL_DefineFlag(gamefunc_Next_Weapon,false);
+   CONTROL_DefineFlag(gamefunc_Previous_Weapon,false);
+}
+
+/*
+===================
+=
+= GetTime
+=
+===================
+*/
+
+int GetTime(void)
+   {
+   return totalclock;
+   }
+
+
+/*
+===================
+=
+= CenterCenter
+=
+===================
+*/
+
+void CenterCenter(void)
+   {
+   buildprintf("Center the joystick and press a button\n");
+   }
+
+/*
+===================
+=
+= UpperLeft
+=
+===================
+*/
+
+void UpperLeft(void)
+   {
+   buildprintf("Move joystick to upper-left corner and press a button\n");
+   }
+
+/*
+===================
+=
+= LowerRight
+=
+===================
+*/
+
+void LowerRight(void)
+   {
+   buildprintf("Move joystick to lower-right corner and press a button\n");
+   }
+
+/*
+===================
+=
+= CenterThrottle
+=
+===================
+*/
+
+void CenterThrottle(void)
+   {
+   buildprintf("Center the throttle control and press a button\n");
+   }
+
+/*
+===================
+=
+= CenterRudder
+=
+===================
+*/
+
+void CenterRudder(void)
+{
+   buildprintf("Center the rudder control and press a button\n");
+}
+
+// Rare Multiplayer, when dead, total screen screwup back again!
+// E3l1 (Coop /w monsters) sprite list corrupt 50%
+// Univbe exit, instead, default to screen buffer.
+// Check all caches bounds and memory usages
+// Fix enlarger weapon selections to perfection
+// Need sounds.c
+// Spawning a couple of sounds at the same time
+// Check Weapon Switching
+// FIRE and FIRE2
+// Where should I flash the screen white???
+// Jittery on subs in mp?
+// Check accurate memory amounts!
+// Why squish sound at hit space when dead?
+// Falling Counter Not reset in mp
+// Wierd small freezer
+// Double freeze on player?, still firing
+// Do Mouse Flip option
+// Save mouse aiming
+// Laser bounce off mirrors
+// GEORGE:   Ten in text screen.
+// Alien:
+// Freeze: change
+// Press space holding player
+// Press space
+// tank broke
+// 2d mode fucked in fake mp mode
+// 207
+// Mail not rolling up on conveyers
+// Fix all alien animations
+// Do episode names in .CONS
+// do syntak check for "{?????"
+// Make commline parms set approiate multiplayer flags
+
+// Check all breakables to see if they are exploding properly
+// Fix freezing palette on Alien
+
+// Do a demo make run overnite
+// Fix Super Duck
+// Slime Guies, use quickkick.
+
+// Make Lasers from trip bombs reflect off mirrors
+// Remember for lockout of sound swears
+// Pass sender in packed, NOT
+// Fatal sync give no message for TEN
+// Hitting TEN BUTTON(OPTION) no TEN SCreen
+// Check multioperateswitches for se 31,32
+// Fix pal for ceilings (SE#18)
+// case 31: sprites up one high
+// E1l1 No Kill All troops in room, sleep time
+
+// Fifo for message list
+
+// Bloodsplat on conveyers
+
+// Meclanical
+// Increase sound
+// Mouse Delay at death
+// Wierd slowdown
+
+// Footprints on stuff floating
+
+// Ken, The inside function is called a lot in -1 sectors
+// No loading Univbe message rewrite
+// Expander must cycle with rest of weapons
+// Duck SHOOT PIPEBOMB, red wall
+
+// Get commit source from mark
+
+/*
+1. fix pipebomb bug
+2. check george maps
+4. Save/Restore check (MP and SP)
+5. Check TEN
+6. Get Commit fixed
+8. Is mail slow?
+9. Cacheing
+10. Blue out "PLAY ON TEN" in MULTIPLAYER
+11. Eight Player test
+12. Postal.voc not found.
+13. All Monsters explode in arcade,
+    check SEENINE STRENGTH,
+    Change 28<<8 back to 16<<8 in hitradius
+    Compare 1.3d to 1.4
+14. Check sounds/gfx for for parr lock
+15. Player # Loaded a game
+16. Replace Crane code 1.3d to 1.4
+17. Fix Greenslime
+18. Small Freeze sprite,below floor
+19. Vesa message auto abort in mp?
+20. Fucked Palette in my skip ahead in MP
+21. Load in main menu
+22. Rotated frag screen no game screen
+23. Jibs sounds when killed other dukes
+24. Ten code and /f4 mode
+25. Fix All MP Glitches!!
+26. Unrem Menues anim tenbn
+27. buy groc,clothes,scanner
+28. Why Double Defs in global and game, is so at work
+29. Check that all .objs are erased
+30. Check why 1.3ds gotweapon gamedef coop code no workie
+31. Heavy mods to net code
+32. Make sure all commline stuff works,
+33. killed all waitfor???
+34. 90k stack
+35. double door probs
+36: copy protection
+* when you start a game the duke saying that is played when you choose a skill the sound is cut off.
+* NEWBEASTJUMPING is not deleted at premap in multi-play
+if(*c == '4') no work need objs ask ken, commit
+{
+movesperpacket = 4;
+setpackettimeout(0x3fffffff,0x3fffffff);
+}
+remember, netcode load
+*/
+//  Ai Problem in god mode.
+// Checkplayerhurtwall for forcefields bigforce
+// Nuddie, posters. IMF
+// Release commit.c to public?
+// Document Save bug with mp
+// Check moves per packet /f4 waitforeverybody over net?
+// Kill IDF OBJ
+// No shotguns under water @ tanker
+// Unrem copyprotect
+// Look for printf and puts
+// Check con rewrites
+// erase mmulti.c, or get newest objs
+// Why nomonsters screwy in load menu in mp
+// load last > 'y' == NOT
+// Check xptr oos when dead rising to surface.
+//    diaginal warping with shotguns
+// Test white room.  Lasertripbomb arming crash
+// The Bog
+// Run Duke Out of windows
+// Put Version number in con files
+// Test diff. version playing together
+// Reorganize dukecd
+// Put out patch w/ two weeks testing
+// Print draw3d
+// Double Klick
+
+/*
+Duke Nukem V
+
+Layout:
+
+      Settings:
+        Suburbs
+          Duke inflitrating neighborhoods inf. by aliens
+        Death Valley:
+          Sorta like a western.  Bull-skulls half buried in the sand
+          Military compound:  Aliens take over nuke-missle silo, duke
+            must destroy.
+          Abondend Aircraft field
+        Vegas:
+          Blast anything bright!  Alien lights camoflauged.
+          Alien Drug factory. The Blue Liquid
+        Mountainal Cave:
+          Interior cave battles.
+        Jungle:
+          Trees, canopee, animals, a mysterious hole in the earth with
+          gas seaping thru.
+        Penetencury:
+          Good use of spotlights:
+        Mental ward:
+          People whom have claimed to be slowly changing into an
+          alien species
+
+      Inventory:
+        Wood,
+        Metal,
+        Torch,
+        Rope,
+        Plastique,
+        Cloth,
+        Wiring,
+        Glue,
+        Cigars,
+        Food,
+        Duck Tape,
+        Nails,
+        Piping,
+        Petrol,
+        Uranium,
+        Gold,
+        Prism,
+        Power Cell,
+
+        Hand spikes (Limited usage, they become dull)
+        Oxygent     (Oxygen mixed with stimulant)
+
+
+      Player Skills:
+        R-Left,R-Right,Foward,Back
+        Strafe, Jump, Double Flip Jump for distance
+        Help, Escape
+        Fire/Use
+        Use Menu
+
+    After a brief resbit, Duke decides to get back to work.
+
+Cmdr:   "Duke, we've got a lot of scared people down there.
+         Some reports even claim that people are already
+         slowly changing into aliens."
+Duke:   "No problem, my speciality is in croud control."
+Cmdr:   "Croud control, my ass!  Remember that incident
+         during the war?  You created nuthin' but death and
+         destruction."
+Duke:   "Not destruction, justice."
+Cmdr:   "I'll take no responsibility for your actions.  Your on
+         your own!  Behave your self, damnit!  You got that,
+         soldger?"
+Duke:   "I've always been on my own...   Face it, it's ass kickin' time,
+         SIR!"
+Cmdr:   "Get outta here...!"
+        (Duke gives the Cmdr a hard stair, then cocks his weapon and
+         walks out of the room)
+Cmdr:   In a wisper: "Good luck, my friend."
+
+        (Cut to a scene where aliens are injecting genetic material
+         into an unconcious subject)
+
+Programming:   ( the functions I need )
+     Images: Polys
+     Actors:
+       Multi-Object sections for change (head,arms,legs,torsoe,all change)
+       Facial expressions.  Pal lookup per poly?
+
+     struct imagetype
+        {
+            int *itable; // AngX,AngY,AngZ,Xoff,Yoff,Zoff;
+            int *idata;
+            struct imagetype *prev, *next;
+        }
+
+*/
+
+
+// Test frag screen name fuckup
+// Test all xptrs
+// Make Jibs stick to ceiling
+// Save Game menu crash
+// Cache len sum err
+// Loading in main (MP), reset totalclock?
+// White Room
+// Sound hitch with repeat bits
+// Rewrite saved menues so no crash
+// Put a getpackets after loadplayer in menus
+// Put "loading..." before waitfor in loadpla
+// No ready2send = 0 for loading
+// Test Joystick
+// Ten
+// Bog
+// Test Blimp respawn
+// move 1 in player???
+
+/*
+ * vim:ts=4:sw=4:
+ */
