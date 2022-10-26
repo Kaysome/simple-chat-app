@@ -7755,3 +7755,1440 @@ int app_main(int argc, char const * const argv[])
                     asperr = -1;
                 }
             }
+            if (asperr == 0 && chdir(dirpath) < 0) {
+                buildprintf("warning: could not change directory to %s\n", dirpath);
+            }
+            free(supportdir);
+        }
+    }
+
+    buildsetlogfile("duke3d.log");
+
+    wm_setapptitle("JFDuke3D");
+    buildprintf("\nJFDuke3D\n"
+        "Based on Duke Nukem 3D by 3D Realms Entertainment.\n"
+        "Additional improvements by Jonathon Fowler (http://www.jonof.id.au) and other contributors.\n"
+        "See GPL.TXT for license terms.\n\n"
+        "Version %s.\nBuilt %s %s.\n", game_version, game_date, game_time);
+
+    if (preinitengine()) {
+       wm_msgbox("Build Engine Initialisation Error",
+               "There was a problem initialising the Build engine: %s", engineerrstr);
+       exit(1);
+    }
+
+    configloaded = CONFIG_ReadSetup();
+    if (getenv("DUKE3DGRP")) {
+        strncpy(duke3dgrp, getenv("DUKE3DGRP"), BMAX_PATH);
+    }
+
+    ScanGroups();
+    gamegrp = IdentifyGroup(duke3dgrp);
+
+    if (netparam) { // -net parameter on command line.
+        netsuccess = initmultiplayersparms(endnetparam - netparam, &argv[netparam]);
+    }
+
+#ifdef HAVE_STARTWIN
+    {
+        struct startwin_settings settings;
+
+        memset(&settings, 0, sizeof(settings));
+        settings.fullscreen = ScreenMode;
+        settings.xdim3d = ScreenWidth;
+        settings.ydim3d = ScreenHeight;
+        settings.bpp3d = ScreenBPP;
+        settings.forcesetup = ForceSetup;
+        settings.usemouse = UseMouse;
+        settings.usejoy = UseJoystick;
+        settings.samplerate = MixRate;
+        settings.bitspersample = NumBits;
+        settings.channels = NumChannels;
+        settings.selectedgrp = gamegrp;
+        settings.netoverride = netparam > 0;
+
+        if (configloaded < 0 || (ForceSetup && CommandSetup == 0) || (CommandSetup > 0)) {
+            if (startwin_run(&settings) == STARTWIN_CANCEL) {
+                uninitengine();
+                exit(0);
+            }
+        }
+
+        ScreenMode = settings.fullscreen;
+        ScreenWidth = settings.xdim3d;
+        ScreenHeight = settings.ydim3d;
+        ScreenBPP = settings.bpp3d;
+        ForceSetup = settings.forcesetup;
+        UseMouse = settings.usemouse;
+        UseJoystick = settings.usejoy;
+        MixRate = settings.samplerate;
+        NumBits = settings.bitspersample;
+        NumChannels = settings.channels;
+        gamegrp = settings.selectedgrp;
+
+        if (!netparam) {
+            char modeparm[8];
+            const char *parmarr[3] = { modeparm, NULL, NULL };
+            int parmc = 0;
+
+            if (settings.joinhost) {
+                strcpy(modeparm, "-nm");
+                parmarr[1] = settings.joinhost;
+                parmc = 2;
+            } else if (settings.numplayers > 1 && settings.numplayers <= MAXPLAYERS) {
+                sprintf(modeparm, "-nm:%d", settings.numplayers);
+                parmc = 1;
+            }
+
+            if (parmc > 0) {
+                netsuccess = initmultiplayersparms(parmc, parmarr);
+            }
+
+            if (settings.joinhost) {
+                free(settings.joinhost);
+            }
+        }
+    }
+#endif
+
+    if (gamegrp) {
+        Bstrcpy(duke3dgrp, gamegrp->name);
+        gametype = gamegrp->game;
+        gameeditionname = gamegrp->ref->name;  // Points to static data, so won't be lost in FreeGroups().
+    }
+    if (gametype == GAMEGRP_GAME_NAM) {
+        strcpy(defaultconfilename, "nam.con");
+    }
+
+    FreeGroups();
+
+    buildprintf("GRP file: %s\n", duke3dgrp);
+    initgroupfile(duke3dgrp);
+
+    if (!gamegrp) {
+        // Couldn't identify the game by checksum of known released
+        // content, so guess at registered/shareware state by probing
+        // for DOS end screens.
+        i = kopen4load("DUKESW.BIN",1);
+        if (i >= 0) {
+            gametype = GAMEGRP_GAME_DUKESW;
+            kclose(i);
+        }
+    }
+
+    {
+        struct strllist *s;
+        while (CommandGrps) {
+            s = CommandGrps->next;
+            j = initgroupfile(CommandGrps->str);
+            if( j == -1 ) buildprintf("Warning: could not find group file %s.\n",CommandGrps->str);
+            else {
+                groupfile = j;
+                buildprintf("Using group file %s.\n",CommandGrps->str);
+            }
+
+            free(CommandGrps->str);
+            free(CommandGrps);
+            CommandGrps = s;
+        }
+    }
+
+    RegisterShutdownFunction( Shutdown );
+
+    OSD_SetFunctions(
+        NULL, NULL, NULL, NULL, NULL,
+        osdfunc_clearbackground, NULL, osdfunc_onshowosd
+    );
+    registerosdcommands();
+
+    Startup();
+    if (quitevent) return 0;
+
+    buildputs("\n");
+    if (NAM) {
+        buildputs("NAM\n");
+        buildputs("Copyright (c) 1998 GT Interactive. (c) 1996 3D Realms Entertainment\n");
+        buildputs("NAM modifications by Matt Saettler\n");
+    } else {
+        if (VOLUMEALL && PLUTOPAK) {
+            buildputs("Duke Nukem 3D (Atomic Edition)\n");
+        } else if (VOLUMEALL) {
+            buildputs("Duke Nukem 3D (Full Version)\n");
+        } else if (VOLUMEONE) {
+            buildputs("Duke Nukem 3D (Unregistered Shareware)\n");
+        } else {
+            buildputs("Duke Nukem 3D\n");
+        }
+        buildputs("Copyright (c) 1996 3D Realms Entertainment\n");
+    }
+    if (VOLUMEONE) {
+        buildputs("\nDistribution of shareware Duke Nukem 3D is restricted in certain ways.\n");
+        buildputs("Please read LICENSE.DOC for more details.\n");
+    }
+    buildputs("\n");
+
+    if (!loaddefinitionsfile(duke3ddef)) buildprintf("Definitions file loaded.\n");
+
+    ud.multimode = numplayers;
+    if (!netsuccess && numplayers == 1 && CommandFakeMulti) {
+        ud.multimode = CommandFakeMulti;
+    }
+    else if(numplayers >= 2)
+    {
+        sendlogon();
+    }
+    else if(boardfilename[0] != 0)
+    {
+        ud.m_level_number = 7;
+        ud.m_volume_number = 0;
+        ud.warp_on = 1;
+    }
+
+    if(ud.multimode > 1)
+    {
+        playerswhenstarted = ud.multimode;
+
+        if(ud.warp_on == 0)
+        {
+            ud.m_monsters_off = 1;
+            ud.m_player_skill = 0;
+        }
+    }
+
+    ud.last_level = -1;
+
+   RTS_Init(ud.rtsname);
+   if(numlumps) buildprintf("Using .RTS file:%s\n",ud.rtsname);
+
+    if( setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP) < 0 )
+    {
+        buildprintf("Failure setting video mode %dx%dx%d %s! Attempting safer mode...\n",
+                ScreenWidth,ScreenHeight,ScreenBPP,ScreenMode?"fullscreen":"windowed");
+        ScreenMode = 0;
+        ScreenWidth = 640;
+        ScreenHeight = 480;
+        ScreenBPP = 8;
+        setgamemode(ScreenMode,ScreenWidth,ScreenHeight,ScreenBPP);
+    }
+
+    {
+        // Send JFAudioLib output into the JFBuild console.
+        extern void (*ASS_MessageOutputString)(const char *);
+        ASS_MessageOutputString = buildputs;
+
+        buildprintf("Checking sound inits.\n");
+        SoundStartup();
+        buildprintf("Checking music inits.\n");
+        MusicStartup();
+        loadtmb();
+    }
+
+if (VOLUMEONE) {
+        if(numplayers > 4 || ud.multimode > 4)
+            gameexit(" The full version of Duke Nukem 3D supports 5 or more players.");
+}
+
+    setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0],0);
+
+    //ESCESCAPE;
+
+    FX_StopAllSounds();
+    clearsoundlocks();
+
+    if(ud.warp_on > 1 && ud.multimode < 2)
+    {
+        clearallviews(0L);
+        //ps[myconnectindex].palette = palette;
+        //palto(0,0,0,0);
+    setgamepalette(&ps[myconnectindex], palette, 0);    // JBF 20040308
+        rotatesprite(320<<15,200<<15,65536L,0,LOADSCREEN,0,0,2+8+64,0,0,xdim-1,ydim-1);
+        menutext(160,105,0,0,"LOADING SAVED GAME...");
+        nextpage();
+
+        j = loadplayer(ud.warp_on-2);
+        if(j)
+            ud.warp_on = 0;
+    }
+
+//    getpackets();
+
+    MAIN_LOOP_RESTART:
+
+    wm_setwindowtitle(gameeditionname);
+
+    if(ud.warp_on == 0)
+        Logo();
+    else if(ud.warp_on == 1)
+    {
+        newgame(ud.m_volume_number,ud.m_level_number,ud.m_player_skill);
+        if (enterlevel(MODE_GAME)) backtomenu();
+    }
+    else vscrn();
+
+    if( ud.warp_on == 0 && playback() )
+    {
+        FX_StopAllSounds();
+        clearsoundlocks();
+        nomorelogohack = 1;
+        goto MAIN_LOOP_RESTART;
+    }
+
+    ud.auto_run = RunMode;
+    ud.showweapons = ShowOpponentWeapons;
+    ps[myconnectindex].aim_mode = ud.mouseaiming;
+    ps[myconnectindex].auto_aim = AutoAim;
+    ps[myconnectindex].weaponswitch = ud.weaponswitch;
+
+    ud.warp_on = 0;
+    KB_KeyDown[sc_Pause] = 0;   // JBF: I hate the pause key
+
+    while ( !(ps[myconnectindex].gm&MODE_END) ) //The whole loop!!!!!!!!!!!!!!!!!!
+    {
+        if (handleevents()) {   // JBF
+            if (quitevent) {
+                KB_KeyDown[sc_Escape] = 1;
+                quitevent = 0;
+            }
+        }
+
+        OSD_DispatchQueued();
+
+        if( ud.recstat == 2 || ud.multimode > 1 || ( ud.show_help == 0 && (ps[myconnectindex].gm&MODE_MENU) != MODE_MENU ) )
+            if( ps[myconnectindex].gm&MODE_GAME )
+                if( moveloop() ) continue;
+
+        if( ps[myconnectindex].gm&MODE_EOL || ps[myconnectindex].gm&MODE_RESTART )
+        {
+            if( ps[myconnectindex].gm&MODE_EOL )
+            {
+                closedemowrite();
+
+                ready2send = 0;
+
+                i = ud.screen_size;
+                ud.screen_size = 0;
+                vscrn();
+                ud.screen_size = i;
+                dobonus(0);
+
+                if(ud.eog)
+                {
+                    ud.eog = 0;
+                    if(ud.multimode < 2)
+                    {
+if (!VOLUMEALL) {
+                        doorders();
+}
+                        ps[myconnectindex].gm = MODE_MENU;
+                        cmenu(0);
+                        probey = 0;
+                        goto MAIN_LOOP_RESTART;
+                    }
+                    else
+                    {
+                        ud.m_level_number = 0;
+                        ud.level_number = 0;
+                    }
+                }
+            }
+
+            ready2send = 0;
+            if(numplayers > 1) ps[myconnectindex].gm = MODE_GAME;
+            if (enterlevel(ps[myconnectindex].gm)) {
+                backtomenu();
+                goto MAIN_LOOP_RESTART;
+            }
+            continue;
+        }
+
+        cheats();
+        nonsharedkeys();
+
+        if( (ud.show_help == 0 && ud.multimode < 2 && !(ps[myconnectindex].gm&MODE_MENU) ) || ud.multimode > 1 || ud.recstat == 2)
+            i = min(max((totalclock-ototalclock)*(65536L/TICSPERFRAME),0),65536);
+        else
+            i = 65536;
+
+        displayrooms(screenpeek,i);
+        displayrest(i);
+
+//        if( KB_KeyPressed(sc_F) )
+//        {
+//            KB_ClearKeyDown(sc_F);
+//            addplayer();
+//        }
+
+        if(ps[myconnectindex].gm&MODE_DEMO)
+            goto MAIN_LOOP_RESTART;
+
+        if(debug_on) caches();
+
+        checksync();
+
+if (VOLUMEONE) {
+        if(ud.show_help == 0 && show_shareware > 0 && (ps[myconnectindex].gm&MODE_MENU) == 0 )
+            rotatesprite((320-50)<<16,9<<16,65536L,0,BETAVERSION,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+}
+
+        nextpage();
+
+    while (!(ps[myconnectindex].gm&MODE_MENU) && ready2send && totalclock >= ototalclock+TICSPERFRAME)
+        faketimerhandler();
+    }
+
+    gameexit(" ");
+
+    return 0;
+}
+
+char opendemoread(char which_demo) // 0 = mine
+{
+    char d[13];
+    unsigned char ver;
+    short i;
+
+    strcpy(d, "demo_.dmo");
+
+    if(which_demo == 10)
+        d[4] = 'x';
+    else
+        d[4] = '0' + which_demo;
+
+    ud.reccnt = 0;
+
+     if(which_demo == 1 && firstdemofile[0] != 0)
+     {
+       if ((recfilep = kopen4load(firstdemofile,loadfromgrouponly)) == -1) return(0);
+     }
+     else
+       if ((recfilep = kopen4load(d,loadfromgrouponly)) == -1) return(0);
+
+     if (kread(recfilep,&ud.reccnt,sizeof(int)) != sizeof(int)) goto corrupt;
+     if (kread(recfilep,&ver,sizeof(char)) != sizeof(char)) goto corrupt;
+     if( (ver != BYTEVERSION) ) // || (ud.reccnt < 512) )
+     {
+        if      (ver == BYTEVERSION_JF)   buildprintf("Demo %s is for Regular edition.\n", d);
+        else if (ver == BYTEVERSION_JF+1) buildprintf("Demo %s is for Atomic edition.\n", d);
+        else if (ver == BYTEVERSION_JF+2) buildprintf("Demo %s is for Shareware version.\n", d);
+        else buildprintf("Demo %s is of an incompatible version (%d).\n", d, ver);
+        kclose(recfilep);
+        ud.reccnt = 0;
+        return 0;
+     }
+
+         if (kread(recfilep,(char *)&ud.volume_number,sizeof(char)) != sizeof(char)) goto corrupt;
+         if (kread(recfilep,(char *)&ud.level_number,sizeof(char)) != sizeof(char)) goto corrupt;
+         if (kread(recfilep,(char *)&ud.player_skill,sizeof(char)) != sizeof(char)) goto corrupt;
+     if (kread(recfilep,(char *)&ud.m_coop,sizeof(char)) != sizeof(char)) goto corrupt;
+     if (kread(recfilep,(char *)&ud.m_ffire,sizeof(char)) != sizeof(char)) goto corrupt;
+     if (kread(recfilep,(short *)&ud.multimode,sizeof(short)) != sizeof(short)) goto corrupt;
+     if (kread(recfilep,(short *)&ud.m_monsters_off,sizeof(short)) != sizeof(short)) goto corrupt;
+     if (kread(recfilep,(int32 *)&ud.m_respawn_monsters,sizeof(int32)) != sizeof(int32)) goto corrupt;
+     if (kread(recfilep,(int32 *)&ud.m_respawn_items,sizeof(int32)) != sizeof(int32)) goto corrupt;
+     if (kread(recfilep,(int32 *)&ud.m_respawn_inventory,sizeof(int32)) != sizeof(int32)) goto corrupt;
+     if (kread(recfilep,(int32 *)&ud.playerai,sizeof(int32)) != sizeof(int32)) goto corrupt;
+     if (kread(recfilep,(char *)&ud.user_name[0][0],sizeof(ud.user_name)) != sizeof(ud.user_name)) goto corrupt;
+     if (kread(recfilep,(int32 *)&ud.auto_run,sizeof(int32)) != sizeof(int32)) goto corrupt;
+     if (kread(recfilep,(char *)boardfilename,sizeof(boardfilename)) != sizeof(boardfilename)) goto corrupt;
+     if( boardfilename[0] != 0 )
+     {
+        ud.m_level_number = 7;
+        ud.m_volume_number = 0;
+     }
+
+    for(i=0;i<ud.multimode;i++) {
+       if (kread(recfilep,(int32 *)&ps[i].aim_mode,sizeof(int32)) != sizeof(int32)) goto corrupt;
+       if (kread(recfilep,(int32 *)&ps[i].auto_aim,sizeof(int32)) != sizeof(int32)) goto corrupt;   // JBF 20031126
+       if (kread(recfilep,(int32 *)&ps[i].weaponswitch,sizeof(int32)) != sizeof(int32)) goto corrupt;
+    }
+
+     ud.god = ud.cashman = ud.eog = ud.showallmap = 0;
+     ud.clipping = ud.scrollmode = ud.overhead_on = 0;
+     ud.showweapons =  ud.pause_on = ud.auto_run = 0;
+
+         newgame(ud.volume_number,ud.level_number,ud.player_skill);
+         return(1);
+corrupt:
+     buildprintf("Demo file %d is corrupt.\n",which_demo);
+     ud.reccnt = 0;
+     kclose(recfilep);
+     return 0;
+}
+
+
+void opendemowrite(void)
+{
+    char *d = "demo1.dmo";
+    int dummylong = 0;
+    char ver;
+    short i;
+
+    if(ud.recstat == 2) kclose(recfilep);
+
+    ver = BYTEVERSION;
+
+    if ((frecfilep = fopen(d,"wb")) == NULL) return;
+    fwrite(&dummylong,4,1,frecfilep);
+    fwrite(&ver,sizeof(char),1,frecfilep);
+    fwrite((char *)&ud.volume_number,sizeof(char),1,frecfilep);
+    fwrite((char *)&ud.level_number,sizeof(char),1,frecfilep);
+    fwrite((char *)&ud.player_skill,sizeof(char),1,frecfilep);
+    fwrite((char *)&ud.m_coop,sizeof(char),1,frecfilep);
+    fwrite((char *)&ud.m_ffire,sizeof(char),1,frecfilep);
+    fwrite((short *)&ud.multimode,sizeof(short),1,frecfilep);
+    fwrite((short *)&ud.m_monsters_off,sizeof(short),1,frecfilep);
+    fwrite((int32 *)&ud.m_respawn_monsters,sizeof(int32),1,frecfilep);
+    fwrite((int32 *)&ud.m_respawn_items,sizeof(int32),1,frecfilep);
+    fwrite((int32 *)&ud.m_respawn_inventory,sizeof(int32),1,frecfilep);
+    fwrite((int32 *)&ud.playerai,sizeof(int32),1,frecfilep);
+    fwrite((char *)&ud.user_name[0][0],sizeof(ud.user_name),1,frecfilep);
+    fwrite((int32 *)&ud.auto_run,sizeof(int32),1,frecfilep);
+    fwrite((char *)boardfilename,sizeof(boardfilename),1,frecfilep);
+
+    for(i=0;i<ud.multimode;i++) {
+        fwrite((int32 *)&ps[i].aim_mode,sizeof(int32),1,frecfilep);
+        fwrite((int32 *)&ps[i].auto_aim,sizeof(int32),1,frecfilep);     // JBF 20031126
+        fwrite(&ps[i].weaponswitch,sizeof(int32),1,frecfilep);
+    }
+
+    totalreccnt = 0;
+    ud.reccnt = 0;
+}
+
+void record(void)
+{
+    short i;
+
+    for(i=connecthead;i>=0;i=connectpoint2[i])
+         {
+         copybufbyte(&sync[i],&recsync[ud.reccnt],sizeof(input));
+                 ud.reccnt++;
+                 totalreccnt++;
+                 if (ud.reccnt >= RECSYNCBUFSIZ)
+                 {
+              dfwrite(recsync,sizeof(input)*ud.multimode,ud.reccnt/ud.multimode,frecfilep);
+                          ud.reccnt = 0;
+                 }
+         }
+}
+
+void closedemowrite(void)
+{
+    if (ud.recstat == 1)
+    {
+        if (ud.reccnt > 0)
+        {
+            dfwrite(recsync,sizeof(input)*ud.multimode,ud.reccnt/ud.multimode,frecfilep);
+
+            fseek(frecfilep,SEEK_SET,0L);
+            fwrite(&totalreccnt,sizeof(int),1,frecfilep);
+            ud.recstat = ud.m_recstat = 0;
+        }
+        fclose(frecfilep);
+    }
+}
+
+char which_demo = 1;
+char in_menu = 0;
+
+// extern int syncs[];
+int playback(void)
+{
+    int i,j,l;
+    char foundemo;
+
+    if( ready2send ) return 0;
+
+    foundemo = 0;
+
+    RECHECK:
+
+    in_menu = ps[myconnectindex].gm&MODE_MENU;
+
+    pub = NUMPAGES;
+    pus = NUMPAGES;
+
+    flushperms();
+
+    if(numplayers < 2) foundemo = opendemoread(which_demo);
+
+    if(foundemo == 0)
+    {
+        if(which_demo > 1)
+        {
+            which_demo = 1;
+            goto RECHECK;
+        }
+        fadepal(0,0,0, 0,63,7);
+        setgamepalette(&ps[myconnectindex], palette, 1);    // JBF 20040308
+        drawbackground();
+        menus();
+        //ps[myconnectindex].palette = palette;
+        nextpage();
+        fadepal(0,0,0, 63,0,-7);
+        ud.reccnt = 0;
+    }
+    else
+    {
+        ud.recstat = 2;
+        which_demo++;
+        if(which_demo == 10) which_demo = 1;
+        if (enterlevel(MODE_DEMO)) return 1;
+    }
+
+    if(foundemo == 0 || in_menu || KB_KeyWaiting() || numplayers > 1)
+    {
+        FX_StopAllSounds();
+        clearsoundlocks();
+        ps[myconnectindex].gm |= MODE_MENU;
+    }
+
+    ready2send = 0;
+    i = 0;
+
+    KB_FlushKeyboardQueue();
+
+    while (ud.reccnt > 0 || foundemo == 0)
+    {
+        if(foundemo) while ( totalclock >= (lockclock+TICSPERFRAME) )
+        {
+            if ((i == 0) || (i >= RECSYNCBUFSIZ))
+            {
+                i = 0;
+                l = min(ud.reccnt,RECSYNCBUFSIZ);
+                if (kdfread(recsync,sizeof(input)*ud.multimode,l/ud.multimode,recfilep) != (unsigned)(l/ud.multimode)) {
+                    buildprintf("Demo %d is corrupt.\n", which_demo-1);
+                    foundemo = 0;
+                    ud.reccnt = 0;
+                    kclose(recfilep);
+                    ps[myconnectindex].gm |= MODE_MENU;
+                    break;
+                }
+            }
+
+            for(j=connecthead;j>=0;j=connectpoint2[j])
+            {
+               copybufbyte(&recsync[i],&inputfifo[movefifoend[j]&(MOVEFIFOSIZ-1)][j],sizeof(input));
+               movefifoend[j]++;
+               i++;
+               ud.reccnt--;
+            }
+            domovethings();
+        }
+
+        if(foundemo == 0)
+        {
+            ready2send = 0;
+            drawbackground();
+        }
+        else
+        {
+            nonsharedkeys();
+
+            j = min(max((totalclock-lockclock)*(65536/TICSPERFRAME),0),65536);
+            displayrooms(screenpeek,j);
+            displayrest(j);
+
+            if(ud.multimode > 1 && ps[myconnectindex].gm )
+                getpackets();
+        }
+
+        if( (ps[myconnectindex].gm&MODE_MENU) && (ps[myconnectindex].gm&MODE_EOL) )
+            goto RECHECK;
+
+        if (!(ps[myconnectindex].gm&MODE_MENU) && (KB_KeyPressed(sc_Escape) || BUTTON(gamefunc_Show_Menu)))
+        {
+            KB_ClearKeyDown(sc_Escape);
+            CONTROL_ClearButton(gamefunc_Show_Menu);
+            FX_StopAllSounds();
+            clearsoundlocks();
+            ps[myconnectindex].gm |= MODE_MENU;
+            cmenu(0);
+            intomenusounds();
+        }
+
+        if(ps[myconnectindex].gm&MODE_TYPE)
+        {
+            typemode();
+            if((ps[myconnectindex].gm&MODE_TYPE) != MODE_TYPE)
+                ps[myconnectindex].gm = MODE_MENU;
+        }
+        else
+        {
+            menus();
+            if( ud.multimode > 1 )
+            {
+                ControlInfo noshareinfo;
+                CONTROL_GetInput( &noshareinfo );
+                if( BUTTON(gamefunc_SendMessage) )
+                {
+                    KB_FlushKeyboardQueue();
+                    CONTROL_ClearButton( gamefunc_SendMessage );
+                    ps[myconnectindex].gm = MODE_TYPE;
+                    typebuf[0] = 0;
+                    inputloc = 0;
+                }
+            }
+        }
+
+        operatefta();
+
+        if(ud.last_camsprite != ud.camerasprite)
+        {
+            ud.last_camsprite = ud.camerasprite;
+            ud.camera_time = totalclock+(TICRATE*2);
+        }
+
+        if (VOLUMEONE)
+            if( ud.show_help == 0 && (ps[myconnectindex].gm&MODE_MENU) == 0 )
+                rotatesprite((320-50)<<16,9<<16,65536L,0,BETAVERSION,0,0,2+8+16+128,0,0,xdim-1,ydim-1);
+
+        handleevents();
+        getpackets();
+        nextpage();
+
+        if( ps[myconnectindex].gm==MODE_END || ps[myconnectindex].gm==MODE_GAME )
+        {
+            if(foundemo)
+                kclose(recfilep);
+            return 0;
+        }
+    }
+    kclose(recfilep);
+
+    if(ps[myconnectindex].gm&MODE_MENU) goto RECHECK;
+    return 1;
+}
+
+char moveloop()
+{
+    int i;
+
+    if (numplayers > 1)
+        while (fakemovefifoplc < movefifoend[myconnectindex]) fakedomovethings();
+
+    getpackets();
+
+    if (numplayers < 2) bufferjitter = 0;
+    while (movefifoend[myconnectindex]-movefifoplc > bufferjitter)
+    {
+        for(i=connecthead;i>=0;i=connectpoint2[i])
+            if (movefifoplc == movefifoend[i]) break;
+        if (i >= 0) break;
+        if( domovethings() ) return 1;
+    }
+    return 0;
+}
+
+void fakedomovethingscorrect(void)
+{
+     int i;
+     struct player_struct *p;
+
+     if (numplayers < 2) return;
+
+     i = ((movefifoplc-1)&(MOVEFIFOSIZ-1));
+     p = &ps[myconnectindex];
+
+     if (p->posx == myxbak[i] && p->posy == myybak[i] && p->posz == myzbak[i]
+          && p->horiz == myhorizbak[i] && p->ang == myangbak[i]) return;
+
+     myx = p->posx; omyx = p->oposx; myxvel = p->posxv;
+     myy = p->posy; omyy = p->oposy; myyvel = p->posyv;
+     myz = p->posz; omyz = p->oposz; myzvel = p->poszv;
+     myang = p->ang; omyang = p->oang;
+     mycursectnum = p->cursectnum;
+     myhoriz = p->horiz; omyhoriz = p->ohoriz;
+     myhorizoff = p->horizoff; omyhorizoff = p->ohorizoff;
+     myjumpingcounter = p->jumping_counter;
+     myjumpingtoggle = p->jumping_toggle;
+     myonground = p->on_ground;
+     myhardlanding = p->hard_landing;
+     myreturntocenter = p->return_to_center;
+
+     fakemovefifoplc = movefifoplc;
+     while (fakemovefifoplc < movefifoend[myconnectindex])
+          fakedomovethings();
+
+}
+
+void fakedomovethings(void)
+{
+        input *syn;
+        struct player_struct *p;
+        int i, j, k, doubvel, fz, cz, hz, lz, x, y;
+        unsigned int sb_snum;
+        short psect, psectlotag, tempsect, backcstat;
+        char shrunk, spritebridge;
+
+        syn = (input *)&inputfifo[fakemovefifoplc&(MOVEFIFOSIZ-1)][myconnectindex];
+
+        p = &ps[myconnectindex];
+
+        backcstat = sprite[p->i].cstat;
+        sprite[p->i].cstat &= ~257;
+
+        sb_snum = syn->bits;
+
+        psect = mycursectnum;
+        psectlotag = sector[psect].lotag;
+        spritebridge = 0;
+
+        shrunk = (sprite[p->i].yrepeat < 32);
+
+        if( ud.clipping == 0 && ( sector[psect].floorpicnum == MIRROR || psect < 0 || psect >= MAXSECTORS) )
+        {
+            myx = omyx;
+            myy = omyy;
+        }
+        else
+        {
+            omyx = myx;
+            omyy = myy;
+        }
+
+        omyhoriz = myhoriz;
+        omyhorizoff = myhorizoff;
+        omyz = myz;
+        omyang = myang;
+
+        getzrange(myx,myy,myz,psect,&cz,&hz,&fz,&lz,163L,CLIPMASK0);
+
+        j = getflorzofslope(psect,myx,myy);
+
+        if( (lz&49152) == 16384 && psectlotag == 1 && klabs(myz-j) > PHEIGHT+(16<<8) )
+            psectlotag = 0;
+
+        if( p->aim_mode == 0 && myonground && psectlotag != 2 && (sector[psect].floorstat&2) )
+        {
+                x = myx+(sintable[(myang+512)&2047]>>5);
+                y = myy+(sintable[myang&2047]>>5);
+                tempsect = psect;
+                updatesector(x,y,&tempsect);
+                if (tempsect >= 0)
+                {
+                     k = getflorzofslope(psect,x,y);
+                     if (psect == tempsect)
+                          myhorizoff += mulscale16(j-k,160);
+                     else if (klabs(getflorzofslope(tempsect,x,y)-k) <= (4<<8))
+                          myhorizoff += mulscale16(j-k,160);
+                }
+        }
+        if (myhorizoff > 0) myhorizoff -= ((myhorizoff>>3)+1);
+        else if (myhorizoff < 0) myhorizoff += (((-myhorizoff)>>3)+1);
+
+        if(hz >= 0 && (hz&49152) == 49152)
+        {
+                hz &= (MAXSPRITES-1);
+                if (sprite[hz].statnum == 1 && sprite[hz].extra >= 0)
+                {
+                    hz = 0;
+                    cz = getceilzofslope(psect,myx,myy);
+                }
+        }
+
+        if(lz >= 0 && (lz&49152) == 49152)
+        {
+                 j = lz&(MAXSPRITES-1);
+                 if ((sprite[j].cstat&33) == 33)
+                 {
+                        psectlotag = 0;
+                        spritebridge = 1;
+                 }
+                 if(badguy(&sprite[j]) && sprite[j].xrepeat > 24 && klabs(sprite[p->i].z-sprite[j].z) < (84<<8) )
+                 {
+                    j = getangle( sprite[j].x-myx,sprite[j].y-myy);
+                    myxvel -= sintable[(j+512)&2047]<<4;
+                    myyvel -= sintable[j&2047]<<4;
+                }
+        }
+
+        if( sprite[p->i].extra <= 0 )
+        {
+                 if( psectlotag == 2 )
+                 {
+                            if(p->on_warping_sector == 0)
+                            {
+                                     if( klabs(myz-fz) > (PHEIGHT>>1))
+                                             myz += 348;
+                            }
+                            clipmove(&myx,&myy,&myz,&mycursectnum,0,0,164L,(4L<<8),(4L<<8),CLIPMASK0);
+                 }
+
+                 updatesector(myx,myy,&mycursectnum);
+                 pushmove(&myx,&myy,&myz,&mycursectnum,128L,(4L<<8),(20L<<8),CLIPMASK0);
+
+                myhoriz = 100;
+                myhorizoff = 0;
+
+                 goto ENDFAKEPROCESSINPUT;
+        }
+
+        doubvel = TICSPERFRAME;
+
+        if(p->on_crane >= 0) goto FAKEHORIZONLY;
+
+        if(p->one_eighty_count < 0) myang += 128;
+
+        i = 40;
+
+        if( psectlotag == 2)
+        {
+                 myjumpingcounter = 0;
+
+                 if ( sb_snum&1 )
+                 {
+                            if(myzvel > 0) myzvel = 0;
+                            myzvel -= 348;
+                            if(myzvel < -(256*6)) myzvel = -(256*6);
+                 }
+                 else if (sb_snum&(1<<1))
+                 {
+                            if(myzvel < 0) myzvel = 0;
+                            myzvel += 348;
+                            if(myzvel > (256*6)) myzvel = (256*6);
+                 }
+                 else
+                 {
+                    if(myzvel < 0)
+                    {
+                        myzvel += 256;
+                        if(myzvel > 0)
+                            myzvel = 0;
+                    }
+                    if(myzvel > 0)
+                    {
+                        myzvel -= 256;
+                        if(myzvel < 0)
+                            myzvel = 0;
+                    }
+                }
+
+                if(myzvel > 2048) myzvel >>= 1;
+
+                 myz += myzvel;
+
+                 if(myz > (fz-(15<<8)) )
+                            myz += ((fz-(15<<8))-myz)>>1;
+
+                 if(myz < (cz+(4<<8)) )
+                 {
+                            myz = cz+(4<<8);
+                            myzvel = 0;
+                 }
+        }
+
+        else if(p->jetpack_on)
+        {
+                 myonground = 0;
+                 myjumpingcounter = 0;
+                 myhardlanding = 0;
+
+                 if(p->jetpack_on < 11)
+                            myz -= (p->jetpack_on<<7); //Goin up
+
+                 if(shrunk) j = 512;
+                 else j = 2048;
+
+                 if (sb_snum&1)                            //A
+                            myz -= j;
+                 if (sb_snum&(1<<1))                       //Z
+                            myz += j;
+
+                 if(shrunk == 0 && ( psectlotag == 0 || psectlotag == 2 ) ) k = 32;
+                 else k = 16;
+
+                 if(myz > (fz-(k<<8)) )
+                            myz += ((fz-(k<<8))-myz)>>1;
+                 if(myz < (cz+(18<<8)) )
+                            myz = cz+(18<<8);
+        }
+        else if( psectlotag != 2 )
+        {
+            if (psectlotag == 1 && p->spritebridge == 0)
+            {
+                 if(shrunk == 0) i = 34;
+                 else i = 12;
+            }
+                 if(myz < (fz-(i<<8)) && (floorspace(psect)|ceilingspace(psect)) == 0 ) //falling
+                 {
+                            if( (sb_snum&3) == 0 && myonground && (sector[psect].floorstat&2) && myz >= (fz-(i<<8)-(16<<8) ) )
+                                     myz = fz-(i<<8);
+                            else
+                            {
+                                     myonground = 0;
+
+                                     myzvel += (gc+80);
+
+                                     if(myzvel >= (4096+2048)) myzvel = (4096+2048);
+                            }
+                 }
+
+                 else
+                 {
+                            if(psectlotag != 1 && psectlotag != 2 && myonground == 0 && myzvel > (6144>>1))
+                                 myhardlanding = myzvel>>10;
+                            myonground = 1;
+
+                            if(i==40)
+                            {
+                                     //Smooth on the ground
+
+                                     k = ((fz-(i<<8))-myz)>>1;
+                                     if( klabs(k) < 256 ) k = 0;
+                                     myz += k; // ((fz-(i<<8))-myz)>>1;
+                                     myzvel -= 768; // 412;
+                                     if(myzvel < 0) myzvel = 0;
+                            }
+                            else if(myjumpingcounter == 0)
+                            {
+                                myz += ((fz-(i<<7))-myz)>>1; //Smooth on the water
+                                if(p->on_warping_sector == 0 && myz > fz-(16<<8))
+                                {
+                                    myz = fz-(16<<8);
+                                    myzvel >>= 1;
+                                }
+                            }
+
+                            if( sb_snum&2 )
+                                     myz += (2048+768);
+
+                            if( (sb_snum&1) == 0 && myjumpingtoggle == 1)
+                                     myjumpingtoggle = 0;
+
+                            else if( (sb_snum&1) && myjumpingtoggle == 0 )
+                            {
+                                     if( myjumpingcounter == 0 )
+                                             if( (fz-cz) > (56<<8) )
+                                             {
+                                                myjumpingcounter = 1;
+                                                myjumpingtoggle = 1;
+                                             }
+                            }
+                            if( myjumpingcounter && (sb_snum&1) == 0 )
+                                myjumpingcounter = 0;
+                 }
+
+                 if(myjumpingcounter)
+                 {
+                            if( (sb_snum&1) == 0 && myjumpingtoggle == 1)
+                                     myjumpingtoggle = 0;
+
+                            if( myjumpingcounter < (1024+256) )
+                            {
+                                     if(psectlotag == 1 && myjumpingcounter > 768)
+                                     {
+                                             myjumpingcounter = 0;
+                                             myzvel = -512;
+                                     }
+                                     else
+                                     {
+                                             myzvel -= (sintable[(2048-128+myjumpingcounter)&2047])/12;
+                                             myjumpingcounter += 180;
+
+                                             myonground = 0;
+                                     }
+                            }
+                            else
+                            {
+                                     myjumpingcounter = 0;
+                                     myzvel = 0;
+                            }
+                 }
+
+                 myz += myzvel;
+
+                 if(myz < (cz+(4<<8)) )
+                 {
+                            myjumpingcounter = 0;
+                            if(myzvel < 0) myxvel = myyvel = 0;
+                            myzvel = 128;
+                            myz = cz+(4<<8);
+                 }
+
+        }
+
+        if ( p->fist_incs ||
+                     p->transporter_hold > 2 ||
+                     myhardlanding ||
+                     p->access_incs > 0 ||
+                     p->knee_incs > 0 ||
+                     (p->curr_weapon == TRIPBOMB_WEAPON &&
+                      p->kickback_pic > 1 &&
+                      p->kickback_pic < 4 ) )
+        {
+                 doubvel = 0;
+                 myxvel = 0;
+                 myyvel = 0;
+        }
+        else if ( syn->avel )          //p->ang += syncangvel * constant
+        {                         //ENGINE calculates angvel for you
+            int tempang;
+
+            tempang = syn->avel<<1;
+
+            if(psectlotag == 2)
+                myang += (tempang-(tempang>>3))*ksgn(doubvel);
+            else myang += (tempang)*ksgn(doubvel);
+            myang &= 2047;
+        }
+
+        if ( myxvel || myyvel || syn->fvel || syn->svel )
+        {
+                 if(p->steroids_amount > 0 && p->steroids_amount < 400)
+                     doubvel <<= 1;
+
+                 myxvel += ((syn->fvel*doubvel)<<6);
+                 myyvel += ((syn->svel*doubvel)<<6);
+
+                 if( ( p->curr_weapon == KNEE_WEAPON && p->kickback_pic > 10 && myonground ) || ( myonground && (sb_snum&2) ) )
+                 {
+                            myxvel = mulscale16(myxvel,dukefriction-0x2000);
+                            myyvel = mulscale16(myyvel,dukefriction-0x2000);
+                 }
+                 else
+                 {
+                    if(psectlotag == 2)
+                    {
+                        myxvel = mulscale16(myxvel,dukefriction-0x1400);
+                        myyvel = mulscale16(myyvel,dukefriction-0x1400);
+                    }
+                    else
+                    {
+                        myxvel = mulscale16(myxvel,dukefriction);
+                        myyvel = mulscale16(myyvel,dukefriction);
+                    }
+                 }
+
+                 if( abs(myxvel) < 2048 && abs(myyvel) < 2048 )
+                     myxvel = myyvel = 0;
+
+                 if( shrunk )
+                 {
+                     myxvel =
+                         mulscale16(myxvel,(dukefriction)-(dukefriction>>1)+(dukefriction>>2));
+                     myyvel =
+                         mulscale16(myyvel,(dukefriction)-(dukefriction>>1)+(dukefriction>>2));
+                 }
+        }
+
+FAKEHORIZONLY:
+        if(psectlotag == 1 || spritebridge == 1) i = (4L<<8); else i = (20L<<8);
+
+        clipmove(&myx,&myy,&myz,&mycursectnum,myxvel,myyvel,164L,4L<<8,i,CLIPMASK0);
+        pushmove(&myx,&myy,&myz,&mycursectnum,164L,4L<<8,4L<<8,CLIPMASK0);
+
+        if( p->jetpack_on == 0 && psectlotag != 1 && psectlotag != 2 && shrunk)
+            myz += 30<<8;
+
+        if ((sb_snum&(1<<18)) || myhardlanding)
+            myreturntocenter = 9;
+
+        if (sb_snum&(1<<13))
+        {
+                myreturntocenter = 9;
+                if (sb_snum&(1<<5)) myhoriz += 6;
+                myhoriz += 6;
+        }
+        else if (sb_snum&(1<<14))
+        {
+                myreturntocenter = 9;
+                if (sb_snum&(1<<5)) myhoriz -= 6;
+                myhoriz -= 6;
+        }
+        else if (sb_snum&(1<<3))
+        {
+                if (sb_snum&(1<<5)) myhoriz += 6;
+                myhoriz += 6;
+        }
+        else if (sb_snum&(1<<4))
+        {
+                if (sb_snum&(1<<5)) myhoriz -= 6;
+                myhoriz -= 6;
+        }
+
+        if (myreturntocenter > 0)
+            if ((sb_snum&(1<<13)) == 0 && (sb_snum&(1<<14)) == 0)
+        {
+             myreturntocenter--;
+             myhoriz += 33-(myhoriz/3);
+        }
+
+        if(p->aim_mode)
+            myhoriz += syn->horz/2;//>>1;
+        else
+        {
+            if( myhoriz > 95 && myhoriz < 105) myhoriz = 100;
+            if( myhorizoff > -5 && myhorizoff < 5) myhorizoff = 0;
+        }
+
+        if (myhardlanding > 0)
+        {
+            myhardlanding--;
+            myhoriz -= (myhardlanding<<4);
+        }
+
+        if (myhoriz > 299) myhoriz = 299;
+        else if (myhoriz < -99) myhoriz = -99;
+
+        if(p->knee_incs > 0)
+        {
+            myhoriz -= 48;
+            myreturntocenter = 9;
+        }
+
+
+ENDFAKEPROCESSINPUT:
+
+        myxbak[fakemovefifoplc&(MOVEFIFOSIZ-1)] = myx;
+        myybak[fakemovefifoplc&(MOVEFIFOSIZ-1)] = myy;
+        myzbak[fakemovefifoplc&(MOVEFIFOSIZ-1)] = myz;
+        myangbak[fakemovefifoplc&(MOVEFIFOSIZ-1)] = myang;
+        myhorizbak[fakemovefifoplc&(MOVEFIFOSIZ-1)] = myhoriz;
+        fakemovefifoplc++;
+
+        sprite[p->i].cstat = backcstat;
+}
+
+
+char domovethings(void)
+{
+    short i, j;
+    unsigned char ch;
+
+    for(i=connecthead;i>=0;i=connectpoint2[i])
+        if( sync[i].bits&(1<<17) )
+    {
+        multiflag = 2;
+        multiwhat = (sync[i].bits>>18)&1;
+        multipos = (unsigned) (sync[i].bits>>19)&15;
+        multiwho = i;
+
+        if( multiwhat )
+        {
+            saveplayer( multipos );
+            multiflag = 0;
+
+            if(multiwho != myconnectindex)
+            {
+                strcpy(fta_quotes[122],&ud.user_name[multiwho][0]);
+                strcat(fta_quotes[122]," SAVED A MULTIPLAYER GAME");
+                FTA(122,&ps[myconnectindex]);
+            }
+            else
+            {
+                strcpy(fta_quotes[122],"MULTIPLAYER GAME SAVED");
+                FTA(122,&ps[myconnectindex]);
+            }
+            break;
+        }
+        else
+        {
+//            waitforeverybody();
+
+            j = loadplayer( multipos );
+
+            multiflag = 0;
+
+            if(j == 0)
+            {
+                if(multiwho != myconnectindex)
+                {
+                    strcpy(fta_quotes[122],&ud.user_name[multiwho][0]);
+                    strcat(fta_quotes[122]," LOADED A MULTIPLAYER GAME");
+                    FTA(122,&ps[myconnectindex]);
+                }
+                else
+                {
+                    strcpy(fta_quotes[122],"MULTIPLAYER GAME LOADED");
+                    FTA(122,&ps[myconnectindex]);
+                }
+                return 1;
+            }
+        }
+    }
+
+    ud.camerasprite = -1;
+    lockclock += TICSPERFRAME;
+
+    if(earthquaketime > 0) earthquaketime--;
+    if(rtsplaying > 0) rtsplaying--;
+
+    for(i=0;i<MAXUSERQUOTES;i++)
+         if (user_quote_time[i])
+         {
+             user_quote_time[i]--;
+             if (!user_quote_time[i]) pub = NUMPAGES;
+         }
+     if ((klabs(quotebotgoal-quotebot) <= 16) && (ud.screen_size <= 8))
+         quotebot += ksgn(quotebotgoal-quotebot);
+     else
+         quotebot = quotebotgoal;
+
+    if( show_shareware > 0 )
+    {
+        show_shareware--;
+        if(show_shareware == 0)
+        {
+            pus = NUMPAGES;
+            pub = NUMPAGES;
+        }
+    }
+
+    everyothertime++;
+
+    for(i=connecthead;i>=0;i=connectpoint2[i])
+        copybufbyte(&inputfifo[movefifoplc&(MOVEFIFOSIZ-1)][i],&sync[i],sizeof(input));
+    movefifoplc++;
+
+    updateinterpolations();
+
+    j = -1;
+    for(i=connecthead;i>=0;i=connectpoint2[i])
+     {
+          if ((sync[i].bits&(1<<26)) == 0) { j = i; continue; }
+
+          closedemowrite();
+
+          if (i == myconnectindex) gameexit(" ");
+          if (screenpeek == i)
+          {
+                screenpeek = connectpoint2[i];
+                if (screenpeek < 0) screenpeek = connecthead;
+          }
+
+          if (i == connecthead) connecthead = connectpoint2[connecthead];
+          else connectpoint2[j] = connectpoint2[i];
+
+          numplayers--;
+          ud.multimode--;
+
+          if (numplayers < 2)
+              sound(GENERIC_AMBIENCE17);
+
+          pub = NUMPAGES;
+          pus = NUMPAGES;
+          vscrn();
+
+          sprintf(buf,"%s is history!",ud.user_name[i]);
+
+          quickkill(&ps[i]);
+          deletesprite(ps[i].i);
+
+          adduserquote(buf);
+
+          if(j < 0 && networkmode == 0 )
+              gameexit( " \nThe 'MASTER/First player' just quit the game.  All\nplayers are returned from the game. This only happens in 5-8\nplayer mode as a different network scheme is used.");
+      }
+
+      if ((numplayers >= 2) && ((movefifoplc&7) == 7))
+      {
+            ch = (unsigned char)(randomseed&255);
+            for(i=connecthead;i>=0;i=connectpoint2[i])
+                 ch += ((ps[i].posx+ps[i].posy+ps[i].posz+ps[i].ang+ps[i].horiz)&255);
+            syncval[myconnectindex][syncvalhead[myconnectindex]&(MOVEFIFOSIZ-1)] = ch;
+            syncvalhead[myconnectindex]++;
+      }
+
+    if(ud.recstat == 1) record();
+
+    if( ud.pause_on == 0 )
+    {
+        global_random = TRAND;
+        movedummyplayers();//ST 13
+    }
+
+    for(i=connecthead;i>=0;i=connectpoint2[i])
+    {
+        cheatkeys(i);
+
+        if( ud.pause_on == 0 )
+        {
+            processinput(i);
+            checksectors(i);
+        }
+    }
+
+    if( ud.pause_on == 0 )
+    {
+        movefta();//ST 2
+        moveweapons();          //ST 5 (must be last)
+        movetransports();       //ST 9
+
+        moveplayers();          //ST 10
+        movefallers();          //ST 12
+        moveexplosions();       //ST 4
+
+        moveactors();           //ST 1
+        moveeffectors();        //ST 3
+
+        movestandables();       //ST 6
+        doanimations();
+        movefx();               //ST 11
+    }
+
+    fakedomovethingscorrect();
+
+    if( (everyothertime&1) == 0)
+    {
+        animatewalls();
+        movecyclers();
+        pan3dsound();
+    }
+
+
+    return 0;
+}
+
+
+void doorders(void)
+{
+    setview(0,0,xdim-1,ydim-1);
+
+    fadepal(0,0,0, 0,63,7);
+    //ps[myconnectindex].palette = palette;
+    setgamepalette(&ps[myconnectindex], palette, 1);    // JBF 20040308
+
+    rotatesprite(0,0,65536L,0,ORDERING,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+    fadepal(0,0,0, 63,0,-7);
+
+    userack();
+
+    fadepal(0,0,0, 0,63,7);
+    rotatesprite(0,0,65536L,0,ORDERING+1,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+    fadepal(0,0,0, 63,0,-7);
+
+    userack();
+
+    fadepal(0,0,0, 0,63,7);
+    rotatesprite(0,0,65536L,0,ORDERING+2,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+    fadepal(0,0,0, 63,0,-7);
+
+    userack();
+
+    fadepal(0,0,0, 0,63,7);
+    rotatesprite(0,0,65536L,0,ORDERING+3,0,0,2+8+16+64, 0,0,xdim-1,ydim-1);
+    fadepal(0,0,0, 63,0,-7);
+
+    userack();
+}
+
+void dobonus(char bonusonly)
+{
+    short t,gfx_offset;
+    int i, y,xfragtotal,yfragtotal;
+    short bonuscnt;
+    char clockpad;
+    char *lastmapname;
+    int32 playerbest = -1;
+    const int MAXTIME = 999*60*26 + 59*26;  // ~16.6 hours.
+    char *yourtime = "Your Time:", *besttime = "Your Best Time:";
+    UserInput uinfo;
+
+    struct {
+        int tmin, tmax;
+        int pic;
+        int x, y;
+    }
+    breathe[] = {
+        {  0,  30,VICTORY1+1,176,59 },
