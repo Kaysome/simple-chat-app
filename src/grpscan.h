@@ -44,4 +44,15 @@ struct importgroupsmeta {
 
 enum {
     IMPORTGROUP_COPIED = 2,     // A file was imported.
-    IMPORTGROUP
+    IMPORTGROUP_SKIPPED = 1,    // Identified, but passed over.
+    IMPORTGROUP_OK = 0,         // Nothing good nor bad.
+    IMPORTGROUP_ERROR = -1,
+};
+
+int ScanGroups(void);
+struct grpfile const * IdentifyGroup(const char *grpfilename);
+struct grpfile const * GroupsFound(void);
+void FreeGroups(void);
+int ImportGroupsFromPath(const char *path, struct importgroupsmeta *cbs);
+
+#endif
