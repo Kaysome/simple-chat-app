@@ -25,4 +25,28 @@
 
 #define IDD_PAGE_GAME               1300
 #define IDC_GAMELIST                1301
-#define IDC_CHOOSEIMPORT       
+#define IDC_CHOOSEIMPORT            1302
+#define IDC_IMPORTINFO              1303
+
+#define IDD_IMPORTINFO              1400
+#define IDC_IMPORTINFO_HEADER       1401
+#define IDC_IMPORTINFO_TEXT         1402
+
+#define IDD_IMPORTSTATUS            1500
+#define IDC_IMPORTSTATUS_TEXT       1501
+
+#define IDI_ICON       100
+#define IDB_BMP        200
+
+#ifndef IDC_STATIC
+#define IDC_STATIC (-1)
+#endif
+
+#ifdef RC_INVOKED
+#ifndef __DATE__
+#define __DATE__ "0000-00-00"
+#endif
+#ifndef __TIME__
+#define __TIME__ "00:00:00"
+#endif
+#endif
