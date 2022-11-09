@@ -191,4 +191,88 @@ void MusicPause( int onf )
    if (onf) {
       if (MusicIsWaveform) {
          FX_PauseSound(MusicVoice, TRUE);
+      } else {
+         MUSIC_Pause();
+      }
+   } else {
+      if (MusicIsWaveform) {
+         FX_PauseSound(MusicVoice, FALSE);
+      } else {
+         MUSIC_Continue();
+      }
+   }
+   
+   MusicPaused = onf;
+}
+
+void MusicSetVolume(int volume)
+{
+   if (MusicIsWaveform && MusicVoice >= 0) {
+      //FX_SetVoiceVolume(MusicVoice, volume);
+   } else if (!MusicIsWaveform) {
+      MUSIC_SetVolume(volume);
+   }
+}
+
+int USRHOOKS_GetMem(char **ptr, unsigned int size )
+{
+   *ptr = malloc(size);
+
+   if (*ptr == NULL)
+      return(USRHOOKS_Error);
+
+   return( USRHOOKS_Ok);
+
+}
+
+int USRHOOKS_FreeMem(char *ptr)
+{
+   free(ptr);
+   return( USRHOOKS_Ok);
+}
+
+unsigned char menunum=0;
+
+void intomenusounds(void)
+{
+    short menusnds[] =
+    {
+        LASERTRIP_EXPLODE,
+        DUKE_GRUNT,
+        DUKE_LAND_HURT,
+        CHAINGUN_FIRE,
+        SQUISHED,
+        KICK_HIT,
+        PISTOL_RICOCHET,
+        PISTOL_BODYHIT,
+        PISTOL_FIRE,
+        SHOTGUN_FIRE,
+        BOS1_WALK,
+        RPG_EXPLODE,
+        PIPEBOMB_BOUNCE,
+        PIPEBOMB_EXPLODE,
+        NITEVISION_ONOFF,
+        RPG_SHOOT,
+        SELECT_WEAPON
+    };
+    sound(menusnds[menunum++]);
+    menunum %= 17;
+}
+
+void playmusic(char *fn)
+{
+    int fp;
+    char * testfn, * extension;
+
+    if(MusicToggle == 0) return;
+    if(MusicDevice < 0) return;
+
+    stopmusic();
     
+    testfn = (char *) malloc( strlen(fn) + 5 );
+    strcpy(testfn, fn);
+    extension = strrchr(testfn, '.');
+
+    do {
+       if (extension && !Bstrcasecmp(extension, ".mid")) {
+	  /
