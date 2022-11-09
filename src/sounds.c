@@ -275,4 +275,68 @@ void playmusic(char *fn)
 
     do {
        if (extension && !Bstrcasecmp(extension, ".mid")) {
-	  /
+	  // we've been asked to load a .mid file, but first
+	  // let's see if there's an ogg with the same base name
+	  // lying around
+	  strcpy(extension, ".ogg");
+	  fp = kopen4load(testfn, 0);
+	  if (fp >= 0) {
+             free(testfn);
+	     break;
+	  }
+       }
+       free(testfn);
+
+       // just use what we've been given
+       fp = kopen4load(fn, 0);
+    } while (0);
+
+    if (fp < 0) return;
+
+    MusicLen = kfilelength( fp );
+    MusicPtr = (char *) malloc(MusicLen);
+    kread( fp, MusicPtr, MusicLen);
+    kclose( fp );
+    
+    if (!memcmp(MusicPtr, "MThd", 4)) {
+       MUSIC_PlaySong( MusicPtr, MusicLen, MUSIC_LoopSong );
+       MusicIsWaveform = 0;
+    } else {
+       MusicVoice = FX_PlayLoopedAuto(MusicPtr, MusicLen, 0, 0, 0,
+                                      MusicVolume, MusicVolume, MusicVolume,
+				      FX_MUSIC_PRIORITY, MUSIC_ID);
+       MusicIsWaveform = 1;
+    }
+
+    MusicPaused = 0;
+}
+
+void stopmusic(void)
+{
+    if (MusicIsWaveform && MusicVoice >= 0) {
+       FX_StopSound(MusicVoice);
+       MusicVoice = -1;
+    } else if (!MusicIsWaveform) {
+       MUSIC_StopSong();
+    }
+
+    MusicPaused = 0;
+
+    if (MusicPtr) {
+       free(MusicPtr);
+       MusicPtr = 0;
+       MusicLen = 0;
+    }
+}
+
+char loadsound(unsigned short num)
+{
+    int   fp, l;
+
+    if(num >= NUM_SOUNDS || SoundToggle == 0) return 0;
+    if (FXDevice < 0) return 0;
+
+    fp = kopen4load(sounds[num],loadfromgrouponly);
+    if(fp == -1)
+    {
+        sprintf(&fta_quotes[113][0],"Sound
