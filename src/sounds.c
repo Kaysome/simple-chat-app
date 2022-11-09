@@ -108,4 +108,87 @@ void SoundShutdown( void )
 
    status = FX_Shutdown();
    if ( status != FX_Ok ) {
-	  s
+	  sprintf(buf, "Sound shutdown error: %s", FX_ErrorString( FX_Error ));
+      gameexit(buf);
+   }
+}
+
+/*
+===================
+=
+= MusicStartup
+=
+===================
+*/
+
+void MusicStartup( void )
+   {
+   int32 status;
+   int musicdevicetype;
+
+   // if they chose None lets return
+   if (MusicDevice < 0) {
+      return;
+   } else if (MusicDevice == 0) {
+      musicdevicetype = ASS_AutoDetect;
+   } else {
+      musicdevicetype = MusicDevice - 1;
+   }
+   
+   status = MUSIC_Init( musicdevicetype, MusicParams );
+
+   if ( status == MUSIC_Ok )
+      {
+      MUSIC_SetVolume( MusicVolume );
+      }
+   else
+   {
+      buildprintf("Couldn't find selected sound card, or, error w/ sound card itself.\n");
+
+      SoundShutdown();
+      uninittimer();
+      uninitengine();
+      CONTROL_Shutdown();
+      CONFIG_WriteSetup();
+      KB_Shutdown();
+      uninitgroupfile();
+      //unlink("duke3d.tmp");
+      exit(-1);
+   }
+}
+
+/*
+===================
+=
+= MusicShutdown
+=
+===================
+*/
+
+void MusicShutdown( void )
+   {
+   int32 status;
+
+   // if they chose None lets return
+   if (MusicDevice < 0)
+      return;
+   
+   stopmusic();
+   
+   status = MUSIC_Shutdown();
+   if ( status != MUSIC_Ok )
+      {
+      Error( MUSIC_ErrorString( MUSIC_ErrorCode ));
+      }
+   }
+
+void MusicPause( int onf )
+{
+   if (MusicPaused == onf || (MusicIsWaveform && MusicVoice < 0)) {
+      return;
+   }
+   
+   if (onf) {
+      if (MusicIsWaveform) {
+         FX_PauseSound(MusicVoice, TRUE);
+    
