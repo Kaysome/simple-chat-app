@@ -3166,3 +3166,214 @@ char parse(void)
                     break;
             }
             break;
+        case 85:    //ifspritepal
+            insptr++;
+            parseifelse( g_sp->pal == *insptr);
+            break;
+
+        case 111:   //ifangdiffl
+            insptr++;
+            j = klabs(getincangle(ps[g_p].ang,g_sp->ang));
+            parseifelse( j <= *insptr);
+            break;
+
+        case 109:   //ifnosounds
+
+            for(j=1;j<NUM_SOUNDS;j++)
+                if( SoundOwner[j][0].i == g_i )
+                    break;
+
+            parseifelse( j == NUM_SOUNDS );
+            break;
+        default:
+            killit_flag = 1;
+            break;
+    }
+    return 0;
+}
+
+void execute(short i,short p,int x)
+{
+    char done;
+
+    g_i = i;
+    g_p = p;
+    g_x = x;
+    g_sp = &sprite[g_i];
+    g_t = &hittype[g_i].temp_data[0];
+
+    if( actorscrptr[g_sp->picnum] == 0 ) return;
+
+    insptr = 4 + (actorscrptr[g_sp->picnum]);
+
+    killit_flag = 0;
+
+    if(g_sp->sectnum < 0 || g_sp->sectnum >= MAXSECTORS)
+    {
+        if(badguy(g_sp))
+            ps[g_p].actors_killed++;
+        deletesprite(g_i);
+        return;
+    }
+
+    if(g_t[4])
+    {
+        g_sp->lotag += TICSPERFRAME;
+        if(g_sp->lotag > *(decodescriptptr(g_t[4])+4) )
+        {
+            g_t[2]++;
+            g_sp->lotag = 0;
+            g_t[3] +=  *(decodescriptptr(g_t[4])+3);
+        }
+        if( klabs(g_t[3]) >= klabs( *(decodescriptptr(g_t[4])+1) * *(decodescriptptr(g_t[4])+3) ) )
+            g_t[3] = 0;
+    }
+
+    do
+        done = parse();
+    while( done == 0 );
+
+    if(killit_flag == 1)
+    {
+        if(ps[g_p].actorsqu == g_i)
+            ps[g_p].actorsqu = -1;
+        deletesprite(g_i);
+    }
+    else
+    {
+        move();
+
+        if( g_sp->statnum == 1)
+        {
+            if( badguy(g_sp) )
+            {
+                if( g_sp->xrepeat > 60 ) return;
+                if( ud.respawn_monsters == 1 && g_sp->extra <= 0 ) return;
+            }
+            else if( ud.respawn_items == 1 && (g_sp->cstat&32768) ) return;
+
+            if(hittype[g_i].timetosleep > 1)
+                hittype[g_i].timetosleep--;
+            else if(hittype[g_i].timetosleep == 1)
+                 changespritestat(g_i,2);
+        }
+
+        else if(g_sp->statnum == 6)
+            switch(g_sp->picnum)
+            {
+                case RUBBERCAN:
+                case EXPLODINGBARREL:
+                case WOODENHORSE:
+                case HORSEONSIDE:
+                case CANWITHSOMETHING:
+                case FIREBARREL:
+                case NUKEBARREL:
+                case NUKEBARRELDENTED:
+                case NUKEBARRELLEAKED:
+                case TRIPBOMB:
+                case EGG:
+                    if(hittype[g_i].timetosleep > 1)
+                        hittype[g_i].timetosleep--;
+                    else if(hittype[g_i].timetosleep == 1)
+                        changespritestat(g_i,2);
+                    break;
+            }
+    }
+}
+
+
+
+
+
+// "Duke 2000"
+// "Virchua Duke"
+// "Son of Death
+// "Cromium"
+// "Potent"
+// "Flotsom"
+
+// Volume One
+// "Duke is brain dead",
+// "BOOT TO THE HEAD"
+// Damage too duke
+// Weapons are computer cont.  Only logical thinking
+// is disappearing.
+// " Flips! "
+// Flash on screen, inst.
+// "BUMS"
+// "JAIL"/"MENTAL WARD (Cop code for looney?  T. asks Cop.)"
+// "GUTS OR GLORY"
+
+// ( Duke's Mission
+
+// Duke:    "Looks like some kind of transporter...?"
+// Byte:    "...YES"
+
+// Duke:    "Waa, here goes nuthin'. "
+// (Duke puts r. arm in device)
+
+// Duke:    AAAAHHHHHHHHHHHHHHHHHHHHHHHHH!!!
+// (Duke's arm is seved.)
+// Byte:    NO.NO.NO.NO.NO.NO.NO...
+// ( Byte directs duke to the nearest heat source)
+// (Shut Up Mode)
+// ( Duke Staggers, end of arm bleeding, usual oozing arm guts. )
+// Byte: Left, Left, Left, Left, Right.
+// ( Duke, loozing consc, trips on broken pipe, )
+// ( hits temple on edge of step. )
+// ( Rats everywhere, byte pushing them away with weapon,
+// ( eventually covered, show usual groosums, Duke appears dead
+// ( Duke wakes up, in hospital, vision less blurry
+// ( Hospital doing brain scan, 1/3 cran. mass MISSING!
+// Doc: Hummm?  ( Grabbing upper lip to "appear" smart. )
+
+// Stand back boys
+
+// Schrapnel has busted my scull!
+// Now I'm insane, Mental ward, got to escape.
+// Search light everywhere.
+
+// (M)Mendor, The Tree Dweller.
+// (M)BashMan, The Destructor.
+// (M)Lash, The Scavenger.
+// (F)Mag, The Slut.
+// (F)
+// NRA OR SOMETHIN'
+
+// Duke Nukem
+// 5th Dimention
+// Pentagon Man!
+
+
+// I Hope your not stupid!
+// The 70's meet the future.
+// Dirty Harry style.  70's music with futuristic edge
+// The Instant De-Welder(tm)
+// I think I'm going to puke...
+// Badge attitude.
+// He's got a Badge(LA 3322), a Bulldog, a Bronco (beat up/bondoed).
+// Gfx:
+// Lite rail systems
+// A church.  Large cross
+// Sniper Scope,
+// Really use the phone
+// The Boiler Room
+// The IRS, nuking other government buildings?
+// You wouldn't have a belt of booz, would ya?
+// Slow turning signes
+// More persise shooting/descructions
+// Faces, use phoneoms and its lookup.  Talking, getting in fights.
+// Drug dealers, pimps, and all galore
+// Weapons, Anything lying around.
+// Trees to clime, burning trees.
+// Sledge Hammer, Sledge hammer with Spike
+// sancurary, get away from it all.
+// Goodlife = ( War + Greed ) / Peace
+// Monsterism           (ACTION)
+// Global Hunter        (RPG)
+// Slick a Wick         (PUZZLE)
+// Roach Condo          (FUNNY)
+// AntiProfit           (RPG)
+// Pen Patrol           (TD SIM)
+// 97.5 KPIG! - Wanker County
+// "Fauna" - Native Indiginouns Animal Life
