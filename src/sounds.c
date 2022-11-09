@@ -22,3 +22,90 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 Original Source: 1996 - Todd Replogle
 Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 Modifications for JonoF's port by Jonathon Fowler (jf@jonof.id.au)
+*/
+//-------------------------------------------------------------------------
+
+//#include <conio.h>
+#include <stdio.h>
+#include <string.h>
+#include "duke3d.h"
+
+
+#define LOUDESTVOLUME 150
+
+#define MUSIC_ID  -65536
+
+int backflag,numenvsnds;
+
+static int MusicIsWaveform = 0;
+static char * MusicPtr = 0;
+static int MusicLen = 0;
+static int MusicVoice = -1;
+static int MusicPaused = 0;
+
+
+/*
+===================
+=
+= SoundStartup
+=
+===================
+*/
+
+void SoundStartup( void )
+{
+   int32 status;
+    int fxdevicetype;
+    void * initdata = 0;
+
+   // if they chose None lets return
+    if (FXDevice < 0) {
+        return;
+    } else if (FXDevice == 0) {
+        fxdevicetype = ASS_AutoDetect;
+    } else {
+        fxdevicetype = FXDevice - 1;
+    }
+    
+    #ifdef _WIN32
+    initdata = (void *) win_gethwnd();
+    #endif
+
+   status = FX_Init( fxdevicetype, NumVoices, &NumChannels, &NumBits, &MixRate, initdata );
+   if ( status == FX_Ok ) {
+      FX_SetVolume( FXVolume );
+      FX_SetReverseStereo(ReverseStereo);
+	  status = FX_SetCallBack( testcallback );
+  }
+
+   if ( status != FX_Ok ) {
+	  sprintf(buf, "Sound startup error: %s", FX_ErrorString( FX_Error ));
+	  gameexit(buf);
+   }
+	
+	FXDevice = 0;
+}
+
+/*
+===================
+=
+= SoundShutdown
+=
+===================
+*/
+
+void SoundShutdown( void )
+{
+   int32 status;
+
+   // if they chose None lets return
+   if (FXDevice < 0)
+      return;
+   
+   if (MusicVoice >= 0) {
+      MusicShutdown();
+   }
+
+   status = FX_Shutdown();
+   if ( status != FX_Ok ) {
+	  s
