@@ -339,4 +339,61 @@ char loadsound(unsigned short num)
     fp = kopen4load(sounds[num],loadfromgrouponly);
     if(fp == -1)
     {
-        sprintf(&fta_quotes[113][0],"Sound
+        sprintf(&fta_quotes[113][0],"Sound %s(#%d) not found.",sounds[num],num);
+        FTA(113,&ps[myconnectindex]);
+        return 0;
+    }
+
+    l = kfilelength( fp );
+    soundsiz[num] = l;
+
+    Sound[num].lock = 200;
+
+    allocache((void **)&Sound[num].ptr,l,&Sound[num].lock);
+    kread( fp, Sound[num].ptr , l);
+    kclose( fp );
+    return 1;
+}
+
+int xyzsound(short num,short i,int x,int y,int z)
+{
+    int sndist, cx, cy, cz, j,k;
+    short pitche,pitchs,cs;
+    int voice, sndang, ca, pitch;
+
+//    if(num != 358) return 0;
+
+    if( num >= NUM_SOUNDS ||
+        FXDevice < 0 ||
+        ( (soundm[num]&8) && ud.lockout ) ||
+        SoundToggle == 0 ||
+        Sound[num].num > 3 ||
+        FX_VoiceAvailable(soundpr[num]) == 0 ||
+        (ps[myconnectindex].timebeforeexit > 0 && ps[myconnectindex].timebeforeexit <= 26*3) ||
+        ps[myconnectindex].gm&MODE_MENU) return -1;
+
+    if( soundm[num]&128 )
+    {
+        sound(num);
+        return 0;
+    }
+
+    if( soundm[num]&4 )
+    {
+        if(VoiceToggle==0 || (ud.multimode > 1 && PN == APLAYER && sprite[i].yvel != screenpeek && ud.coop != 1) ) return -1;
+
+        for(j=0;j<NUM_SOUNDS;j++)
+          for(k=0;k<Sound[j].num;k++)
+            if( (Sound[j].num > 0) && (soundm[j]&4) )
+              return -1;
+    }
+
+    cx = ps[screenpeek].oposx;
+    cy = ps[screenpeek].oposy;
+    cz = ps[screenpeek].oposz;
+    cs = ps[screenpeek].cursectnum;
+    ca = ps[screenpeek].ang+ps[screenpeek].look_ang;
+
+    sndist = FindDistance3D((cx-x),(cy-y),(cz-z)>>4);
+
+    if( 
