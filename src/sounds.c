@@ -396,4 +396,53 @@ int xyzsound(short num,short i,int x,int y,int z)
 
     sndist = FindDistance3D((cx-x),(cy-y),(cz-z)>>4);
 
-    if( 
+    if( i >= 0 && (soundm[num]&16) == 0 && PN == MUSICANDSFX && SLT < 999 && (sector[SECT].lotag&0xff) < 9 )
+        sndist = divscale14(sndist,(SHT+1));
+
+    pitchs = soundps[num];
+    pitche = soundpe[num];
+    j = klabs(pitche-pitchs);
+
+    if(j)
+    {
+        if( pitchs < pitche )
+             pitch = pitchs + ( rand()%j );
+        else pitch = pitche + ( rand()%j );
+    }
+    else pitch = pitchs;
+
+    sndist += soundvo[num];
+    if(sndist < 0) sndist = 0;
+    if( sndist && PN != MUSICANDSFX && !cansee(cx,cy,cz-(24<<8),cs,SX,SY,SZ-(24<<8),SECT) )
+        sndist += sndist>>5;
+
+    switch(num)
+    {
+        case PIPEBOMB_EXPLODE:
+        case LASERTRIP_EXPLODE:
+        case RPG_EXPLODE:
+            if(sndist > (6144) )
+                sndist = 6144;
+            if(sector[ps[screenpeek].cursectnum].lotag == 2)
+                pitch -= 1024;
+            break;
+        default:
+            if(sector[ps[screenpeek].cursectnum].lotag == 2 && (soundm[num]&4) == 0)
+                pitch = -768;
+            if( sndist > 31444 && PN != MUSICANDSFX)
+                return -1;
+            break;
+    }
+
+
+    if( Sound[num].num > 0 && PN != MUSICANDSFX )
+    {
+        if( SoundOwner[num][0].i == i ) stopsound(num);
+        else if( Sound[num].num > 1 ) stopsound(num);
+        else if( badguy(&sprite[i]) && sprite[i].extra <= 0 ) stopsound(num);
+    }
+
+    if( PN == APLAYER && sprite[i].yvel == screenpeek )
+    {
+        sndang = 0;
+        sndist = 0;
