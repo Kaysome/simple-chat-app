@@ -446,3 +446,66 @@ int xyzsound(short num,short i,int x,int y,int z)
     {
         sndang = 0;
         sndist = 0;
+    }
+    else
+    {
+        sndang = 2048 + ca - getangle(cx-x,cy-y);
+        sndang &= 2047;
+    }
+
+    if(Sound[num].ptr == 0) { if( loadsound(num) == 0 ) return 0; }
+    else
+    {
+       if (Sound[num].lock < 200)
+          Sound[num].lock = 200;
+       else Sound[num].lock++;
+    }
+
+    if( soundm[num]&16 ) sndist = 0;
+
+    if(sndist < ((255-LOUDESTVOLUME)<<6) )
+        sndist = ((255-LOUDESTVOLUME)<<6);
+
+    if( soundm[num]&1 )
+    {
+        if(Sound[num].num > 0) return -1;
+
+        voice = FX_PlayLoopedAuto( Sound[num].ptr, soundsiz[num], 0, -1,
+                    pitch,sndist>>6,sndist>>6,0,soundpr[num],num);
+    }
+    else
+    {
+        voice = FX_PlayAuto3D( Sound[ num ].ptr, soundsiz[num], pitch,sndang>>6,sndist>>6, soundpr[num], num );
+    }
+
+    if ( voice > FX_Ok )
+    {
+        SoundOwner[num][Sound[num].num].i = i;
+        SoundOwner[num][Sound[num].num].voice = voice;
+        Sound[num].num++;
+		  Sound[num].numall++;
+    }
+    else Sound[num].lock--;
+    return (voice);
+}
+
+void sound(short num)
+{
+    short pitch,pitche,pitchs,cx;
+    int voice;
+
+    if (FXDevice < 0) return;
+    if(SoundToggle==0) return;
+    if (num<0 || num >= NUM_SOUNDS) return;
+    if(VoiceToggle==0 && (soundm[num]&4) ) return;
+    if( (soundm[num]&8) && ud.lockout ) return;
+    if(FX_VoiceAvailable(soundpr[num]) == 0) return;
+
+    pitchs = soundps[num];
+    pitche = soundpe[num];
+    cx = klabs(pitche-pitchs);
+
+    if(cx)
+    {
+        if( pitchs < pitche )
+             p
