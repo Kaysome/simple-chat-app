@@ -508,4 +508,74 @@ void sound(short num)
     if(cx)
     {
         if( pitchs < pitche )
-             p
+             pitch = pitchs + ( rand()%cx );
+        else pitch = pitche + ( rand()%cx );
+    }
+    else pitch = pitchs;
+
+    if(Sound[num].ptr == 0) { if( loadsound(num) == 0 ) return; }
+    else
+    {
+       if (Sound[num].lock < 200)
+          Sound[num].lock = 200;
+       else Sound[num].lock++;
+    }
+
+    if( soundm[num]&1 )
+    {
+         voice = FX_PlayLoopedAuto( Sound[num].ptr, soundsiz[num], 0, -1,
+                 pitch,LOUDESTVOLUME,LOUDESTVOLUME,LOUDESTVOLUME,soundpr[num],num);
+    }
+    else
+    {
+        voice = FX_PlayAuto3D( Sound[ num ].ptr, soundsiz[num], pitch,0,255-LOUDESTVOLUME,soundpr[num], num );
+    }
+
+    if(voice > FX_Ok) {
+		 Sound[num].numall++;
+		 return;
+	 }
+    Sound[num].lock--;
+}
+
+int spritesound(unsigned short num, short i)
+{
+    if(num >= NUM_SOUNDS) return -1;
+    return xyzsound(num,i,SX,SY,SZ);
+}
+
+void stopspritesound(short num, short i)
+{
+	(void)i;
+	stopsound(num);
+}
+
+void stopsound(short num)
+{
+    if(Sound[num].num > 0)
+    {
+        FX_StopSound(SoundOwner[num][Sound[num].num-1].voice);
+        //testcallback(num);
+    }
+}
+
+void stopenvsound(short num,short i)
+{
+    short j, k;
+
+    if(Sound[num].num > 0)
+    {
+        k = Sound[num].num;
+        for(j=0;j<k;j++)
+           if(SoundOwner[num][j].i == i)
+        {
+            FX_StopSound(SoundOwner[num][j].voice);
+            break;
+        }
+    }
+}
+
+void pan3dsound(void)
+{
+    int sndist, sx, sy, sz, cx, cy, cz;
+    short sndang,ca,j
