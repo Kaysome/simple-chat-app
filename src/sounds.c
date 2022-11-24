@@ -578,4 +578,58 @@ void stopenvsound(short num,short i)
 void pan3dsound(void)
 {
     int sndist, sx, sy, sz, cx, cy, cz;
-    short sndang,ca,j
+    short sndang,ca,j,k,i,cs;
+
+    numenvsnds = 0;
+
+    if(ud.camerasprite == -1)
+    {
+        cx = ps[screenpeek].oposx;
+        cy = ps[screenpeek].oposy;
+        cz = ps[screenpeek].oposz;
+        cs = ps[screenpeek].cursectnum;
+        ca = ps[screenpeek].ang+ps[screenpeek].look_ang;
+    }
+    else
+    {
+        cx = sprite[ud.camerasprite].x;
+        cy = sprite[ud.camerasprite].y;
+        cz = sprite[ud.camerasprite].z;
+        cs = sprite[ud.camerasprite].sectnum;
+        ca = sprite[ud.camerasprite].ang;
+    }
+
+    for(j=0;j<NUM_SOUNDS;j++) for(k=0;k<Sound[j].num;k++)
+    {
+        i = SoundOwner[j][k].i;
+
+        sx = sprite[i].x;
+        sy = sprite[i].y;
+        sz = sprite[i].z;
+
+        if( PN == APLAYER && sprite[i].yvel == screenpeek)
+        {
+            sndang = 0;
+            sndist = 0;
+        }
+        else
+        {
+            sndang = 2048 + ca - getangle(cx-sx,cy-sy);
+            sndang &= 2047;
+            sndist = FindDistance3D((cx-sx),(cy-sy),(cz-sz)>>4);
+            if( i >= 0 && (soundm[j]&16) == 0 && PN == MUSICANDSFX && SLT < 999 && (sector[SECT].lotag&0xff) < 9 )
+                sndist = divscale14(sndist,(SHT+1));
+        }
+
+        sndist += soundvo[j];
+        if(sndist < 0) sndist = 0;
+
+        if( sndist && PN != MUSICANDSFX && !cansee(cx,cy,cz-(24<<8),cs,sx,sy,sz-(24<<8),SECT) )
+            sndist += sndist>>5;
+
+        if(PN == MUSICANDSFX && SLT < 999)
+            numenvsnds++;
+
+        switch(j)
+        {
+            case PI
