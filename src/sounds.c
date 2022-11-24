@@ -632,4 +632,56 @@ void pan3dsound(void)
 
         switch(j)
         {
-            case PI
+            case PIPEBOMB_EXPLODE:
+            case LASERTRIP_EXPLODE:
+            case RPG_EXPLODE:
+                if(sndist > (6144)) sndist = (6144);
+                break;
+            default:
+                if( sndist > 31444 && PN != MUSICANDSFX)
+                {
+                    stopsound(j);
+                    continue;
+                }
+        }
+
+        if(Sound[j].ptr == 0 && loadsound(j) == 0 ) continue;
+        if( soundm[j]&16 ) sndist = 0;
+
+        if(sndist < ((255-LOUDESTVOLUME)<<6) )
+            sndist = ((255-LOUDESTVOLUME)<<6);
+
+        FX_Pan3D(SoundOwner[j][k].voice,sndang>>6,sndist>>6);
+    }
+}
+
+void testcallback(unsigned int num)
+{
+    short tempi,tempj,tempk;
+
+   if ((int) num == MUSIC_ID) {
+      return;
+   }
+   
+        if((int)num < 0)
+        {
+            if(lumplockbyte[-num] >= 200)
+                lumplockbyte[-num]--;
+            return;
+        }
+
+        tempk = Sound[num].num;
+
+        if(tempk > 0)
+        {
+            if( (soundm[num]&16) == 0)
+                for(tempj=0;tempj<tempk;tempj++)
+            {
+                tempi = SoundOwner[num][tempj].i;
+                if(sprite[tempi].picnum == MUSICANDSFX && sector[sprite[tempi].sectnum].lotag < 3 && sprite[tempi].lotag < 999)
+                {
+                    hittype[tempi].temp_data[0] = 0;
+                    if( (tempj + 1) < tempk )
+                    {
+                        SoundOwner[num][tempj].voice = SoundOwner[num][tempk-1].voice;
+                        SoundOw
