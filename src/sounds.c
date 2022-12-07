@@ -684,4 +684,65 @@ void testcallback(unsigned int num)
                     if( (tempj + 1) < tempk )
                     {
                         SoundOwner[num][tempj].voice = SoundOwner[num][tempk-1].voice;
-                        SoundOw
+                        SoundOwner[num][tempj].i     = SoundOwner[num][tempk-1].i;
+                    }
+                    break;
+                }
+            }
+
+            Sound[num].num--;
+            SoundOwner[num][tempk-1].i = -1;
+        }
+
+		  Sound[num].numall--;
+        Sound[num].lock--;
+}
+
+void clearsoundlocks(void)
+{
+    int i;
+
+    for(i=0;i<NUM_SOUNDS;i++)
+        if(Sound[i].lock >= 200)
+            Sound[i].lock = 199;
+
+    for(i=0;i<11;i++)
+        if(lumplockbyte[i] >= 200)
+            lumplockbyte[i] = 199;
+}
+
+int isspritemakingsound(short i, int num)
+{
+	int j, k;
+	if (num < 0) {
+		// is sprite making any sound at all (expensive)
+		for (j = 0; j < NUM_SOUNDS; j++) {
+			for (k = 0; k < Sound[j].num; k++) {
+            if (SoundOwner[j][k].i == i) {
+					return 1;
+				}
+			}
+		}
+	} else {
+		for (k = 0; k < Sound[num].num; k++) {
+			if (SoundOwner[num][k].i == i) {
+				return 1;
+			}
+		}
+	}
+
+	return 0;
+}
+
+// xyz: 0 - sound(), 1 - xyzsound(), 2 - either
+int issoundplaying(int num, int xyz)
+{
+    if (xyz == 0) {
+        return Sound[num].numall - Sound[num].num;
+    } else if (xyz == 1) {
+	return Sound[num].num;
+    } else {
+        return Sound[num].numall;
+    }
+}
+
