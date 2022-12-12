@@ -53,4 +53,25 @@ elif [ "$1" = "notarystatus" ]; then
 elif [ "$1" = "finish" ]; then
     set -xe
 
-    # Clean a previous packagin
+    # Clean a previous packaging attempt.
+    rm -rf $PRODUCT-$VERSION-mac $PRODUCT-$VERSION-mac.zip
+
+    # Put all the pieces together.
+    mkdir $PRODUCT-$VERSION-mac
+    cp -R xcode/build/Release/*.app $PRODUCT-$VERSION-mac
+    cp jfbuild/buildlic.txt $PRODUCT-$VERSION-mac
+    cp GPL.TXT $PRODUCT-$VERSION-mac
+    sed "s/\\\$VERSION/$VERSION/g" < releasenotes.html > $PRODUCT-$VERSION-mac/readme.html
+
+    # Staple notary tickets to the applications.
+    find $PRODUCT-$VERSION-mac -maxdepth 1 -name '*.app' -print0 | xargs -t -0 -I% xcrun stapler staple -v %
+
+    # Zip it all up.
+    ditto -c -k --sequesterRsrc --keepParent $PRODUCT-$VERSION-mac $PRODUCT-$VERSION-mac.zip
+
+else
+    echo package-macos.sh build
+    echo package-macos.sh notarise
+    echo package-macos.sh notarystatus '[uuid]'
+    echo package-macos.sh finish
+fi
