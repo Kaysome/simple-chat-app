@@ -23,4 +23,32 @@ if ($Args[0] -eq "amd64") {
 
 for ($arg = 1; $arg -lt $Args.Length; $arg++) {
     if ($Args[$arg] -eq "build") {
-        Remove-Item "Makefile.msvcuser" -ErrorAction Si
+        Remove-Item "Makefile.msvcuser" -ErrorAction SilentlyContinue
+        Remove-Item "jfbuild\Makefile.msvcuser" -ErrorAction SilentlyContinue
+        & cmd.exe /c "$VCVARSALL" $ARCH 8.1 "&&" nmake /f Makefile.msvc clean all
+
+    } elseif ($Args[$arg] -eq "finish") {
+        Remove-Item "$PRODUCT-$VERSION-$DIRARCH" -Recurse -ErrorAction SilentlyContinue
+        Remove-Item "$PRODUCT-$VERSION-$DIRARCH.zip" -ErrorAction SilentlyContinue
+
+        $workDir = New-Item "$PRODUCT-$VERSION-$DIRARCH" -ItemType Directory
+        Copy-Item "duke3d.exe" $workDir
+        Copy-Item "build.exe" $workDir
+        Copy-Item "jfbuild\buildlic.txt" $workDir
+        Copy-Item "GPL.TXT" $workDir
+        Set-Content "$workDir\readme.html" (Get-Content "releasenotes.html" `
+            -Encoding UTF8 -Raw).Replace('$VERSION', $VERSION)
+
+        $vcredist = (New-Object -ComObject "WScript.Shell").CreateShortcut("$workDir\Microsoft Visual C++ Redistributable.url")
+        if ($ARCH -eq "amd64") {
+            $vcredist.TargetPath = "https://aka.ms/vs/16/release/vc_redist.x64.exe"
+        } else {
+            $vcredist.TargetPath = "https://aka.ms/vs/16/release/vc_redist.x86.exe"
+        }
+        $vcredist.Save()
+
+        Compress-Archive "$PRODUCT-$VERSION-$DIRARCH" "$PRODUCT-$VERSION-$DIRARCH.zip" -CompressionLevel Optimal
+    } else {
+        Write-Warning ("Unknown action {0}" -f $Args[$arg])
+    }
+}
