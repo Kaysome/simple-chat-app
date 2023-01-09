@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="EditorStartupWinController">
+            <connections>
+                <outlet property="alwaysShowButton" destination="VkR-qr-Xv2" id="hWK-HI-RS8"/>
+                <outlet property="cancelButton" destination="1Rr-a3-Ovt" id="HjU-fs-ozc"/>
+                <outlet property="fullscreenButton" destination="vcP-CZ-XN5" id="Wov-ds-vDL"/>
+                <outlet property="messagesView" destination="Xlp-cm-pzd" id="W89-V2-Eqf"/>
+                <outlet property="startButton" destination="lVe-rZ-tKb" id="eN3-t2-OdO"/>
+                <outlet property="tabConfig" destination="wYq-5E-IaK" id="mqs-Yj-Z38"/>
+                <outlet property="tabMessages" destination="7Oi-Ni-62U" id="gJT-bB-mcL"/>
+                <outlet property="tabView" destination="MbR-hz-7Hp" id="XB7-CE-

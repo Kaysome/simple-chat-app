@@ -874,3 +874,187 @@
 					"-Wall",
 				);
 			};
+			name = Debug;
+		};
+		AB69BCF80A73C1A800F3DCB8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = AB81F9452590B9DE00306B8E /* Common.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++98";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"../jfaudiolib/third-party",
+					"$(HOME)/Library/Frameworks",
+				);
+				GCC_CHAR_IS_UNSIGNED_CHAR = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"USE_POLYMOST=1",
+					"USE_OPENGL=1",
+					RENDERTYPESDL,
+				);
+				GCC_WARN_PEDANTIC = YES;
+				HEADER_SEARCH_PATHS = (
+					../src,
+					../jfbuild/include,
+					../jfaudiolib/include,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				WARNING_CFLAGS = (
+					"-W",
+					"-Wall",
+				);
+			};
+			name = Release;
+		};
+		AB69BD0D0A73C30600F3DCB8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = JFDuke3D.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "JFDuke3D-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				OTHER_LDFLAGS = "-lc++";
+				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfduke3d;
+				PRODUCT_NAME = JFDuke3D;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		AB69BD0E0A73C30600F3DCB8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = JFDuke3D.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "JFDuke3D-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
+				OTHER_LDFLAGS = "-lc++";
+				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfduke3d;
+				PRODUCT_NAME = JFDuke3D;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		AB98B2D81A69FD42009E8749 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		AB98B2D91A69FD42009E8749 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		ABD2DF5121AA3E1600BDB555 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		ABD2DF5221AA3E1600BDB555 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		ABD769620A73D117006C27C1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = EditorAppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Build Editor for JFDuke3D.entitlements";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "Build Editor-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @loader_path/../Frameworks";
+				OTHER_LDFLAGS = "-lc++";
+				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfduke3d.build;
+				PRODUCT_NAME = "Build Editor for JFDuke3D";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		ABD769630A73D117006C27C1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = EditorAppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Build Editor for JFDuke3D.entitlements";
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_FILE = "Build Editor-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(LD_RUNPATH_SEARCH_PATHS_$(IS_MACCATALYST)) @loader_path/../Frameworks";
+				OTHER_LDFLAGS = "-lc++";
+				PRODUCT_BUNDLE_IDENTIFIER = au.id.jonof.jfduke3d.build;
+				PRODUCT_NAME = "Build Editor for JFDuke3D";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AB69BCF60A73C1A800F3DCB8 /* Build configuration list for PBXProject "duke3d" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB69BCF70A73C1A800F3DCB8 /* Debug */,
+				AB69BCF80A73C1A800F3DCB8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AB69BD0C0A73C30600F3DCB8 /* Build configuration list for PBXNativeTarget "JFDuke3D" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB69BD0D0A73C30600F3DCB8 /* Debug */,
+				AB69BD0E0A73C30600F3DCB8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AB98B2D71A69FD42009E8749 /* Build configuration list for PBXAggregateTarget "all" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AB98B2D81A69FD42009E8749 /* Debug */,
+				AB98B2D91A69FD42009E8749 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ABD2DF5A21AA3E1600BDB555 /* Build configuration list for PBXAggregateTarget "Version stamp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ABD2DF5121AA3E1600BDB555 /* Debug */,
+				ABD2DF5221AA3E1600BDB555 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ABD769610A73D117006C27C1 /* Build configuration list for PBXNativeTarget "Build Editor for JFDuke3D" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ABD769620A73D117006C27C1 /* Debug */,
+				ABD769630A73D117006C27C1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = AB69BCF50A73C1A800F3DCB8 /* Project object */;
+}
