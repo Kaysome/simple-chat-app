@@ -50,4 +50,28 @@ for JFDuke3D</string>
                     <button verticalHuggingPriority="750" misplaced="YES" id="lVe-rZ-tKb">
                         <rect key="frame" x="496" y="13" width="85" height="32"/>
                         <autoresizingMask key="autoresizingMask"/>
-                        <buttonCell ke
+                        <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="yvA-Cj-lzh">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="start:" target="-2" id="oZw-vf-FBD"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" misplaced="YES" id="1Rr-a3-Ovt">
+                        <rect key="frame" x="411" y="13" width="85" height="32"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="push" title="Cancel" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="Mf4-tq-AoL">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="cancel:" target="-2" id="WRT-DC-oDD"/>
+                        </connections>
+       
