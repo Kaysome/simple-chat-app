@@ -74,4 +74,20 @@ Gw
                         <connections>
                             <action selector="cancel:" target="-2" id="WRT-DC-oDD"/>
                         </connections>
-       
+                    </button>
+                    <tabView misplaced="YES" initialItem="wYq-5E-IaK" id="MbR-hz-7Hp">
+                        <rect key="frame" x="158" y="46" width="424" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <font key="font" metaFont="system"/>
+                        <tabViewItems>
+                            <tabViewItem label="Configuration" identifier="" id="wYq-5E-IaK">
+                                <view key="view" id="UKf-Is-SRN">
+                                    <rect key="frame" x="10" y="33" width="404" height="254"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <textField verticalHuggingPriority="750" id="X3Q-5l-jWv">
+                                            <rect key="frame" x="15" y="218" width="111" height="17"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="2D Video mode:" id="3v9-Pa-utI">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="cat
