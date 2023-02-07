@@ -119,4 +119,18 @@ Gw
                                         <popUpButton verticalHuggingPriority="750" id="OoU-E2-12L">
                                             <rect key="frame" x="132" y="186" width="249" height="26"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <popUpButtonCell key="cell" type="push" title="XXX x YYY Z-bpp" bezelStyle="
+                                            <popUpButtonCell key="cell" type="push" title="XXX x YYY Z-bpp" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="t8s-Yn-r4a" id="fne-BR-tal">
+                                                <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                <font key="font" metaFont="menu"/>
+                                                <menu key="menu" title="OtherViews" id="LFX-6W-bhw">
+                                                    <items>
+                                                        <menuItem title="XXX x YYY Z-bpp" state="on" id="t8s-Yn-r4a"/>
+                                                    </items>
+                                                </menu>
+                                            </popUpButtonCell>
+                                        </popUpButton>
+                                        <button id="vcP-CZ-XN5">
+                                            <rect key="frame" x="132" y="165" width="85" height="19"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <buttonCell key="cell" type="check" title="Fullscreen" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="rwG-0f-JsF">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByConten
