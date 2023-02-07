@@ -104,4 +104,19 @@ Gw
                                                     <items>
                                                         <menuItem title="XXX x YYY" state="on" id="jPk-IJ-igv"/>
                                                     </items>
-         
+                                                </menu>
+                                            </popUpButtonCell>
+                                        </popUpButton>
+                                        <textField verticalHuggingPriority="750" id="snn-pR-nfh">
+                                            <rect key="frame" x="15" y="192" width="102" height="17"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="3D Video mode:" id="4yz-bN-JvB">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                        </textField>
+                                        <popUpButton verticalHuggingPriority="750" id="OoU-E2-12L">
+                                            <rect key="frame" x="132" y="186" width="249" height="26"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <popUpButtonCell key="cell" type="push" title="XXX x YYY Z-bpp" bezelStyle="
