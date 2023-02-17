@@ -182,4 +182,22 @@ Gw
                     </tabView>
                     <button misplaced="YES" id="VkR-qr-Xv2">
                         <rect key="frame" x="18" y="22" width="234" height="18"/>
-                        <autor
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="Always show configuration on start" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="FNh-Ts-AKm">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                    </button>
+                </subviews>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="9ai-mC-rwK"/>
+                <outlet property="initialFirstResponder" destination="lVe-rZ-tKb" id="uHy-oK-TwJ"/>
+            </connections>
+            <point key="canvasLocation" x="344.5" y="287"/>
+        </window>
+    </objects>
+    <resources>
+        <image name="NSApplicationIcon" width="128" height="128"/>
+    </resources>
+</document>
