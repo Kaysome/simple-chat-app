@@ -151,4 +151,17 @@ Gw
                                         <scrollView misplaced="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="BFT-wj-c1p">
                                             <rect key="frame" x="4" y="3" width="396" height="248"/>
                                             <autoresizingMask key="autoresizingMask"/>
-                                            <clipView key="c
+                                            <clipView key="contentView" id="A1S-b5-3J8">
+                                                <rect key="frame" x="1" y="1" width="394" height="246"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <subviews>
+                                                    <textView editable="NO" selectable="NO" importsGraphics="NO" richText="NO" verticallyResizable="YES" usesFontPanel="YES" usesRuler="YES" spellingCorrection="YES" smartInsertDelete="YES" id="Xlp-cm-pzd">
+                                                        <rect key="frame" x="0.0" y="0.0" width="387" height="246"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        <size key="minSize" width="387" height="246"/>
+                                                        <size key="maxSize" width="401" height="10000000"/>
+                                                        <color key="insertionPointColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                    </textView>
+                                                </subviews>
+                        
