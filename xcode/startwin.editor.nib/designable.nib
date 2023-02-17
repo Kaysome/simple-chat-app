@@ -133,4 +133,22 @@ Gw
                                             <rect key="frame" x="132" y="165" width="85" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <buttonCell key="cell" type="check" title="Fullscreen" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="rwG-0f-JsF">
-                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByConten
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="system"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="fullscreenClicked:" target="-2" id="cfd-e7-pYp"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Messages" identifier="" id="7Oi-Ni-62U">
+                                <view key="view" id="JF0-1i-g4g">
+                                    <rect key="frame" x="10" y="33" width="404" height="254"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <scrollView misplaced="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="BFT-wj-c1p">
+                                            <rect key="frame" x="4" y="3" width="396" height="248"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <clipView key="c
